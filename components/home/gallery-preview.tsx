@@ -11,58 +11,49 @@ export function GalleryPreview() {
   return (
     <section className="section-spacing bg-white">
       <div className="container-tight">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
           <div>
             <motion.span
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className="section-label mb-4 inline-flex"
+              viewport={{ once: true, margin: "-80px" }}
+              className="section-label mb-3 inline-flex"
             >
               Portfolio
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.04 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ delay: 0.03 }}
               className="heading-section text-ink"
             >
               Our Work Gallery
             </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.08 }}
-              className="body-large mt-3 max-w-xl"
-            >
-              Explore our recent decorations. Each project is crafted with attention to detail.
-            </motion.p>
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.12 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ delay: 0.08 }}
           >
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/gallery" className="flex items-center gap-2">
-                View Full Gallery <ArrowRight className="w-4 h-4" />
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/gallery" className="flex items-center gap-1.5 text-xs">
+                View Full Gallery <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </Button>
           </motion.div>
         </div>
 
         <div className="relative">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" role="list">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5" role="list">
             {FALLBACK_GALLERY.slice(0, 12).map((item, index) => (
               <motion.article
                 key={item.id}
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: index * 0.03, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ delay: index * 0.025, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className={cn(
                   "relative aspect-[4/5] overflow-hidden rounded-xl group cursor-pointer",
                   index === 0 && "md:col-span-2 md:row-span-2",
@@ -81,13 +72,13 @@ export function GalleryPreview() {
                       alt={item.title}
                       fill
                       className="object-cover image-zoom"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-gold mb-0.5 block">Gallery</span>
-                      <h3 className="text-white font-semibold text-sm">{item.title}</h3>
-                      <p className="text-white/60 text-xs capitalize">{item.category.replace("-", " ")}</p>
+                    <div className="absolute bottom-0 left-0 right-0 p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-gold mb-0.5 block">Gallery</span>
+                      <h3 className="text-white font-semibold text-xs">{item.title}</h3>
+                      <p className="text-white/60 text-[10px] capitalize">{item.category.replace("-", " ")}</p>
                     </div>
                   </div>
                 </Link>

@@ -19,26 +19,26 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-charcoal text-white/80">
-      <div className="container-tight py-16 md:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-10">
+    <footer className="bg-charcoal text-white/80 pb-16 lg:pb-0">
+      <div className="container-tight py-10 md:py-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
           <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-5" aria-label={`${BRAND.name} - Home`}>
+            <Link href="/" className="flex items-center gap-2 mb-4" aria-label={`${BRAND.name} - Home`}>
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Decorator"
-                width={140}
-                height={38}
-                className="h-[36px] w-auto object-contain brightness-0 invert"
+                width={120}
+                height={32}
+                className="h-[32px] w-auto object-contain brightness-0 invert"
               />
             </Link>
-            <p className="text-white/50 text-sm leading-relaxed max-w-xs mb-5">{BRAND.description}</p>
-            <div className="flex flex-wrap gap-3 mb-5">
+            <p className="text-white/40 text-xs leading-relaxed max-w-xs mb-4">{BRAND.description}</p>
+            <div className="flex flex-wrap gap-2.5 mb-4">
               <a
                 href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors"
                 aria-label="WhatsApp"
               >
                 <SocialIcon d={WHATSAPP_PATH} />
@@ -46,56 +46,38 @@ export function Footer() {
               </a>
               <a
                 href={`mailto:${BRAND.email}`}
-                className="flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors"
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-3.5 h-3.5" />
                 <span>{BRAND.email}</span>
               </a>
               <a
                 href={`tel:${BRAND.phone.replace(/\D/g, "")}`}
-                className="flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white transition-colors"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="w-3.5 h-3.5" />
                 <span>{BRAND.phone}</span>
               </a>
             </div>
-            <div className="flex gap-3">
-              <a
-                href={BRAND.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all"
-                aria-label="Instagram"
-              >
+            <div className="flex gap-2.5">
+              <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all" aria-label="Instagram">
                 <SocialIcon d={INSTAGRAM_PATH} />
               </a>
-              <a
-                href={BRAND.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all"
-                aria-label="Facebook"
-              >
+              <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all" aria-label="Facebook">
                 <SocialIcon d={FACEBOOK_PATH} />
               </a>
-              <a
-                href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all"
-                aria-label="WhatsApp"
-              >
+              <a href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all" aria-label="WhatsApp">
                 <SocialIcon d={WHATSAPP_PATH} />
               </a>
             </div>
           </div>
 
           <nav>
-            <h4 className="font-heading text-sm font-bold text-white mb-4">Shop</h4>
-            <ul className="space-y-2.5">
+            <h4 className="font-heading text-xs font-bold text-white mb-3">Shop</h4>
+            <ul className="space-y-2">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-sm">
+                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-xs">
                     {link.label}
                   </Link>
                 </li>
@@ -104,11 +86,11 @@ export function Footer() {
           </nav>
 
           <nav>
-            <h4 className="font-heading text-sm font-bold text-white mb-4">Services</h4>
-            <ul className="space-y-2.5">
+            <h4 className="font-heading text-xs font-bold text-white mb-3">Services</h4>
+            <ul className="space-y-2">
               {FOOTER_LINKS.services.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-sm">
+                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-xs">
                     {link.label}
                   </Link>
                 </li>
@@ -117,11 +99,11 @@ export function Footer() {
           </nav>
 
           <div>
-            <h4 className="font-heading text-sm font-bold text-white mb-4">Company</h4>
-            <ul className="space-y-2.5">
+            <h4 className="font-heading text-xs font-bold text-white mb-3">Company</h4>
+            <ul className="space-y-2">
               {FOOTER_LINKS.company.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-sm">
+                  <Link href={link.href} className="text-white/40 hover:text-white transition-colors text-xs">
                     {link.label}
                   </Link>
                 </li>
@@ -130,36 +112,36 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/8">
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="mt-8 pt-6 border-t border-white/8">
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
             {WHY_CHOOSE_US.map((item, index) => (
-              <div key={index} className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <div className="w-3.5 h-3.5 rounded bg-gold/40" />
+              <div key={index} className="flex gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                  <div className="w-3 h-3 rounded bg-gold/40" />
                 </div>
                 <div>
-                  <h5 className="font-medium text-white text-sm">{item.title}</h5>
-                  <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{item.description}</p>
+                  <h5 className="font-medium text-white text-xs">{item.title}</h5>
+                  <p className="text-white/30 text-[10px] mt-0.5 leading-relaxed">{item.description}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/8">
-            <p className="text-white/30 text-xs">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-5 border-t border-white/8">
+            <p className="text-white/30 text-[10px]">
               &copy; {currentYear} {BRAND.name}. All rights reserved.
             </p>
-            <div className="flex items-center gap-5 text-xs text-white/30">
+            <div className="flex items-center gap-4 text-[10px] text-white/30">
               <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" />
+                <MapPin className="w-3 h-3" />
                 {BRAND.address}
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
+                <Clock className="w-3 h-3" />
                 Mon-Sat 9AM-8PM
               </span>
               <span className="flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5" />
+                <Phone className="w-3 h-3" />
                 {BRAND.phone}
               </span>
             </div>

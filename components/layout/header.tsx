@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag, Heart, Search, Menu, X, ChevronDown, Shield, HeadphonesIcon, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -77,22 +77,28 @@ export function Header() {
     setMaterialMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+    return () => document.body.classList.remove("menu-open");
+  }, [mobileMenuOpen]);
+
   const navLinks = NAV_LINKS;
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+    <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
           ? "bg-white/95 backdrop-blur-xl border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
-          : "bg-transparent"
+          : "bg-white/80 backdrop-blur-sm"
       )}
     >
       <div className="container-tight">
-        <div className="flex items-center justify-between h-16 md:h-[68px] gap-4">
+          <div className="flex items-center justify-between h-14 md:h-16 gap-4">
           <Link
             href="/"
             className="flex items-center gap-2.5 flex-shrink-0"
@@ -412,6 +418,6 @@ export function Header() {
       {materialMenuOpen && (
         <div className="hidden lg:block fixed inset-0 z-30" onClick={() => setMaterialMenuOpen(false)} />
       )}
-    </motion.header>
+    </header>
   );
 }
