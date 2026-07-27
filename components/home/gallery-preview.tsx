@@ -3,14 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_GALLERY } from "@/lib/seed";
 import { cn } from "@/lib/utils";
 
 export function GalleryPreview() {
   return (
-    <section className="section-spacing bg-background">
+    <section className="section-spacing bg-white">
       <div className="container-tight">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
           <div>
@@ -23,10 +22,10 @@ export function GalleryPreview() {
               Portfolio
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.05 }}
+              transition={{ delay: 0.04 }}
               className="heading-section text-ink"
             >
               Our Work Gallery
@@ -35,17 +34,17 @@ export function GalleryPreview() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.08 }}
               className="body-large mt-3 max-w-xl"
             >
-              Explore our recent decorations. Each project is crafted with attention to detail and personalized to our clients' vision.
+              Explore our recent decorations. Each project is crafted with attention to detail.
             </motion.p>
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.12 }}
           >
             <Button variant="outline" size="lg" asChild>
               <Link href="/gallery" className="flex items-center gap-2">
@@ -62,8 +61,8 @@ export function GalleryPreview() {
                 key={item.id}
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: index * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ delay: index * 0.03, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className={cn(
                   "relative aspect-[4/5] overflow-hidden rounded-xl group cursor-pointer",
                   index === 0 && "md:col-span-2 md:row-span-2",
@@ -84,16 +83,11 @@ export function GalleryPreview() {
                       className="object-cover image-zoom"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <span className="label text-gold mb-1 block text-[10px]">Gallery</span>
-                      <h3 className="text-white font-semibold text-sm mb-0.5">{item.title}</h3>
-                      <p className="text-white/70 text-xs capitalize">{item.category.replace("-", " ")}</p>
-                    </div>
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm" aria-label="View">
-                        <Search className="w-4 h-4 text-ink" />
-                      </button>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-gold mb-0.5 block">Gallery</span>
+                      <h3 className="text-white font-semibold text-sm">{item.title}</h3>
+                      <p className="text-white/60 text-xs capitalize">{item.category.replace("-", " ")}</p>
                     </div>
                   </div>
                 </Link>

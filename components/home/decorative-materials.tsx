@@ -1,89 +1,55 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "@/components/ui/icons";
 import { MATERIAL_CATEGORIES } from "@/lib/constants";
 
 export function DecorativeMaterialsSection() {
   return (
-    <section className="section-spacing bg-forest">
+    <section className="bg-forest py-14 md:py-16">
       <div className="container-tight">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
-        >
-          <span className="label text-gold mb-3 block">Premium Collection</span>
+        <div className="text-center mb-10">
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-white/80 text-[0.6875rem] font-semibold uppercase tracking-widest mb-4"
+          >
+            25+ Categories
+          </motion.span>
           <motion.h2
-            className="heading-section text-white mb-5"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ delay: 0.04 }}
+            className="heading-section text-white"
           >
-            Decorative Materials
+            Decorative Material
           </motion.h2>
-          <motion.p
-            className="body-large text-white/80 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.2 }}
-          >
-            Everything you need for unforgettable celebrations — from elegant helium
-            balloon bunches to bespoke decoration setups. Browse our curated materials
-            and book online.
-          </motion.p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-          {MATERIAL_CATEGORIES.slice(0, 12).map((category, index) => (
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5">
+          {MATERIAL_CATEGORIES.map((cat, index) => (
             <motion.div
-              key={category.slug}
-              initial={{ opacity: 0, y: 20 }}
+              key={cat.slug}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: index * 0.04, duration: 0.5 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ delay: index * 0.02, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
               <Link
-                href={`/materials/${category.slug}`}
-                className="group block relative overflow-hidden rounded-2xl bg-white/10 border border-white/10 p-4 md:p-5 text-center card-lift"
+                href={`/materials/${cat.slug}`}
+                className="group flex flex-col items-center gap-2 p-3.5 rounded-2xl hover:bg-white/10 transition-colors duration-150 text-center"
               >
-                <div className="text-4xl md:text-5xl mb-3">{category.icon}</div>
-                <h3 className="text-sm md:text-[0.9375rem] font-semibold text-white mb-1">
-                  {category.name}
-                </h3>
-                <p className="text-[0.75rem] md:text-xs text-white/60 line-clamp-2">
-                  {category.description}
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-gold text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Browse <ArrowRight className="w-3 h-3" />
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl group-hover:bg-white/15 transition-colors duration-150">
+                  {cat.icon}
+                </div>
+                <span className="text-[0.6875rem] font-medium text-white/70 group-hover:text-white transition-colors leading-tight">
+                  {cat.name}
                 </span>
               </Link>
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ delay: 0.6 }}
-          className="text-center mt-10 md:mt-12"
-        >
-          <Button
-            variant="outline"
-            size="lg"
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white px-8 py-4 rounded-2xl font-medium"
-            asChild
-          >
-            <Link href="/materials" className="flex items-center gap-2">
-              View All Materials <ArrowRight className="w-5 h-5" />
-            </Link>
-          </Button>
-        </motion.div>
       </div>
     </section>
   );

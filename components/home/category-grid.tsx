@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { SHOP_CATEGORIES, SERVICE_CATEGORIES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "@/components/ui/icons";
-import { Package, PartyPopper, Flower2, Gift, Balloon } from "lucide-react";
 
 const categoryImages: Record<string, string> = {
   "helium-balloons": "/images/balloon-wall.png",
@@ -21,27 +20,6 @@ const serviceImages: Record<string, string> = {
   "baby-shower": "/images/baby-shower-arch.png",
   corporate: "/images/balloon-wall.png",
   wedding: "/images/wedding-room.png",
-  haldi: "/images/birthday-arch.png",
-  reception: "/images/wedding-room.png",
-  "house-decoration": "/images/hero-balloons.png",
-  proposal: "/images/bouquet-box.png",
-  "room-decoration": "/images/birthday-arch.png",
-};
-
-const productCategoryIcons: Record<string, React.ComponentType<any>> = {
-  "helium-balloons": Balloon,
-  "balloon-bouquets": Gift,
-  "balloon-packets": Package,
-  "party-supplies": PartyPopper,
-  "flower-bouquets": Flower2,
-};
-
-const serviceCategoryIcons: Record<string, React.ComponentType<any>> = {
-  birthday: PartyPopper,
-  anniversary: Gift,
-  "baby-shower": Flower2,
-  corporate: Package,
-  wedding: Flower2,
 };
 
 interface CategoryCardProps {
@@ -57,33 +35,35 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: Category
   const href = type === "product" ? `/shop?category=${slug}` : `/services/${slug}`;
   return (
     <motion.article
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -4 }}
       transition={{ type: "spring", damping: 20, stiffness: 200 }}
-      className="group relative overflow-hidden rounded-2xl border border-border/60 bg-white card-soft cursor-pointer"
+      className="group relative overflow-hidden rounded-2xl border border-border/40 bg-white cursor-pointer"
     >
       <Link href={href} className="block" aria-label={`View ${name}`}>
         <div className="relative aspect-[3/2] overflow-hidden">
           <Image
             src={image}
-            alt=""
+            alt={name}
             fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
           {itemCount !== undefined && (
-            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-xs font-semibold text-ink">
-              {itemCount} items
+            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[11px] font-semibold text-ink">
+              {itemCount}+ items
             </div>
           )}
         </div>
-        <div className="p-5">
-          <p className="label text-forest mb-1.5">{type === "product" ? "Shop" : "Service"}</p>
-          <h3 className="text-base font-semibold text-ink mb-1 group-hover:text-forest transition-colors">{name}</h3>
-          <p className="text-sm text-secondary-text line-clamp-1">{subtitle}</p>
-          <div className="flex items-center gap-1.5 text-forest font-medium text-sm mt-3 group-hover:gap-2.5 transition-all">
+        <div className="p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-forest/70 mb-1">
+            {type === "product" ? "Shop" : "Service"}
+          </p>
+          <h3 className="text-[0.9375rem] font-semibold text-ink mb-0.5 group-hover:text-forest transition-colors">{name}</h3>
+          <p className="text-xs text-secondary-text line-clamp-1">{subtitle}</p>
+          <div className="flex items-center gap-1.5 text-forest font-medium text-xs mt-2.5 group-hover:gap-2 transition-all">
             <span>Explore</span>
-            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            <ArrowRight className="w-3 h-3" aria-hidden="true" />
           </div>
         </div>
       </Link>
@@ -106,10 +86,10 @@ export function CategoryGrid() {
               Browse Collection
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.05 }}
+              transition={{ delay: 0.04 }}
               className="heading-section text-ink"
             >
               Shop by Category
@@ -118,7 +98,7 @@ export function CategoryGrid() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.08 }}
               className="body-large mt-3 max-w-xl"
             >
               Discover our curated collection of premium helium balloons, bouquets, and party essentials.
@@ -128,7 +108,7 @@ export function CategoryGrid() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.12 }}
           >
             <Button variant="outline" size="lg" className="w-full md:w-auto" asChild>
               <Link href="/shop" className="flex items-center gap-2">
@@ -142,10 +122,10 @@ export function CategoryGrid() {
           {SHOP_CATEGORIES.map((cat, index) => (
             <motion.div
               key={cat.slug}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
               <CategoryCard
                 name={cat.name}
@@ -171,10 +151,10 @@ export function CategoryGrid() {
                 Event Styling
               </motion.span>
               <motion.h3
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: 0.05 }}
+                transition={{ delay: 0.04 }}
                 className="heading-section text-ink"
               >
                 Decoration Services
@@ -183,7 +163,7 @@ export function CategoryGrid() {
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.08 }}
                 className="body-large mt-3 max-w-xl"
               >
                 Professional event styling for birthdays, weddings, corporate events, and special occasions.
@@ -193,7 +173,7 @@ export function CategoryGrid() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.12 }}
             >
               <Button variant="outline" size="lg" className="w-full md:w-auto" asChild>
                 <Link href="/services" className="flex items-center gap-2">
@@ -207,10 +187,10 @@ export function CategoryGrid() {
             {SERVICE_CATEGORIES.slice(0, 5).map((cat, index) => (
               <motion.div
                 key={cat.slug}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 <CategoryCard
                   name={cat.name}

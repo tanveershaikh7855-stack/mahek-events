@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Star, Calendar, MapPin, CreditCard, Users, CheckCircle } from "lucide-react";
+import { Star, Calendar, Users, CreditCard } from "lucide-react";
 import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_SERVICES } from "@/lib/seed";
 import { formatPrice } from "@/lib/utils";
@@ -36,10 +36,10 @@ export function ServicesSection() {
               Expert Styling
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.05 }}
+              transition={{ delay: 0.04 }}
               className="heading-section text-ink"
             >
               Premium Decoration Services
@@ -48,17 +48,17 @@ export function ServicesSection() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.08 }}
               className="body-large mt-3 max-w-xl"
             >
-              From intimate celebrations to grand events, our expert stylists create unforgettable experiences tailored to your vision.
+              From intimate celebrations to grand events, our expert stylists create unforgettable experiences.
             </motion.p>
           </div>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.12 }}
           >
             <Button variant="outline" size="lg" asChild>
               <Link href="/services" className="flex items-center gap-2">
@@ -72,41 +72,41 @@ export function ServicesSection() {
           {FALLBACK_SERVICES.slice(0, 6).map((service, index) => (
             <motion.article
               key={service.slug}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative overflow-hidden rounded-2xl border border-border/60 bg-white card-soft"
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative overflow-hidden rounded-2xl border border-border/40 bg-white"
             >
               <Link href={`/services/${service.slug}`} className="block" aria-label={service.name}>
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
                     src={serviceImages[service.slug] || serviceImages.birthday}
-                    alt=""
+                    alt={service.name}
                     fill
                     className="object-cover image-zoom"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <span className="label text-gold mb-1 block">Decoration Service</span>
-                    <h3 className="text-lg font-semibold text-white mb-1">{service.name}</h3>
-                    <p className="text-white/70 text-sm line-clamp-2">{service.description}</p>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-gold mb-1 block">Decoration Service</span>
+                    <h3 className="text-lg font-bold text-white mb-0.5">{service.name}</h3>
+                    <p className="text-white/60 text-sm line-clamp-2">{service.description}</p>
                   </div>
                 </div>
               </Link>
 
-              <div className="p-5 pt-4">
+              <div className="p-5">
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {service.features.slice(0, 3).map((feature) => (
-                    <span key={feature} className="px-2 py-0.5 text-[11px] rounded-full bg-forest-light text-forest font-medium">
+                    <span key={feature} className="px-2 py-0.5 text-[10px] rounded-full bg-forest/8 text-forest font-medium">
                       {feature}
                     </span>
                   ))}
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-border/60">
+                <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-base font-bold text-ink">{formatPrice(service.priceFrom)}<span className="text-xs font-normal text-secondary-text"> onwards</span></span>
-                  <Button size="sm" variant="outline" asChild className="gap-1 h-8 text-xs">
+                  <Button size="sm" variant="outline" asChild className="gap-1 h-8 text-xs rounded-full">
                     <Link href={`/booking?service=${service.slug}`}>Book Now <ArrowRight className="w-3.5 h-3.5" /></Link>
                   </Button>
                 </div>
@@ -115,7 +115,7 @@ export function ServicesSection() {
           ))}
         </div>
 
-        <div className="mt-16 p-8 md:p-10 rounded-2xl bg-forest-light border border-forest/10">
+        <div className="mt-16 p-8 md:p-10 rounded-3xl bg-forest-light border border-forest/8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
             <ServiceStat icon={Calendar} value="Same Day" label="Booking Available" />
             <ServiceStat icon={Users} value="5000+" label="Events Styled" />
@@ -131,11 +131,11 @@ export function ServicesSection() {
 function ServiceStat({ icon: Icon, value, label }: { icon: React.ComponentType<any>; value: string; label: string }) {
   return (
     <div className="p-3">
-      <div className="w-11 h-11 mx-auto mb-3 rounded-xl bg-white flex items-center justify-center shadow-sm">
+      <div className="w-11 h-11 mx-auto mb-3 rounded-xl bg-white flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
         <Icon className="w-5 h-5 text-forest" />
       </div>
-      <p className="text-xl md:text-2xl font-bold text-forest">{value}</p>
-      <p className="text-xs md:text-sm text-secondary-text mt-1">{label}</p>
+      <p className="text-xl md:text-2xl font-extrabold text-forest tracking-tight">{value}</p>
+      <p className="text-xs text-secondary-text mt-1">{label}</p>
     </div>
   );
 }

@@ -6,37 +6,37 @@ const FEATURES = [
   {
     icon: Truck,
     title: "140 KM Delivery Radius",
-    description: "Same-day helium balloon delivery across Mumbai, Thane, Navi Mumbai, and extended suburbs within 140 KM.",
+    description: "Same-day helium balloon delivery across Mumbai, Thane, Navi Mumbai, and extended suburbs.",
     highlight: "Order by 2 PM",
   },
   {
     icon: Sparkles,
     title: "Premium Materials Only",
-    description: "We source high-grade latex, foil balloons, and fresh flowers that look better and last longer than standard alternatives.",
+    description: "We source high-grade latex, foil balloons, and fresh flowers that look better and last longer.",
     highlight: "Decorator Grade",
   },
   {
     icon: Award,
     title: "Expert Design Team",
-    description: "Our in-house stylists have 15+ years of combined experience creating elegant, Instagram-worthy decorations for every occasion.",
+    description: "Our in-house stylists have 15+ years of combined experience creating elegant decorations.",
     highlight: "Custom Themes",
   },
   {
     icon: Shield,
     title: "Secure & Flexible Payment",
-    description: "Pay via Cash on Delivery, UPI, Credit/Debit cards, or wallets. For decoration bookings, only 50% advance confirms your date.",
+    description: "Pay via COD, UPI, Credit/Debit cards, or wallets. 50% advance confirms your date.",
     highlight: "COD Available",
   },
   {
     icon: Heart,
     title: "5000+ Happy Customers",
-    description: "Trusted by thousands across Mumbai for birthdays, weddings, corporate events, and intimate proposals. Read their stories.",
-    highlight: "4.9\u2605 Average",
+    description: "Trusted by thousands across Mumbai for birthdays, weddings, corporate events, and proposals.",
+    highlight: "4.9 Star Average",
   },
   {
     icon: Users,
     title: "End-to-End Service",
-    description: "From concept to setup and takedown, we handle everything. You enjoy the celebration while we manage the details.",
+    description: "From concept to setup and takedown, we handle everything. You enjoy the celebration.",
     highlight: "Setup & Removal",
   },
 ];
@@ -45,7 +45,7 @@ export function WhyChooseUs() {
   return (
     <section className="section-spacing bg-background">
       <div className="container-tight">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-16">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -55,10 +55,10 @@ export function WhyChooseUs() {
             Our Promise
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.05 }}
+            transition={{ delay: 0.04 }}
             className="heading-section text-ink"
           >
             Why Choose Mahek Decorator?
@@ -67,29 +67,29 @@ export function WhyChooseUs() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.08 }}
             className="body-large mt-4"
           >
             We combine premium quality, creative expertise, and reliable service to make every celebration extraordinary.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map((feature, index) => (
             <motion.article
               key={feature.title}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="group p-6 md:p-7 rounded-2xl border border-border/60 bg-white card-lift"
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="group p-6 rounded-2xl border border-border/40 bg-white hover:border-forest/15 transition-colors duration-200"
             >
-              <div className="w-12 h-12 rounded-xl bg-forest-light flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-6 h-6 text-forest" />
+              <div className="w-11 h-11 rounded-xl bg-forest/5 flex items-center justify-center mb-4 group-hover:bg-forest/10 transition-colors duration-200">
+                <feature.icon className="w-5 h-5 text-forest" />
               </div>
-              <h3 className="text-lg font-semibold text-ink mb-2">{feature.title}</h3>
-              <p className="text-sm text-secondary-text leading-relaxed mb-4">{feature.description}</p>
-              <span className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-semibold rounded-full bg-forest-light text-forest">
+              <h3 className="text-base font-bold text-ink mb-1.5">{feature.title}</h3>
+              <p className="text-sm text-secondary-text leading-relaxed mb-3">{feature.description}</p>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-forest/8 text-forest">
                 {feature.highlight}
               </span>
             </motion.article>

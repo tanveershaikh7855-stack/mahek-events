@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, DM_Sans, Poppins } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,17 +12,11 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const dmSans = DM_Sans({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-dm-sans",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-poppins",
+  variable: "--font-jakarta",
 });
 
 export const metadata: Metadata = {
@@ -91,7 +86,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmSans.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -102,10 +97,11 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground">
         <Providers>
           <Header />
-          <main id="main-content" className="min-h-screen pt-16 md:pt-18">
+          <main id="main-content" className="min-h-screen pt-16 md:pt-17 pb-16 lg:pb-0">
             {children}
           </main>
           <Footer />
+          <MobileBottomNav />
         </Providers>
       </body>
     </html>
