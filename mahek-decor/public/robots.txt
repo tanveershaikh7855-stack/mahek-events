@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Sitemap: https://mahekdecor.com/sitemap.xml
+
+# Exclude internal pages
+Disallow: /api/
+Disallow: /admin/
