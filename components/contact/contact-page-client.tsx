@@ -63,7 +63,7 @@ export function ContactPageClient() {
     {
       icon: () => <SocialIcon d={FACEBOOK_PATH} />,
       label: "Facebook",
-      value: "Mahek Decorator",
+      value: "Mahek Balloon",
       href: BRAND.facebook,
     },
   ] as const;
@@ -131,7 +131,7 @@ export function ContactPageClient() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Mahek Decorator Location"
+                  title="Mahek Balloon Location"
                 />
               </div>
             </div>

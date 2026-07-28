@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "My Account | Mahek Decorator",
+  title: "My Account | Mahek Balloon",
   description: "Manage your profile, bookings, wishlist, and account settings.",
 };
 

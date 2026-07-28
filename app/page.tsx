@@ -9,6 +9,7 @@ import { GalleryPreview } from "@/components/home/gallery-preview";
 import { WhyChooseUs } from "@/components/home/why-choose-us";
 import { Testimonials } from "@/components/home/testimonials";
 import { Newsletter } from "@/components/home/newsletter";
+import { HomeInfoSection } from "@/components/home/home-info";
 import { seo, business } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function HomePage() {
       <GalleryPreview />
       <WhyChooseUs />
       <Testimonials />
+      <HomeInfoSection />
       <Newsletter />
     </>
   );

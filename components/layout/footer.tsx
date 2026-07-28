@@ -27,12 +27,12 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2.5 mb-5" aria-label={`${BRAND.name} - Home`}>
               <Image
                 src="/images/logo/logo.png"
-                alt="Mahek Decorator"
+                alt="Mahek Balloon"
                 width={120}
                 height={32}
                 className="h-[34px] w-auto object-contain brightness-0 invert"
               />
-              <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Decorator</span>
+              <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloon</span>
             </Link>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-5">{BRAND.description}</p>
             <div className="flex flex-wrap gap-3 mb-5">

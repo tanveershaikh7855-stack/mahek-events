@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = FALLBACK_SERVICES.find((s) => s.slug === slug);
   if (!service) return { title: "Service Not Found" };
   return {
-    title: `${service.name} | Mahek Decorator`,
+    title: `${service.name} | Mahek Balloon`,
     description: service.description,
   };
 }
