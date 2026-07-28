@@ -61,7 +61,7 @@ export function ShopPageClient() {
 
   return (
     <div className="min-h-screen">
-      <section className="pt-24 pb-8 md:pt-28 md:pb-12 bg-background border-b border-border">
+      <section className="pt-24 pb-8 md:pt-28 md:pb-12 bg-background border-b border-black/[0.04]">
         <div className="container-tight">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -72,13 +72,13 @@ export function ShopPageClient() {
             </div>
             <div className="flex items-center gap-3">
               <div className="relative flex-1 md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-text" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-text" />
                 <Input
                   type="search"
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-11"
                 />
                 {searchQuery && (
                   <button
@@ -104,9 +104,9 @@ export function ShopPageClient() {
             <button
               onClick={() => setSelectedCategory(null)}
               className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 selectedCategory === null
-                  ? "bg-forest text-white"
+                  ? "bg-forest text-white shadow-sm shadow-forest/20"
                   : "bg-secondary text-secondary-text hover:bg-border"
               )}
             >
@@ -117,9 +117,9 @@ export function ShopPageClient() {
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                   selectedCategory === cat.id
-                    ? "bg-forest text-white"
+                    ? "bg-forest text-white shadow-sm shadow-forest/20"
                     : "bg-secondary text-secondary-text hover:bg-border"
                 )}
               >
@@ -165,13 +165,13 @@ export function ShopPageClient() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
               {filtered.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.5 }}
+                  transition={{ delay: index * 0.04, duration: 0.5 }}
                 >
                   <ProductCard product={product} priority={index < 4} />
                 </motion.div>

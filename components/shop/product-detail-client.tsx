@@ -92,15 +92,15 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <ChevronRight className="w-4 h-4" />
           <Link href="/shop" className="hover:text-ink transition-colors">Shop</Link>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-ink">{product.name}</span>
+          <span className="text-ink font-medium">{product.name}</span>
         </nav>
       </div>
 
-      <section className="container-tight pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+      <section className="container-tight pb-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-secondary">
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-secondary">
               <Image
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -110,7 +110,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
               {discount > 0 && (
-                <Badge className="absolute top-4 left-4 bg-forest text-white text-sm px-3 py-1">
+                <Badge className="absolute top-4 left-4 bg-forest text-white text-sm px-3 py-1.5 rounded-lg">
                   -{discount}% OFF
                 </Badge>
               )}
@@ -122,7 +122,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      "relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all",
+                      "relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-200",
                       selectedImage === i
                         ? "border-forest"
                         : "border-border hover:border-ink/30"
@@ -143,7 +143,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* Product Info */}
           <div className="flex flex-col">
-            <Badge variant="secondary" className="w-fit mb-3">
+            <Badge variant="secondary" className="w-fit mb-3 rounded-lg">
               {product.categoryId === "cat-1" ? "Helium Balloons" : "Party Supplies"}
             </Badge>
 
@@ -151,7 +151,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <p className="body-large text-secondary-text mb-6">{product.shortDesc}</p>
 
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
@@ -174,7 +174,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   <span className="text-lg text-secondary-text line-through">
                     {formatPrice(product.basePrice)}
                   </span>
-                  <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                  <Badge className="bg-green-100 text-green-800 border-green-200 text-xs rounded-lg">
                     Save {formatPrice(product.basePrice - product.salePrice)}
                   </Badge>
                 </>
@@ -218,9 +218,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                           setSelectedVariants((prev) => ({ ...prev, [variant.label]: option }))
                         }
                         className={cn(
-                          "px-4 py-2 rounded-xl text-sm font-medium border transition-all",
+                          "px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200",
                           selectedVariants[variant.label] === option
-                            ? "border-forest bg-forest-light text-forest"
+                            ? "border-forest bg-forest-light text-forest shadow-sm shadow-forest/10"
                             : "border-border bg-white text-secondary-text hover:border-ink/30"
                         )}
                       >
@@ -233,11 +233,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
             {/* Quantity + Add to Cart */}
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center border border-border rounded-xl">
+              <div className="flex items-center border border-border rounded-xl overflow-hidden">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
-                  className="w-12 h-12 flex items-center justify-center text-secondary-text hover:text-ink disabled:opacity-30"
+                  className="w-12 h-12 flex items-center justify-center text-secondary-text hover:text-ink hover:bg-secondary/50 transition-colors disabled:opacity-30"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -247,7 +247,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <button
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   disabled={quantity >= product.stock}
-                  className="w-12 h-12 flex items-center justify-center text-secondary-text hover:text-ink disabled:opacity-30"
+                  className="w-12 h-12 flex items-center justify-center text-secondary-text hover:text-ink hover:bg-secondary/50 transition-colors disabled:opacity-30"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -257,7 +257,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Button
                 size="lg"
-                className="flex-1 gap-2 bg-forest text-white hover:bg-forest/90 h-14 rounded-xl text-base"
+                className="flex-1 gap-2 bg-forest text-white hover:bg-forest-hover h-14 rounded-2xl text-base transition-all duration-300 hover:shadow-lg hover:shadow-forest/20"
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
               >
@@ -266,7 +266,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </Button>
               <Button
                 size="lg"
-                className="flex-1 gap-2 h-14 rounded-xl text-base bg-white text-forest border-forest border hover:bg-forest-light"
+                className="flex-1 gap-2 h-14 rounded-2xl text-base bg-white text-forest border-forest border hover:bg-forest-light transition-all duration-200"
                 onClick={() => setBookingOpen(true)}
               >
                 <Calendar className="w-5 h-5" />
@@ -275,7 +275,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-1 gap-2 h-14 rounded-xl text-base"
+                className="flex-1 gap-2 h-14 rounded-2xl text-base"
                 asChild
               >
                 <Link
@@ -346,22 +346,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Description & Reviews Tabs */}
       <section className="container-tight pb-16">
         <Tabs defaultValue="description" className="w-full">
-          <TabsList className="w-full justify-start border-b border-border rounded-none bg-transparent p-0 gap-8">
+          <TabsList className="w-full justify-start border-b border-black/[0.06] rounded-none bg-transparent p-0 gap-8">
             <TabsTrigger
               value="description"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text font-medium"
             >
               Description
             </TabsTrigger>
             <TabsTrigger
               value="specifications"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text font-medium"
             >
               Specifications
             </TabsTrigger>
             <TabsTrigger
               value="reviews"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-forest data-[state=active]:text-ink rounded-none bg-transparent px-0 py-4 text-secondary-text font-medium"
             >
               Reviews ({product.reviewCount})
             </TabsTrigger>
@@ -377,23 +377,23 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <div className="max-w-2xl">
               <table className="w-full text-sm">
                 <tbody>
-                  <tr className="border-b border-border">
-                    <td className="py-3 font-medium text-ink w-40">SKU</td>
-                    <td className="py-3 text-secondary-text">{product.sku}</td>
+                  <tr className="border-b border-black/[0.04]">
+                    <td className="py-3.5 font-medium text-ink w-40">SKU</td>
+                    <td className="py-3.5 text-secondary-text">{product.sku}</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="py-3 font-medium text-ink">Category</td>
-                    <td className="py-3 text-secondary-text capitalize">
+                  <tr className="border-b border-black/[0.04]">
+                    <td className="py-3.5 font-medium text-ink">Category</td>
+                    <td className="py-3.5 text-secondary-text capitalize">
                       {product.categoryId.replace("cat-", "Category ")}
                     </td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="py-3 font-medium text-ink">Stock</td>
-                    <td className="py-3 text-secondary-text">{product.stock > 0 ? "In Stock" : "Out of Stock"}</td>
+                  <tr className="border-b border-black/[0.04]">
+                    <td className="py-3.5 font-medium text-ink">Stock</td>
+                    <td className="py-3.5 text-secondary-text">{product.stock > 0 ? "In Stock" : "Out of Stock"}</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="py-3 font-medium text-ink">Delivery</td>
-                    <td className="py-3 text-secondary-text">{product.deliveryBadge}</td>
+                  <tr className="border-b border-black/[0.04]">
+                    <td className="py-3.5 font-medium text-ink">Delivery</td>
+                    <td className="py-3.5 text-secondary-text">{product.deliveryBadge}</td>
                   </tr>
                 </tbody>
               </table>
@@ -401,7 +401,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </TabsContent>
 
           <TabsContent value="reviews" className="pt-6">
-            <div className="text-center py-12 bg-secondary rounded-2xl">
+            <div className="text-center py-14 bg-secondary rounded-3xl">
               <Star className="w-12 h-12 text-gold mx-auto mb-3" />
               <h3 className="text-xl font-semibold text-ink mb-2">No reviews yet</h3>
               <p className="text-secondary-text">Be the first to review this product.</p>
@@ -412,10 +412,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <section className="bg-background border-t border-border">
+        <section className="bg-background border-t border-black/[0.04]">
           <div className="container-tight py-16">
             <h2 className="heading-section text-ink mb-8">Related Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
               {relatedProducts.map((rp, i) => (
                 <ProductCard key={rp.id} product={rp as any} priority={i < 2} />
               ))}

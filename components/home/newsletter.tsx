@@ -22,35 +22,35 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-10 md:py-16 bg-forest">
+    <section className="py-14 md:py-20 bg-forest">
       <div className="container-tight">
         <div className="max-w-lg mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
           >
-            <div className="w-10 h-10 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center">
-              <Mail className="w-5 h-5 text-gold" />
+            <div className="w-12 h-12 mx-auto mb-5 rounded-2xl bg-white/10 flex items-center justify-center">
+              <Mail className="w-6 h-6 text-gold" />
             </div>
-            <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3 tracking-tight">
               Stay Inspired
             </h2>
-            <p className="text-white/50 text-xs leading-relaxed mb-6">
+            <p className="text-white/50 text-sm leading-relaxed mb-7">
               Decoration ideas, exclusive offers, and new products. No spam.
             </p>
           </motion.div>
 
           <motion.form
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ delay: 0.06 }}
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-2.5 max-w-md mx-auto"
+            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
           >
             <div className="relative flex-1">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               <Input
                 type="email"
                 placeholder="Enter your email"
@@ -58,13 +58,13 @@ export function Newsletter() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={status === "loading" || status === "success"}
-                className="w-full pl-10 py-2.5 bg-white/10 border-white/10 text-white placeholder:text-white/30 rounded-full focus:bg-white/15 focus:border-gold/40 text-sm"
+                className="w-full pl-11 py-3 bg-white/10 border-white/10 text-white placeholder:text-white/30 rounded-full focus:bg-white/15 focus:border-gold/40 text-sm"
               />
             </div>
             <Button
               type="submit"
               disabled={!email.trim() || status === "loading" || status === "success"}
-              className="bg-gold text-white hover:bg-gold/90 rounded-full font-semibold h-10 px-5 text-sm"
+              className="bg-gold text-white hover:bg-gold-hover rounded-full font-semibold h-12 px-6 text-sm transition-all duration-300 hover:shadow-lg hover:shadow-gold/20"
             >
               {status === "loading" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -83,7 +83,7 @@ export function Newsletter() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ delay: 0.12 }}
-            className="text-white/25 text-[10px] mt-3"
+            className="text-white/25 text-[11px] mt-4"
           >
             By subscribing, you agree to our Privacy Policy.
           </motion.p>

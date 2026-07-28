@@ -61,7 +61,7 @@ const TEAM = [
 export function AboutClient() {
   return (
     <div className="min-h-screen pt-20 md:pt-24">
-      <section className="py-12 md:py-20 bg-background border-b border-border">
+      <section className="py-14 md:py-20 bg-background border-b border-black/[0.04]">
         <div className="container-tight max-w-4xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -84,9 +84,9 @@ export function AboutClient() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-white border-b border-border">
+      <section className="py-14 md:py-16 bg-white border-b border-black/[0.04]">
         <div className="container-tight">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
             {STATS.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -99,7 +99,7 @@ export function AboutClient() {
                 <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-forest-light flex items-center justify-center">
                   <stat.icon className="w-7 h-7 text-forest" />
                 </div>
-                <p className="text-3xl md:text-4xl font-bold text-ink">{stat.value}</p>
+                <p className="text-3xl md:text-4xl font-bold text-ink tracking-tight">{stat.value}</p>
                 <p className="text-sm text-secondary-text mt-1">{stat.label}</p>
               </motion.div>
             ))}
@@ -107,7 +107,7 @@ export function AboutClient() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-background">
+      <section className="py-14 md:py-16 bg-background">
         <div className="container-tight">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -135,7 +135,7 @@ export function AboutClient() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative aspect-[4/3] rounded-2xl overflow-hidden"
+              className="relative aspect-[4/3] rounded-3xl overflow-hidden"
             >
               <Image
                 src="/images/hero-balloons.png"
@@ -149,13 +149,13 @@ export function AboutClient() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-white border-y border-border">
+      <section className="py-14 md:py-16 bg-white border-y border-black/[0.04]">
         <div className="container-tight">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="heading-section text-ink mb-4">Our Values</h2>
             <p className="body-large">The principles that guide every celebration we create.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {VALUES.map((value, index) => (
               <motion.div
                 key={value.title}
@@ -163,7 +163,7 @@ export function AboutClient() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl border border-border bg-white text-center"
+                className="p-6 rounded-2xl border border-black/[0.04] bg-white text-center hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] transition-shadow duration-300"
               >
                 <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-forest-light flex items-center justify-center">
                   <value.icon className="w-6 h-6 text-forest" />
@@ -176,7 +176,7 @@ export function AboutClient() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-background">
+      <section className="py-14 md:py-16 bg-background">
         <div className="container-tight">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="heading-section text-ink mb-4">Meet Our Team</h2>
@@ -204,16 +204,16 @@ export function AboutClient() {
         </div>
       </section>
 
-      <section className="py-16 bg-forest">
+      <section className="py-16 md:py-20 bg-forest">
         <div className="container-tight text-center max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Create Magic?</h2>
-            <p className="text-white/80 mb-8">Let&apos;s make your next celebration unforgettable.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">Ready to Create Magic?</h2>
+            <p className="text-white/80 mb-8 text-lg">Let&apos;s make your next celebration unforgettable.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gold text-ink hover:bg-gold/90" asChild>
+              <Button size="lg" className="bg-gold text-white hover:bg-gold-hover rounded-full px-8 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20" asChild>
                 <Link href="/booking">Book Decoration <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-full px-8" asChild>
                 <Link href="/contact">Contact Us</Link>
               </Button>
             </div>

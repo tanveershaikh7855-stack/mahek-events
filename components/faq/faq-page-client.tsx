@@ -19,7 +19,7 @@ export function FaqPageClient() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">
-      <section className="py-8 md:py-12 bg-background border-b border-border">
+      <section className="py-10 md:py-14 bg-background border-b border-black/[0.04]">
         <div className="container-tight max-w-3xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -61,18 +61,18 @@ export function FaqPageClient() {
               key={index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="border-b border-border last:border-b-0"
+              transition={{ delay: index * 0.04 }}
+              className="border-b border-black/[0.04] last:border-b-0"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between gap-4 py-5 text-left"
+                className="w-full flex items-center justify-between gap-4 py-5 text-left group"
               >
-                <h3 className="text-sm md:text-base font-medium text-ink pr-4">{faq.question}</h3>
+                <h3 className="text-sm md:text-base font-medium text-ink group-hover:text-forest transition-colors pr-4">{faq.question}</h3>
                 <ChevronDown
                   className={cn(
-                    "w-5 h-5 flex-shrink-0 transition-transform duration-200 text-secondary-text",
-                    openIndex === index && "rotate-180"
+                    "w-5 h-5 flex-shrink-0 transition-transform duration-300 text-secondary-text",
+                    openIndex === index && "rotate-180 text-forest"
                   )}
                 />
               </button>
@@ -82,7 +82,7 @@ export function FaqPageClient() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
                     <p className="pb-5 text-sm text-secondary-text leading-relaxed">{faq.answer}</p>

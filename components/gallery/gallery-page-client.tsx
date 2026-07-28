@@ -31,7 +31,7 @@ export function GalleryPageClient() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">
-      <section className="py-8 md:py-12 bg-background border-b border-border">
+      <section className="py-10 md:py-14 bg-background border-b border-black/[0.04]">
         <div className="container-tight">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
@@ -64,9 +64,9 @@ export function GalleryPageClient() {
                 key={cat.value}
                 onClick={() => setSelectedCategory(cat.value)}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                   selectedCategory === cat.value
-                    ? "bg-forest text-white"
+                    ? "bg-forest text-white shadow-sm shadow-forest/20"
                     : "bg-secondary text-secondary-text hover:bg-border"
                 )}
               >
@@ -85,8 +85,8 @@ export function GalleryPageClient() {
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05, duration: 0.5 }}
-                className="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"
+                transition={{ delay: index * 0.04, duration: 0.5 }}
+                className="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer"
                 onClick={() => setLightboxImage(item.image)}
               >
                 <div className="relative w-full" style={{ aspectRatio: index % 3 === 0 ? "3/4" : "4/5" }}>
@@ -102,8 +102,8 @@ export function GalleryPageClient() {
                     <Search className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="text-white font-semibold">{item.title}</span>
-                    <p className="text-white/70 text-sm capitalize">{item.category}</p>
+                    <span className="text-white font-semibold text-sm">{item.title}</span>
+                    <p className="text-white/70 text-xs capitalize">{item.category}</p>
                   </div>
                 </div>
               </motion.div>
@@ -115,7 +115,7 @@ export function GalleryPageClient() {
               <ImageIcon className="w-16 h-16 mx-auto text-border mb-4" />
               <h3 className="text-xl font-semibold text-ink mb-2">No images found</h3>
               <p className="text-secondary-text mb-6">Try selecting a different category.</p>
-              <Button variant="outline" onClick={() => setSelectedCategory("all")}>
+              <Button variant="outline" className="rounded-full" onClick={() => setSelectedCategory("all")}>
                 View All
               </Button>
             </div>

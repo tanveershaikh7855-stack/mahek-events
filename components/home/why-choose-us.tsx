@@ -45,9 +45,9 @@ export function WhyChooseUs() {
   return (
     <section className="section-spacing bg-background">
       <div className="container-tight">
-        <div className="text-center max-w-xl mx-auto mb-10">
+        <div className="text-center max-w-xl mx-auto mb-12">
           <motion.span
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             className="section-label mb-3 inline-flex"
@@ -65,22 +65,22 @@ export function WhyChooseUs() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map((feature, index) => (
             <motion.article
               key={feature.title}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="group p-4 rounded-2xl border border-border/40 bg-white hover:border-forest/15 transition-colors duration-200"
+              transition={{ delay: index * 0.04, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="group p-5 rounded-2xl border border-black/[0.04] bg-white hover:border-forest/15 hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] transition-all duration-300"
             >
-              <div className="w-9 h-9 rounded-lg bg-forest/5 flex items-center justify-center mb-3 group-hover:bg-forest/10 transition-colors duration-200">
-                <feature.icon className="w-4 h-4 text-forest" />
+              <div className="w-10 h-10 rounded-xl bg-forest/5 flex items-center justify-center mb-4 group-hover:bg-forest/10 transition-colors duration-300">
+                <feature.icon className="w-5 h-5 text-forest" />
               </div>
-              <h3 className="text-sm font-bold text-ink mb-1">{feature.title}</h3>
-              <p className="text-xs text-secondary-text leading-relaxed mb-2.5">{feature.description}</p>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-semibold rounded-full bg-forest/8 text-forest">
+              <h3 className="text-sm font-bold text-ink mb-1.5">{feature.title}</h3>
+              <p className="text-xs text-secondary-text leading-relaxed mb-3">{feature.description}</p>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-forest/5 text-forest">
                 {feature.highlight}
               </span>
             </motion.article>

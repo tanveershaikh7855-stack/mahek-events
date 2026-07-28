@@ -25,7 +25,7 @@ const serviceImages: Record<string, string> = {
 export function ServicesPageClient() {
   return (
     <div className="min-h-screen">
-      <section className="pt-24 pb-12 md:pt-28 md:pb-16 bg-background border-b border-border">
+      <section className="pt-24 pb-12 md:pt-28 md:pb-16 bg-background border-b border-black/[0.04]">
         <div className="container-tight text-center max-w-3xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -47,14 +47,14 @@ export function ServicesPageClient() {
 
       <section className="py-12 md:py-16">
         <div className="container-tight">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {FALLBACK_SERVICES.map((service, index) => (
               <motion.article
                 key={service.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="group bg-white rounded-2xl border border-border overflow-hidden card-lift"
+                transition={{ delay: index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="group bg-white rounded-2xl border border-black/[0.04] overflow-hidden card-lift"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-0">
                   <div className="sm:col-span-2 relative aspect-[4/3] sm:aspect-auto overflow-hidden bg-secondary">
@@ -68,25 +68,25 @@ export function ServicesPageClient() {
                   </div>
                   <div className="sm:col-span-3 p-5 md:p-6 flex flex-col justify-between">
                     <div>
-                      <Badge variant="secondary" className="mb-2">Decoration Service</Badge>
+                      <Badge variant="secondary" className="mb-2 rounded-lg">Decoration Service</Badge>
                       <h3 className="text-xl font-semibold text-ink mb-2">{service.name}</h3>
                       <p className="text-sm text-secondary-text mb-4 line-clamp-2">{service.description}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {service.features.map((f) => (
-                          <span key={f} className="flex items-center gap-1 px-2 py-1 text-xs rounded-md bg-forest-light text-forest">
+                          <span key={f} className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-forest/5 text-forest font-medium">
                             <CheckCircle className="w-3 h-3" />
                             {f}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center justify-between pt-4 border-t border-black/[0.04]">
                       <div>
                         <span className="text-sm text-secondary-text">Starting from</span>
-                        <p className="text-xl font-bold text-ink">{formatPrice(service.priceFrom)}</p>
+                        <p className="text-xl font-bold text-ink tracking-tight">{formatPrice(service.priceFrom)}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" asChild>
+                        <Button size="sm" variant="outline" asChild className="rounded-full">
                           <Link href={`/booking?service=${service.slug}`}>Book Now</Link>
                         </Button>
                         <Button size="sm" variant="ghost" asChild>
@@ -104,22 +104,22 @@ export function ServicesPageClient() {
         </div>
       </section>
 
-      <section className="py-16 bg-white border-t border-border">
+      <section className="py-16 bg-white border-t border-black/[0.04]">
         <div className="container-tight text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-8 md:p-12 rounded-2xl bg-forest-light border border-forest/20"
+            className="p-8 md:p-12 rounded-3xl bg-forest-light border border-forest/10"
           >
             <Calendar className="w-12 h-12 text-forest mx-auto mb-4" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-ink mb-4">
+            <h2 className="text-2xl md:text-3xl font-semibold text-ink mb-4 tracking-tight">
               Ready to Transform Your Event?
             </h2>
             <p className="text-secondary-text mb-8 max-w-lg mx-auto">
-              Tell us about your event and we'll create a custom decoration plan that matches your vision and budget.
+              Tell us about your event and we&apos;ll create a custom decoration plan that matches your vision and budget.
             </p>
-            <Button size="lg" className="bg-forest text-white hover:bg-forest/90" asChild>
+            <Button size="lg" className="bg-forest text-white hover:bg-forest-hover rounded-full px-8 transition-all duration-300 hover:shadow-lg hover:shadow-forest/20" asChild>
               <Link href="/booking" className="flex items-center gap-2">
                 Book Your Decoration <ArrowRight className="w-5 h-5" />
               </Link>

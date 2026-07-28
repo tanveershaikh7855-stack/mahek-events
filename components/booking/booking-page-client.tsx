@@ -38,7 +38,6 @@ export function BookingPageClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // Simulate submission
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setSubmitting(false);
     setStep("success");
@@ -51,24 +50,24 @@ export function BookingPageClient() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-lg mx-auto text-center p-8 md:p-12 rounded-2xl border border-border bg-white"
+            className="max-w-lg mx-auto text-center p-8 md:p-12 rounded-3xl border border-black/[0.04] bg-white"
           >
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4">Booking Confirmed!</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4 tracking-tight">Booking Confirmed!</h1>
             <p className="text-secondary-text mb-6">
               Thank you, {formData.name}! Your {formData.event} decoration booking has been received.
               Our team will confirm via WhatsApp and email within 2 hours.
             </p>
-            <div className="p-4 rounded-xl bg-secondary text-left text-sm space-y-2 mb-6">
+            <div className="p-4 rounded-2xl bg-secondary text-left text-sm space-y-2 mb-6">
               <p><strong>Event:</strong> {formData.event}</p>
               <p><strong>Venue:</strong> {formData.venue}</p>
               <p><strong>Date:</strong> {formData.date} at {formData.time}</p>
               {formData.budget && <p><strong>Budget:</strong> ₹{Number(formData.budget).toLocaleString()}</p>}
             </div>
             <Button
-              className="bg-forest text-white hover:bg-forest/90"
+              className="bg-forest text-white hover:bg-forest-hover rounded-full px-6 transition-all duration-300 hover:shadow-lg hover:shadow-forest/20"
               asChild
             >
               <a
@@ -89,7 +88,7 @@ export function BookingPageClient() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">
-      <section className="py-8 md:py-12 bg-background border-b border-border">
+      <section className="py-10 md:py-14 bg-background border-b border-black/[0.04]">
         <div className="container-tight max-w-2xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -111,12 +110,12 @@ export function BookingPageClient() {
 
       <section className="container-tight py-8 md:py-12">
         <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="p-6 md:p-8 rounded-2xl border border-border bg-white"
+              className="p-6 md:p-8 rounded-3xl border border-black/[0.04] bg-white"
             >
               <h2 className="text-xl font-semibold text-ink mb-6">Contact Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -158,7 +157,7 @@ export function BookingPageClient() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="p-6 md:p-8 rounded-2xl border border-border bg-white"
+              className="p-6 md:p-8 rounded-3xl border border-black/[0.04] bg-white"
             >
               <h2 className="text-xl font-semibold text-ink mb-6">Event Details</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,7 +237,7 @@ export function BookingPageClient() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="p-6 md:p-8 rounded-2xl border border-border bg-white"
+              className="p-6 md:p-8 rounded-3xl border border-black/[0.04] bg-white"
             >
               <div className="text-sm text-secondary-text space-y-3 mb-6">
                 <p className="flex items-center gap-2">
@@ -257,7 +256,7 @@ export function BookingPageClient() {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-forest text-white hover:bg-forest/90"
+                className="w-full bg-forest text-white hover:bg-forest-hover rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-forest/20"
                 disabled={submitting}
               >
                 {submitting ? (

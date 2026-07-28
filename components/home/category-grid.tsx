@@ -27,32 +27,32 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
 }) {
   const href = type === "product" ? `/shop?category=${slug}` : `/services/${slug}`;
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border/40 bg-white cursor-pointer">
+    <article className="group relative overflow-hidden rounded-2xl border border-black/[0.04] bg-white cursor-pointer card-lift">
       <Link href={href} className="block" aria-label={`View ${name}`}>
-        <div className="relative aspect-[3/2] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden">
           <Image
             src={image}
             alt={name}
             fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
           {itemCount !== undefined && (
-            <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-sm text-[9px] font-semibold text-ink">
+            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-ink shadow-sm">
               {itemCount}+ items
             </div>
           )}
         </div>
-        <div className="p-3">
-          <p className="text-[9px] font-semibold uppercase tracking-wider text-forest/70 mb-0.5">
+        <div className="p-3.5">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-forest/60 mb-1">
             {type === "product" ? "Shop" : "Service"}
           </p>
-          <h3 className="text-[0.8125rem] font-semibold text-ink mb-0.5 group-hover:text-forest transition-colors">{name}</h3>
-          <p className="text-[10px] text-secondary-text line-clamp-1">{subtitle}</p>
-          <div className="flex items-center gap-1 text-forest font-medium text-[10px] mt-2 group-hover:gap-1.5 transition-all">
+          <h3 className="text-sm font-semibold text-ink mb-0.5 group-hover:text-forest transition-colors duration-200">{name}</h3>
+          <p className="text-[11px] text-secondary-text line-clamp-1">{subtitle}</p>
+          <div className="flex items-center gap-1.5 text-forest font-medium text-[11px] mt-2.5 group-hover:gap-2 transition-all duration-300">
             <span>Explore</span>
-            <ArrowRight className="w-2.5 h-2.5" aria-hidden="true" />
+            <ArrowRight className="w-3 h-3" aria-hidden="true" />
           </div>
         </div>
       </Link>
@@ -64,10 +64,10 @@ export function CategoryGrid() {
   return (
     <section className="section-spacing bg-background">
       <div className="container-tight">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div>
             <motion.span
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               className="section-label mb-3 inline-flex"
@@ -98,14 +98,14 @@ export function CategoryGrid() {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
           {SHOP_CATEGORIES.map((cat, index) => (
             <motion.div
               key={cat.slug}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: index * 0.04, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
               <CategoryCard
                 name={cat.name}
@@ -119,11 +119,11 @@ export function CategoryGrid() {
           ))}
         </div>
 
-        <div className="mt-10">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
+        <div className="mt-14">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
             <div>
               <motion.span
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 className="section-label-gold mb-3 inline-flex"
@@ -154,14 +154,14 @@ export function CategoryGrid() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
             {SERVICE_CATEGORIES.slice(0, 5).map((cat, index) => (
               <motion.div
                 key={cat.slug}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: index * 0.04, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 <CategoryCard
                   name={cat.name}
