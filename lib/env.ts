@@ -3,29 +3,32 @@ import { z } from "zod";
 /**
  * Central environment contract.
  *
- * Anything the server genuinely cannot run without is `required`. Everything
- * else is optional and gated by an `isConfigured` flag, so a missing Stripe or
- * WhatsApp key degrades that one feature instead of crashing the whole app.
+ * IMPORTANT: this module must never throw at import time. `next build` evaluates
+ * it while collecting page data (with NODE_ENV=production and, on a fresh Vercel
+ * project, no env vars set yet). A hard throw here fails the whole build. So
+ * everything is optional at parse time; missing configuration degrades the
+ * relevant feature at runtime (via `features` flags and graceful fallbacks)
+ * and is surfaced as a one-time warning rather than a crash.
  *
- * This module is server-only. Never import it from a "use client" file.
+ * Server-only. Never import from a "use client" file.
  */
 
-const serverSchema = z.object({
+const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
-  // Required
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  // Runtime-required, but optional at parse time so the build never crashes.
+  // Absence is handled by lib/prisma.ts + withFallback (serves static content).
+  DATABASE_URL: z.string().min(1).optional(),
   DIRECT_URL: z.string().optional(),
 
-  // Auth — NEXTAUTH_SECRET must be a real random string in production.
+  // Auth. NextAuth needs a secret at runtime; if absent, admin login simply
+  // fails (storefront is unaffected).
   NEXTAUTH_SECRET: z.string().min(1).optional(),
   AUTH_SECRET: z.string().min(1).optional(),
-  NEXTAUTH_URL: z.string().url().optional(),
+  NEXTAUTH_URL: z.string().optional(),
 
-  // Admin bootstrap. ADMIN_PASSWORD_HASH is a *bcrypt hash*, not a plaintext
-  // password — the previous code compared a plaintext env var with
-  // bcrypt.compare(), which can never return true.
-  ADMIN_EMAIL: z.string().email().optional(),
+  // Admin bootstrap. ADMIN_PASSWORD_HASH is a *bcrypt hash*, not plaintext.
+  ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD_HASH: z.string().optional(),
 
   // Email
@@ -49,22 +52,33 @@ const serverSchema = z.object({
   // Business rules
   ADVANCE_PERCENT: z.coerce.number().int().min(1).max(100).default(50),
   GST_RATE: z.coerce.number().min(0).max(1).default(0.05),
-  NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_SITE_URL: z.string().default("http://localhost:3000"),
 });
 
-const parsed = serverSchema.safeParse(process.env);
+type Env = z.infer<typeof schema>;
 
-if (!parsed.success) {
+/**
+ * Parse defensively. Even a malformed coerced value (e.g. ADVANCE_PERCENT="abc")
+ * must not crash the build — fall back to schema defaults and warn.
+ */
+function parseEnv(): Env {
+  const parsed = schema.safeParse(process.env);
+  if (parsed.success) return parsed.data;
+
   const issues = parsed.error.issues
-    .map((i) => `  - ${i.path.join(".")}: ${i.message}`)
-    .join("\n");
-  throw new Error(`Invalid environment variables:\n${issues}`);
+    .map((i) => `${i.path.join(".")}: ${i.message}`)
+    .join("; ");
+  console.warn(`[env] ignoring malformed environment values (${issues})`);
+
+  // Re-parse an empty object so every field resolves to its default.
+  return schema.parse({});
 }
 
-export const env = parsed.data;
+export const env = parseEnv();
 
 /** Feature flags derived from which credentials are actually present. */
 export const features = {
+  database: Boolean(env.DATABASE_URL),
   stripe: Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET),
   email: Boolean(env.RESEND_API_KEY),
   whatsapp: Boolean(env.WHATSAPP_API_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID),
@@ -73,15 +87,28 @@ export const features = {
 
 export const authSecret = env.AUTH_SECRET ?? env.NEXTAUTH_SECRET;
 
-if (env.NODE_ENV === "production") {
-  if (!authSecret) {
-    throw new Error("AUTH_SECRET (or NEXTAUTH_SECRET) must be set in production");
+/**
+ * Warn about missing runtime configuration exactly once per process. Called at
+ * import so it runs on server start, but only actually warns in production and
+ * never throws — a paused DB or unset key should not take the process down.
+ */
+function warnMissingConfig(): void {
+  if (env.NODE_ENV !== "production") return;
+
+  const missing: string[] = [];
+  if (!env.DATABASE_URL) missing.push("DATABASE_URL (database features disabled)");
+  if (!authSecret) missing.push("AUTH_SECRET (admin login disabled)");
+  if (!env.ADMIN_PASSWORD_HASH && !env.DATABASE_URL) {
+    missing.push("ADMIN_PASSWORD_HASH (no admin login path configured)");
   }
-  if (!env.ADMIN_PASSWORD_HASH) {
-    // Not fatal — DB-backed users still work — but it is worth screaming about.
+
+  if (missing.length) {
     console.warn(
-      "[env] ADMIN_PASSWORD_HASH is not set. Admin fallback login is disabled; " +
-        "create a User row instead. Generate a hash with: npm run auth:hash -- 'yourpassword'",
+      "[env] running with incomplete configuration:\n" +
+        missing.map((m) => `  - ${m}`).join("\n") +
+        "\nSet these in your host's environment variables for full functionality.",
     );
   }
 }
+
+warnMissingConfig();
