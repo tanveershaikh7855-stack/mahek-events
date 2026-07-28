@@ -33,6 +33,18 @@ import { useCart } from "@/hooks/use-cart";
 import { FALLBACK_PRODUCTS } from "@/lib/seed";
 import { BookingModal } from "@/components/booking/booking-modal";
 
+const categoryNames: Record<string, string> = {
+  "cat-1": "Helium Balloons",
+  "cat-2": "Balloon Bouquets",
+  "cat-3": "Balloon Packets",
+  "cat-4": "Party Supplies",
+  "cat-5": "Flower Bouquets",
+  "cat-6": "Chrome Balloons",
+  "cat-7": "Foil Balloons",
+  "cat-8": "Shape Balloons",
+  "cat-9": "Number Balloons",
+};
+
 interface ProductDetailClientProps {
   product: {
     id: string;
@@ -144,7 +156,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           {/* Product Info */}
           <div className="flex flex-col">
             <Badge variant="secondary" className="w-fit mb-3 rounded-lg">
-              {product.categoryId === "cat-1" ? "Helium Balloons" : "Party Supplies"}
+              {categoryNames[product.categoryId] || "Products"}
             </Badge>
 
             <h1 className="heading-section text-ink mb-3">{product.name}</h1>
@@ -188,7 +200,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </div>
               <div className="flex items-center gap-1.5 text-secondary-text">
                 <Package className="w-4 h-4 text-forest" />
-                {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                {product.stock > 10 ? "In Stock" : product.stock > 0 ? `Only ${product.stock} left` : "Out of stock"}
               </div>
               <div className="flex items-center gap-1.5 text-secondary-text">
                 <CheckCircle className="w-4 h-4 text-forest" />
@@ -313,7 +325,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <div className="flex items-start gap-3">
                 <Truck className="w-5 h-5 text-forest mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-ink">Same Day Delivery</p>
+                  <p className="text-sm font-semibold text-ink">{product.deliveryBadge} Delivery</p>
                   <p className="text-xs text-secondary-text">Order before 2 PM for same-day dispatch within 140 KM.</p>
                 </div>
               </div>
@@ -335,7 +347,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <CheckCircle className="w-5 h-5 text-forest mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold text-ink">Premium Quality</p>
-                  <p className="text-xs text-secondary-text">Verified materials, decorator-grade balloons.</p>
+                  <p className="text-xs text-secondary-text">Verified materials, decorator-grade quality.</p>
                 </div>
               </div>
             </div>
@@ -383,18 +395,37 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   </tr>
                   <tr className="border-b border-black/[0.04]">
                     <td className="py-3.5 font-medium text-ink">Category</td>
-                    <td className="py-3.5 text-secondary-text capitalize">
-                      {product.categoryId.replace("cat-", "Category ")}
-                    </td>
+                    <td className="py-3.5 text-secondary-text">{categoryNames[product.categoryId] || "Products"}</td>
                   </tr>
                   <tr className="border-b border-black/[0.04]">
                     <td className="py-3.5 font-medium text-ink">Stock</td>
-                    <td className="py-3.5 text-secondary-text">{product.stock > 0 ? "In Stock" : "Out of Stock"}</td>
+                    <td className="py-3.5 text-secondary-text">
+                      <span className={cn(
+                        "inline-flex items-center gap-1.5",
+                        product.stock > 10 ? "text-emerald-600" : product.stock > 0 ? "text-amber-600" : "text-gray-500"
+                      )}>
+                        <span className={cn(
+                          "w-2 h-2 rounded-full",
+                          product.stock > 10 ? "bg-emerald-500" : product.stock > 0 ? "bg-amber-500" : "bg-gray-400"
+                        )} />
+                        {product.stock > 0 ? `${product.stock} units available` : "Out of Stock"}
+                      </span>
+                    </td>
                   </tr>
                   <tr className="border-b border-black/[0.04]">
                     <td className="py-3.5 font-medium text-ink">Delivery</td>
                     <td className="py-3.5 text-secondary-text">{product.deliveryBadge}</td>
                   </tr>
+                  {product.variants && product.variants.length > 0 && (
+                    <>
+                      {product.variants.map((variant) => (
+                        <tr key={variant.label} className="border-b border-black/[0.04]">
+                          <td className="py-3.5 font-medium text-ink">{variant.label}s Available</td>
+                          <td className="py-3.5 text-secondary-text">{variant.options.join(", ")}</td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>

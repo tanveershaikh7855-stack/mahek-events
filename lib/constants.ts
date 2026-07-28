@@ -63,6 +63,10 @@ export const SHOP_CATEGORIES = [
   { name: "Balloon Packets", slug: "balloon-packets", subtitle: "Ready-to-fill premium balloons" },
   { name: "Party Supplies", slug: "party-supplies", subtitle: "Complete celebration essentials" },
   { name: "Flower Bouquets", slug: "flower-bouquets", subtitle: "Fresh blooms for meaningful moments" },
+  { name: "Chrome Balloons", slug: "chrome-balloons", subtitle: "Mirror-finish metallic balloons" },
+  { name: "Foil Balloons", slug: "foil-balloons", subtitle: "Premium foil balloons for every theme" },
+  { name: "Shape Balloons", slug: "shape-balloons", subtitle: "Unique shaped balloons for celebrations" },
+  { name: "Number Balloons", slug: "number-balloons", subtitle: "Celebrate milestones with number balloons" },
 ];
 
 export const SERVICE_CATEGORIES = [
