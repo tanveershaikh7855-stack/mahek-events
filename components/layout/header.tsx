@@ -15,7 +15,8 @@ import { NAV_LINKS } from "@/lib/constants";
 const materialNavLink = NAV_LINKS.find((l) => l.label === "Decorative Material");
 const materialChildren = materialNavLink?.children || [];
 
-const ease = [0.16, 1, 0.3, 1];
+// Explicit tuple — inferred as number[], which framer-motion's Easing rejects.
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 function MegaMenu() {
   return (
@@ -311,7 +312,7 @@ export function Header() {
                             <ChevronDown className="w-4 h-4 text-secondary-text group-open:text-forest transition-transform duration-200" />
                           </summary>
                           <div className="ml-3 mt-1 space-y-0.5">
-                            {link.children.map((child) => (
+                            {link.children?.map((child) => (
                               <Link
                                 key={child.href}
                                 href={child.href}

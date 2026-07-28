@@ -7,7 +7,8 @@ import { Truck, ArrowRight, Star, MapPin, Shield, Clock } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { hero, business } from "@/lib/content";
 
-const ease = [0.16, 1, 0.3, 1];
+// Explicit tuple — inferred as number[], which framer-motion's Easing rejects.
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const TRUST_BAR = [
   { icon: Truck, text: hero.features[0] },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, User, Phone, Mail, MapPin, ClipboardCheck, CreditCard, MessageCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
+import { submitBooking } from "@/lib/actions";
 
 interface BookingModalProps {
   product: {
@@ -26,12 +27,15 @@ interface BookingModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const STEPS = ["details", "date", "summary"] as const;
+type Step = (typeof STEPS)[number];
+
 export function BookingModal({ product, open, onOpenChange }: BookingModalProps) {
-  const router = useRouter();
-  const { addItem } = useCart();
-  const [step, setStep] = useState<"details" | "date" | "summary">("details");
+  const [step, setStep] = useState<Step>("details");
   const [loading, setLoading] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState("");
+  const stepIndex = STEPS.indexOf(step);
 
   const formData = {
     name: "",
@@ -57,8 +61,9 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
 
   const deliverySlots = ["Morning (8AM-12PM)", "Afternoon (12PM-4PM)", "Evening (4PM-7PM)", "Night (7PM-9PM)"];
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = (bookingNumber: string) => {
     const message = `🛍️ *New Booking - ${BRAND.name}*\n\n` +
+      `🔖 Booking: ${bookingNumber}\n` +
       `👤 Customer: ${data.name}\n` +
       `📞 Phone: ${data.phone}\n` +
       `📧 Email: ${data.email}\n` +
@@ -77,13 +82,46 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
     onOpenChange(false);
   };
 
-  const handleSubmit = () => {
-    if (!data.name || !data.phone || !data.address) return;
+  /**
+   * Persists the booking first, then opens WhatsApp. Previously this only
+   * waited 300ms and opened WhatsApp — if the customer never pressed send in
+   * WhatsApp, the shop had no record the enquiry ever happened.
+   */
+  const handleSubmit = async () => {
+    if (!data.name || !data.phone || !data.address) {
+      setError("Name, phone and address are required.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      handleWhatsApp();
-    }, 300);
+    setError("");
+
+    const form = new FormData();
+    form.set("name", data.name);
+    form.set("phone", data.phone.replace(/\D/g, "").slice(-10));
+    form.set("email", data.email);
+    form.set("event", data.eventType || "other");
+    form.set("venue", data.address);
+    form.set("date", data.eventDate);
+    form.set("time", data.eventTime);
+    form.set("budget", String(total));
+    form.set(
+      "instructions",
+      `Product: ${product.name} x${data.quantity}. ` +
+        `Payment: ${data.paymentMethod}. ` +
+        `${data.specialRequests || "No special requests."}`,
+    );
+
+    const result = await submitBooking(null, form);
+    setLoading(false);
+
+    if (!result.success) {
+      const messages = Object.values(result.errors).flat();
+      setError(messages[0] ?? "Could not save your booking. Please try again.");
+      return;
+    }
+
+    handleWhatsApp(result.bookingNumber);
   };
 
   return (
@@ -125,7 +163,8 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                     {i + 1}
                   </div>
                   <span className={cn("text-xs font-medium hidden sm:inline", s.active ? "text-forest" : "text-secondary-text")}>{s.label}</span>
-                  {i < 2 && <div className={cn("flex-1 h-px", i < step ? "bg-forest" : "bg-border")} />}
+                  {/* `i < step` compared a number with a string literal and was always false. */}
+                  {i < 2 && <div className={cn("flex-1 h-px", i < stepIndex ? "bg-forest" : "bg-border")} />}
                 </div>
               ))}
             </div>
@@ -163,7 +202,7 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                   </div>
                   <div>
                     <Label htmlFor="booking-event">Event Type</Label>
-                    <Select value={data.eventType} onValueChange={(v) => setData({ ...data, eventType: v })}>
+                    <Select value={data.eventType} onValueChange={(v) => setData({ ...data, eventType: v ?? "" })}>
                       <SelectTrigger className="mt-1" id="booking-event">
                         <SelectValue placeholder="Select event type" />
                       </SelectTrigger>
@@ -248,6 +287,11 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
             </div>
 
             <div className="p-5 border-t border-border">
+              {error && (
+                <div className="mb-3 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
               {step === "details" && (
                 <Button className="w-full h-12 bg-forest text-white font-semibold rounded-xl hover:bg-forest/90 transition-all" onClick={() => setStep("date")}>Continue to Date & Time</Button>
               )}

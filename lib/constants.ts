@@ -71,6 +71,14 @@ export {
   materialCategories,
 };
 
+/**
+ * Share of the order total collected up front to confirm an order.
+ * Safe to import from client components. The server reads ADVANCE_PERCENT from
+ * the environment (lib/env.ts) and its value is the one actually charged —
+ * this constant is for display only.
+ */
+export const ADVANCE_PERCENT = 50;
+
 export const BRAND = { ...business, instagram: socials.instagram, facebook: socials.facebook };
 export const NAV_LINKS = navLinks;
 export const HERO_FEATURES = featuresBar;

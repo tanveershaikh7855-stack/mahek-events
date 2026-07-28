@@ -1,8 +1,7 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { Toaster as SonnerToaster } from "@/components/ui/sonner";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/hooks/use-cart";
 import { WishlistProvider } from "@/hooks/use-wishlist";
 import { LenisProvider } from "@/components/ui/lenis-provider";
@@ -15,6 +14,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <WishlistProvider>
           <LenisProvider>
             {children}
+            {/* One Toaster only. Two were mounted (`sonner` directly and the
+                themed wrapper), so every toast rendered twice. */}
             <Toaster
               position="bottom-right"
               toastOptions={{
@@ -22,7 +23,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 style: { background: "#FAFAF8", border: "1px solid #ECECEC", color: "#111111" },
               }}
             />
-            <SonnerToaster />
             <AIWhatsAppAssistant />
           </LenisProvider>
         </WishlistProvider>

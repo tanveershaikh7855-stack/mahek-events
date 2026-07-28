@@ -18,9 +18,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BRAND } from "@/lib/constants";
+import { submitContact } from "@/lib/actions";
 
-const SocialIcon = ({ d }: { d: string }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true">
+const SocialIcon = ({ d, className }: { d: string; className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className ?? "w-5 h-5"} aria-hidden="true">
     <path d={d} />
   </svg>
 );
@@ -34,12 +35,23 @@ const WHATSAPP_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-
 export function ContactPageClient() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    setError("");
+
+    const result = await submitContact(null, new FormData(e.currentTarget));
+
     setSubmitting(false);
+
+    if (!result.success) {
+      const messages = Object.values(result.errors).flat();
+      setError(messages[0] ?? "Something went wrong. Please try again.");
+      return;
+    }
+
     setSubmitted(true);
   };
 
@@ -49,19 +61,19 @@ export function ContactPageClient() {
     { icon: MapPin, label: "Location", value: BRAND.address, href: null },
     { icon: Clock, label: "Business Hours", value: "Mon - Sat, 9:00 AM - 8:00 PM", href: null },
     {
-      icon: () => <SocialIcon d={WHATSAPP_PATH} />,
+      icon: ({ className }: { className?: string }) => <SocialIcon d={WHATSAPP_PATH} className={className} />,
       label: "WhatsApp",
       value: "Chat with us",
       href: `https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}`,
     },
     {
-      icon: () => <SocialIcon d={INSTAGRAM_PATH} />,
+      icon: ({ className }: { className?: string }) => <SocialIcon d={INSTAGRAM_PATH} className={className} />,
       label: "Instagram",
       value: "@mahekdecor",
       href: BRAND.instagram,
     },
     {
-      icon: () => <SocialIcon d={FACEBOOK_PATH} />,
+      icon: ({ className }: { className?: string }) => <SocialIcon d={FACEBOOK_PATH} className={className} />,
       label: "Facebook",
       value: "Mahek Balloon",
       href: BRAND.facebook,
@@ -108,11 +120,9 @@ export function ContactPageClient() {
                     className="flex items-center gap-4 p-4 rounded-2xl border border-black/[0.04] bg-white hover:border-forest/20 hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] transition-all duration-300 group"
                   >
                     <div className="w-12 h-12 rounded-xl bg-forest-light flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      {typeof IconEl === "function" ? (
-                        <IconEl />
-                      ) : (
-                        <IconEl className="w-6 h-6 text-forest" />
-                      )}
+                      {/* Every entry in contactItems is now a component taking
+                          an optional className, so no runtime branch is needed. */}
+                      <IconEl className="w-6 h-6 text-forest" />
                     </div>
                     <div>
                       <p className="text-sm text-secondary-text">{item.label}</p>
@@ -166,21 +176,26 @@ export function ContactPageClient() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name *</Label>
-                      <Input id="name" placeholder="Full name" required />
+                      <Input id="name" name="name" placeholder="Full name" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" required />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" />
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="message">Message *</Label>
-                      <Textarea id="message" placeholder="Tell us how we can help you..." rows={5} required />
+                      <Textarea id="message" name="message" placeholder="Tell us how we can help you..." rows={5} required />
                     </div>
                   </div>
+                  {error && (
+                    <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+                      {error}
+                    </div>
+                  )}
                   <Button
                     type="submit"
                     size="lg"

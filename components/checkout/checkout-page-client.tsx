@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import {
   CheckCircle,
   CreditCard,
@@ -26,6 +25,8 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
+import { submitCheckout } from "@/lib/actions";
+import { ADVANCE_PERCENT } from "@/lib/constants";
 
 const PAYMENT_METHODS = [
   { value: "COD", label: "Cash on Delivery", icon: Wallet, desc: "Pay when you receive" },
@@ -34,24 +35,80 @@ const PAYMENT_METHODS = [
 ];
 
 export function CheckoutPageClient() {
-  const router = useRouter();
   const { items, subtotal, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState<{
+    orderNumber: string;
+    advanceAmount: number;
+    balanceDue: number;
+  } | null>(null);
+  const [error, setError] = useState("");
 
+  // Indicative only — the server recomputes every figure from the database and
+  // its numbers are the ones charged. See lib/pricing.ts.
   const gst = subtotal * 0.05;
   const delivery = subtotal >= 999 ? 0 : 99;
   const total = subtotal + gst + delivery;
+  const advance = Math.round((total * ADVANCE_PERCENT) / 100);
+  const balance = total - advance;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 2000));
+    setError("");
+
+    const formData = new FormData(e.currentTarget);
+    formData.set("paymentMethod", paymentMethod);
+
+    const result = await submitCheckout(formData, items);
+
+    if (!result.success) {
+      const messages = Object.values(result.errors).flat();
+      setError(messages[0] ?? "Something went wrong. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    // Card/UPI: hand off to Stripe to collect the advance. The order is only
+    // marked CONFIRMED by the webhook once that payment actually clears.
+    if (result.requiresPayment) {
+      try {
+        const res = await fetch("/api/checkout/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: result.orderId }),
+        });
+        const payload = await res.json();
+        if (res.ok && payload.url) {
+          clearCart();
+          window.location.href = payload.url;
+          return;
+        }
+        setError(
+          payload.error ??
+            "Your order was saved but payment could not start. We will call you to collect the advance.",
+        );
+        setSubmitting(false);
+        return;
+      } catch {
+        setError(
+          "Your order was saved but payment could not start. We will call you to collect the advance.",
+        );
+        setSubmitting(false);
+        return;
+      }
+    }
+
     clearCart();
+    setPlacedOrder({
+      orderNumber: result.orderNumber,
+      advanceAmount: result.advanceAmount,
+      balanceDue: result.balanceDue,
+    });
     setSubmitting(false);
     setCompleted(true);
-    setTimeout(() => router.push("/"), 3000);
   };
 
   if (items.length === 0 && !completed) {
@@ -81,9 +138,20 @@ export function CheckoutPageClient() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4">Order Placed!</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">Order Placed!</h1>
+            {placedOrder && (
+              <p className="text-sm font-mono text-forest mb-4">{placedOrder.orderNumber}</p>
+            )}
             <p className="text-secondary-text mb-6">
-              Thank you for your order! You&apos;ll receive a confirmation via WhatsApp shortly.
+              Thank you for your order. We&apos;ve sent the details to your email and WhatsApp.
+              {placedOrder && placedOrder.advanceAmount > 0 && (
+                <>
+                  {" "}Your order is confirmed once the {ADVANCE_PERCENT}% advance of{" "}
+                  <strong>{formatPrice(placedOrder.advanceAmount)}</strong> is received —
+                  our team will call you to arrange it.{" "}
+                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable on delivery.
+                </>
+              )}
             </p>
             <Button className="bg-forest text-white hover:bg-forest/90" asChild>
               <Link href="/shop">Continue Shopping <ArrowRight className="ml-2 w-5 h-5" /></Link>
@@ -117,31 +185,31 @@ export function CheckoutPageClient() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
-                      <Input id="name" placeholder="Enter your full name" required />
+                      <Input id="name" name="name" placeholder="Enter your full name" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" required />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" />
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="address">Delivery Address *</Label>
-                      <Textarea id="address" placeholder="House/Flat No., Street, Landmark" required rows={2} />
+                      <Textarea id="address" name="address" placeholder="House/Flat No., Street, Landmark" required rows={2} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="city">City *</Label>
-                      <Input id="city" placeholder="Mumbai" required />
+                      <Input id="city" name="city" placeholder="Pune" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="pincode">Pincode *</Label>
-                      <Input id="pincode" placeholder="400001" required />
+                      <Input id="pincode" name="pincode" inputMode="numeric" maxLength={6} placeholder="411004" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="state">State *</Label>
-                      <Input id="state" placeholder="Maharashtra" required />
+                      <Input id="state" name="state" placeholder="Maharashtra" required />
                     </div>
                   </div>
                 </motion.div>
@@ -183,6 +251,7 @@ export function CheckoutPageClient() {
                 >
                   <h2 className="text-lg font-semibold text-ink">Order Notes</h2>
                   <Textarea
+                    name="notes"
                     placeholder="Special delivery instructions, preferred time, gate code, etc."
                     rows={3}
                   />
@@ -230,6 +299,23 @@ export function CheckoutPageClient() {
                     </div>
                   </div>
 
+                  <div className="rounded-xl bg-forest-light border border-forest/20 p-3 space-y-2 text-sm">
+                    <div className="flex justify-between font-semibold text-ink">
+                      <span>Advance to confirm ({ADVANCE_PERCENT}%)</span>
+                      <span>{formatPrice(advance)}</span>
+                    </div>
+                    <div className="flex justify-between text-secondary-text">
+                      <span>Balance on delivery</span>
+                      <span>{formatPrice(balance)}</span>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+                      {error}
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     size="lg"
@@ -241,7 +327,9 @@ export function CheckoutPageClient() {
                     ) : (
                       <>
                         <Lock className="w-5 h-5 mr-2" />
-                        Place Order - {formatPrice(total)}
+                        {paymentMethod === "COD"
+                          ? `Place Order - ${formatPrice(total)}`
+                          : `Pay Advance - ${formatPrice(advance)}`}
                       </>
                     )}
                   </Button>

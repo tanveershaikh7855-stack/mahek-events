@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import {
   FALLBACK_CATEGORIES,
@@ -7,8 +8,27 @@ import {
   FALLBACK_DELIVERY_CHARGES,
 } from "./seed";
 
-function withFallback<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  return fn().catch(() => fallback);
+/**
+ * Falls back to the static content CMS when the database is unreachable, so the
+ * storefront still renders during an outage or before the DB is seeded.
+ *
+ * The error is logged rather than silently swallowed — the previous version
+ * discarded it entirely, which meant a misconfigured DATABASE_URL looked exactly
+ * like a working site serving demo data, with nothing in the logs.
+ *
+ * The static content is shaped like the Prisma rows but not identical (plain
+ * numbers instead of Decimal, no createdAt/updatedAt). Pages only read display
+ * fields, so `fallback` is typed `unknown` and bridged with one documented cast
+ * here instead of the ten scattered `as any` casts that sat at each call site.
+ */
+function withFallback<T>(fn: () => Promise<T>, fallback: unknown): Promise<T> {
+  return fn().catch((error: unknown) => {
+    console.error(
+      "[data] database query failed, serving static fallback content:",
+      error instanceof Error ? error.message : error,
+    );
+    return fallback as T;
+  });
 }
 
 export async function getCategories(type?: "PRODUCT" | "SERVICE" | "EVENT") {
@@ -18,13 +38,13 @@ export async function getCategories(type?: "PRODUCT" | "SERVICE" | "EVENT") {
       where,
       orderBy: { sortOrder: "asc" },
     });
-  }, FALLBACK_CATEGORIES.filter((c) => (type ? c.type === type : true)) as any);
+  }, FALLBACK_CATEGORIES.filter((c) => (type ? c.type === type : true)));
 }
 
 export async function getCategoryBySlug(slug: string) {
   return withFallback(
     async () => prisma.category.findUnique({ where: { slug } }),
-    FALLBACK_CATEGORIES.find((c) => c.slug === slug) as any,
+    FALLBACK_CATEGORIES.find((c) => c.slug === slug),
   );
 }
 
@@ -35,7 +55,7 @@ export async function getProducts(options?: {
   search?: string;
 }) {
   return withFallback(async () => {
-    const where: any = { isActive: true };
+    const where: Prisma.ProductWhereInput = { isActive: true };
     if (options?.featured) where.isFeatured = true;
     if (options?.categorySlug) {
       const category = await prisma.category.findUnique({ where: { slug: options.categorySlug } });
@@ -59,7 +79,7 @@ export async function getProducts(options?: {
     if (options?.categorySlug && p.categoryId !== FALLBACK_CATEGORIES.find((c) => c.slug === options.categorySlug)?.id) return false;
     if (options?.search && !p.name.toLowerCase().includes(options.search.toLowerCase())) return false;
     return true;
-  }).slice(0, options?.limit).map((p) => ({ ...p, category: FALLBACK_CATEGORIES.find((c) => c.id === p.categoryId) })) as any);
+  }).slice(0, options?.limit).map((p) => ({ ...p, category: FALLBACK_CATEGORIES.find((c) => c.id === p.categoryId) })));
 }
 
 export async function getProductBySlug(slug: string) {
@@ -75,7 +95,7 @@ export async function getProductBySlug(slug: string) {
           category: FALLBACK_CATEGORIES.find((c) => c.id === FALLBACK_PRODUCTS.find((p) => p.slug === slug)?.categoryId),
           reviews: [],
         }
-      : (null as any),
+      : (null),
   );
 }
 
@@ -87,23 +107,35 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
         take: limit,
         orderBy: { isFeatured: "desc" },
       }),
-    FALLBACK_PRODUCTS.filter((p) => p.categoryId === categoryId && p.id !== productId).slice(0, limit) as any,
+    FALLBACK_PRODUCTS.filter((p) => p.categoryId === categoryId && p.id !== productId).slice(0, limit),
   );
 }
 
+// Services and gallery are content-managed in lib/content.ts rather than the
+// database, so these read straight from it — no cast needed.
 export async function getServices() {
-  return FALLBACK_SERVICES as any;
+  return FALLBACK_SERVICES;
 }
 
 export async function getServiceBySlug(slug: string) {
-  return FALLBACK_SERVICES.find((s) => s.slug === slug) as any;
+  return FALLBACK_SERVICES.find((s) => s.slug === slug);
+}
+
+/** Fisher-Yates. `sort(() => Math.random() - 0.5)` is a biased shuffle. */
+function shuffle<T>(input: readonly T[]): T[] {
+  const items = [...input];
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return items;
 }
 
 export async function getGallery(category?: string) {
   if (category && category !== "all") {
-    return FALLBACK_GALLERY.filter((g) => g.category === category).sort(() => Math.random() - 0.5) as any;
+    return shuffle(FALLBACK_GALLERY.filter((g) => g.category === category));
   }
-  return [...FALLBACK_GALLERY].sort(() => Math.random() - 0.5) as any;
+  return shuffle(FALLBACK_GALLERY);
 }
 
 export async function getDeliveryCharge(distanceKm: number, orderValue: number) {

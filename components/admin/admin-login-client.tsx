@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { Lock, Mail, Loader2, Eye, EyeOff, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,8 @@ import { Label } from "@/components/ui/label";
 
 export function AdminLoginClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,14 +25,23 @@ export function AdminLoginClient() {
     setLoading(true);
     setError("");
 
-    // Simulate login
-    await new Promise((r) => setTimeout(r, 1000));
-    if (email === "admin@mahekdecor.com" && password === "admin123") {
-      router.push("/admin");
-    } else {
+    // Credentials are verified on the server by NextAuth. Previously this
+    // compared against a hardcoded password in the browser, which granted
+    // nothing and could be read by anyone viewing the page source.
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (result?.error) {
       setError("Invalid email or password");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    router.replace(callbackUrl);
+    router.refresh();
   };
 
   return (
@@ -98,7 +110,7 @@ export function AdminLoginClient() {
           </Button>
 
           <p className="text-xs text-secondary-text text-center">
-            Default: admin@mahekdecor.com / admin123
+            Authorised staff only. Contact the administrator for access.
           </p>
         </form>
       </motion.div>

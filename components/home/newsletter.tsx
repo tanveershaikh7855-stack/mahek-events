@@ -7,16 +7,31 @@ import { ArrowRight } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { newsletter } from "@/lib/content";
+import { subscribe } from "@/lib/actions";
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email.trim()) return;
     setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setError("");
+
+    const formData = new FormData();
+    formData.set("email", email.trim());
+
+    const result = await subscribe(null, formData);
+
+    if (!result.success) {
+      const messages = Object.values(result.errors).flat();
+      setError(messages[0] ?? "Could not subscribe. Please try again.");
+      setStatus("idle");
+      return;
+    }
+
     setStatus("success");
     setEmail("");
     setTimeout(() => setStatus("idle"), 3000);
@@ -78,6 +93,12 @@ export function Newsletter() {
               )}
             </Button>
           </motion.form>
+
+          {error && (
+            <p className="text-red-200 text-xs mt-3" role="alert">
+              {error}
+            </p>
+          )}
 
           <motion.p
             initial={{ opacity: 0 }}

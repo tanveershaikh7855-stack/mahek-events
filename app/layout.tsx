@@ -27,7 +27,9 @@ export const metadata: Metadata = {
     template: `%s | ${business.name}`,
   },
   description: seo.metaDescription,
-  keywords: seo.keywords,
+  // seo.keywords is a `readonly` tuple (content.ts uses `as const`); Metadata
+  // wants a mutable string[].
+  keywords: [...seo.keywords],
   authors: [{ name: business.name }],
   creator: business.name,
   publisher: business.name,
