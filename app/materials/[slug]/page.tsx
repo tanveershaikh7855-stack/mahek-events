@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { MATERIAL_CATEGORIES } from "@/lib/constants";
 import { notFound } from "next/navigation";
+import { business } from "@/lib/content";
 
 export async function generateStaticParams() {
   return MATERIAL_CATEGORIES.map((cat) => ({ slug: cat.slug }));
@@ -14,7 +15,7 @@ export function generateMetadata({
   const category = MATERIAL_CATEGORIES.find((c) => c.slug === params.slug);
   if (!category) return { title: "Material Not Found" };
   return {
-    title: `${category.name} | Mahek Decorator`,
+    title: `${category.name} | ${business.name}`,
     description: category.description,
   };
 }

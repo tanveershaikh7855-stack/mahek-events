@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { BookingPageClient } from "@/components/booking/booking-page-client";
+import { bookingPage, business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Book Decoration Service | Mahek Decorator",
-  description:
-    "Book premium decoration services for birthday, wedding, anniversary, baby shower, corporate events, proposals, and more. Free consultation with our expert stylists.",
+  title: `Book Decoration Service | ${business.name}`,
+  description: bookingPage.subtitle,
 };
 
 export default function BookingPage() {

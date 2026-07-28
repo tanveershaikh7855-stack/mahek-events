@@ -5,8 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { Truck, ArrowRight, Star, MapPin, Shield, Clock } from "lucide-react";
 import { BRAND } from "@/lib/constants";
+import { hero, business } from "@/lib/content";
 
 const ease = [0.16, 1, 0.3, 1];
+
+const TRUST_BAR = [
+  { icon: Truck, text: hero.features[0] },
+  { icon: Shield, text: hero.features[1] },
+  { icon: Clock, text: hero.features[2] },
+  { icon: MapPin, text: hero.features[3] },
+];
 
 export function Hero() {
   return (
@@ -22,7 +30,7 @@ export function Hero() {
               className="mb-4"
             >
               <span className="section-label">
-                Premium Balloon &amp; Decoration Studio
+                {hero.badge}
               </span>
             </motion.div>
 
@@ -32,11 +40,11 @@ export function Hero() {
               transition={{ duration: 0.6, ease, delay: 0.06 }}
               className="heading-hero text-ink mb-4 text-balance"
             >
-              Make Every
+              {hero.title}
               <br />
-              Celebration{" "}
+              {hero.highlight}{" "}
               <span className="relative inline-block">
-                <span className="text-forest">Unforgettable</span>
+                <span className="text-forest">{hero.subtitle}</span>
                 <svg className="absolute -bottom-1.5 left-0 w-full h-[6px]" viewBox="0 0 200 8" fill="none" preserveAspectRatio="none">
                   <path d="M2 6C50 2 100 3 150 4C170 4.5 190 5 198 3" stroke="#C9A227" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
@@ -49,8 +57,7 @@ export function Hero() {
               transition={{ duration: 0.6, ease, delay: 0.1 }}
               className="body-large mb-6 max-w-md text-pretty"
             >
-              Premium helium balloons, elegant bouquets, and bespoke decoration services
-              for your most meaningful celebrations. Same-day delivery within 140 KM.
+              {hero.description}
             </motion.p>
 
             <motion.div
@@ -59,12 +66,12 @@ export function Hero() {
               transition={{ duration: 0.6, ease, delay: 0.14 }}
               className="flex flex-wrap items-center gap-3 mb-8"
             >
-              <Link href="/shop" className="btn-primary group">
-                Shop Balloons
+              <Link href={hero.primaryButton.href} className="btn-primary group">
+                {hero.primaryButton.label}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
-              <Link href="/booking" className="btn-secondary">
-                Book Decoration
+              <Link href={hero.secondaryButton.href} className="btn-secondary">
+                {hero.secondaryButton.label}
               </Link>
               <a
                 href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}?text=Hi! I'd like to inquire about your decoration services.`}
@@ -75,7 +82,7 @@ export function Hero() {
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
-                WhatsApp
+                {hero.whatsappButton}
               </a>
             </motion.div>
 
@@ -86,20 +93,19 @@ export function Hero() {
               transition={{ duration: 0.6, ease, delay: 0.18 }}
               className="flex items-center gap-7"
             >
-              <div>
-                <p className="text-2xl font-extrabold text-ink tracking-tight">5000+</p>
-                <p className="text-[11px] text-secondary-text mt-0.5">Happy Customers</p>
-              </div>
-              <div className="w-px h-9 bg-black/[0.06]" />
-              <div>
-                <p className="text-2xl font-extrabold text-ink tracking-tight">140<span className="text-xs font-semibold">KM</span></p>
-                <p className="text-[11px] text-secondary-text mt-0.5">Delivery Radius</p>
-              </div>
-              <div className="w-px h-9 bg-black/[0.06]" />
-              <div>
-                <p className="text-2xl font-extrabold text-ink tracking-tight flex items-center gap-1.5">4.9 <Star className="w-4 h-4 text-gold fill-gold" /></p>
-                <p className="text-[11px] text-secondary-text mt-0.5">Customer Rating</p>
-              </div>
+              {hero.stats.map((stat, i) => (
+                <div key={stat.label}>
+                  <p className="text-2xl font-extrabold text-ink tracking-tight">
+                    {stat.value}{stat.label.includes("KM") && <span className="text-xs font-semibold">KM</span>}
+                    {i === hero.stats.length - 1 && <Star className="w-4 h-4 text-gold fill-gold inline ml-1.5" />}
+                  </p>
+                  <p className="text-[11px] text-secondary-text mt-0.5">{stat.label.replace(" KM", "")}</p>
+                </div>
+              )).reduce((acc, el, i) => {
+                if (i > 0) acc.push(<div key={`sep-${i}`} className="w-px h-9 bg-black/[0.06]" />);
+                acc.push(el);
+                return acc;
+              }, [] as React.ReactNode[])}
             </motion.div>
           </div>
 
@@ -112,7 +118,7 @@ export function Hero() {
           >
             <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] rounded-3xl overflow-hidden shadow-[0_12px_60px_-12px_rgba(0,0,0,0.12)]">
               <Image
-                src="/images/hero-balloons.png"
+                src={hero.image}
                 alt="Premium helium balloon arrangement"
                 fill
                 className="object-cover"
@@ -133,8 +139,8 @@ export function Hero() {
                     <Truck className="w-4.5 h-4.5 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-ink">Same-Day Delivery</p>
-                    <p className="text-[11px] text-secondary-text">Within 140 KM</p>
+                    <p className="text-xs font-semibold text-ink">{hero.features[0]}</p>
+                    <p className="text-[11px] text-secondary-text">Within {business.deliveryRadiusKm} KM</p>
                   </div>
                 </div>
               </motion.div>
@@ -147,12 +153,7 @@ export function Hero() {
       <div className="bg-white border-t border-black/[0.04]">
         <div className="container-tight py-3.5">
           <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide">
-            {[
-              { icon: Truck, text: "Same-Day Delivery" },
-              { icon: Shield, text: "Secure Payment" },
-              { icon: Clock, text: "On-Time Setup" },
-              { icon: MapPin, text: "140 KM Coverage" },
-            ].map((b) => (
+            {TRUST_BAR.map((b) => (
               <div key={b.text} className="flex items-center gap-2.5 flex-shrink-0">
                 <div className="w-8 h-8 rounded-xl bg-forest/5 flex items-center justify-center">
                   <b.icon className="w-4 h-4 text-forest" />

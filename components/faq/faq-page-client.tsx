@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { FREQUENTLY_ASKED_QUESTIONS } from "@/lib/constants";
+import { faqPage } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 export function FaqPageClient() {
@@ -34,7 +35,7 @@ export function FaqPageClient() {
             transition={{ delay: 0.1 }}
             className="body-large mt-4"
           >
-            Everything you need to know about balloons, decorations, delivery, and more.
+            {faqPage.subtitle}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -45,7 +46,7 @@ export function FaqPageClient() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-text" />
             <Input
               type="text"
-              placeholder="Search questions..."
+              placeholder={faqPage.searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-12"

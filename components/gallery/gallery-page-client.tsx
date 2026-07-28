@@ -8,16 +8,12 @@ import { X, Search, Filter, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { FALLBACK_GALLERY } from "@/lib/seed";
+import { galleryCategories } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const CATEGORIES = [
   { value: "all", label: "All Work" },
-  { value: "birthday", label: "Birthday" },
-  { value: "wedding", label: "Wedding" },
-  { value: "baby-shower", label: "Baby Shower" },
-  { value: "corporate", label: "Corporate" },
-  { value: "proposal", label: "Proposal" },
-  { value: "room-decoration", label: "Room Decor" },
+  ...galleryCategories.filter((c) => c !== "All Work").map((c) => ({ value: c.toLowerCase().replace(/ /g, "-"), label: c })),
 ];
 
 export function GalleryPageClient() {

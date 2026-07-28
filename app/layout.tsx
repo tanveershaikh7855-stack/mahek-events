@@ -4,6 +4,7 @@ import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { seo, business } from "@/lib/content";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,50 +21,38 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mahekdecor.com"),
+  metadataBase: new URL(seo.siteUrl),
   title: {
-    default: "Mahek Decorator | Premium Helium Balloons & Decoration Services",
-    template: "%s | Mahek Decorator",
+    default: seo.metaTitle,
+    template: `%s | ${business.name}`,
   },
-  description:
-    "Premium helium balloons, balloon bouquets, party supplies and luxury decoration services. Same-day delivery within 140 KM. Book decorations online.",
-  keywords: [
-    "helium balloons",
-    "balloon bouquets",
-    "balloon decoration",
-    "party supplies",
-    "birthday decoration",
-    "wedding decoration",
-    "flower bouquets",
-    "same day delivery",
-  ],
-  authors: [{ name: "Mahek Decorator" }],
-  creator: "Mahek Decorator",
-  publisher: "Mahek Decorator",
+  description: seo.metaDescription,
+  keywords: seo.keywords,
+  authors: [{ name: business.name }],
+  creator: business.name,
+  publisher: business.name,
   robots: "index, follow",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://mahekdecor.com",
-    siteName: "Mahek Decorator",
-    title: "Mahek Decorator | Premium Helium Balloons & Decoration Services",
-    description:
-      "Premium helium balloons, balloon bouquets, party supplies and luxury decoration services. Same-day delivery within 140 KM.",
+    url: seo.siteUrl,
+    siteName: business.name,
+    title: seo.metaTitle,
+    description: seo.metaDescription,
     images: [
       {
-        url: "/images/logo/logo.png",
+        url: seo.ogImage,
         width: 1200,
         height: 630,
-        alt: "Mahek Decorator - Premium Balloons & Decorations",
+        alt: `${business.name} - Premium Balloons & Decorations`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mahek Decorator | Premium Helium Balloons & Decoration Services",
-    description:
-      "Premium helium balloons, balloon bouquets, party supplies and luxury decoration services. Same-day delivery within 140 KM.",
-    images: ["/images/logo/logo.png"],
+    title: seo.metaTitle,
+    description: seo.metaDescription,
+    images: [seo.ogImage],
   },
   verification: {
     google: "google-site-verification-code",

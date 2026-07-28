@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { BRAND, FOOTER_LINKS, WHY_CHOOSE_US } from "@/lib/constants";
+import { footer } from "@/lib/content";
 
 const SocialIcon = ({ d }: { d: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
@@ -74,7 +75,7 @@ export function Footer() {
           </div>
 
           <nav>
-            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">Shop</h4>
+            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">{footer.shopHeading}</h4>
             <ul className="space-y-2.5">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
@@ -87,7 +88,7 @@ export function Footer() {
           </nav>
 
           <nav>
-            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">Services</h4>
+            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">{footer.servicesHeading}</h4>
             <ul className="space-y-2.5">
               {FOOTER_LINKS.services.map((link) => (
                 <li key={link.href}>
@@ -100,7 +101,7 @@ export function Footer() {
           </nav>
 
           <div>
-            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">Company</h4>
+            <h4 className="font-heading text-xs font-bold text-white mb-4 uppercase tracking-wider">{footer.companyHeading}</h4>
             <ul className="space-y-2.5">
               {FOOTER_LINKS.company.map((link) => (
                 <li key={link.href}>
@@ -139,7 +140,7 @@ export function Footer() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />
-                Mon-Sat 9AM-8PM
+                {footer.businessHours}
               </span>
               <span className="flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5" />

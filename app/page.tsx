@@ -9,11 +9,11 @@ import { GalleryPreview } from "@/components/home/gallery-preview";
 import { WhyChooseUs } from "@/components/home/why-choose-us";
 import { Testimonials } from "@/components/home/testimonials";
 import { Newsletter } from "@/components/home/newsletter";
+import { seo, business } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Premium Helium Balloons & Decoration Services",
-  description:
-    "Mahek Decorator - Premium helium balloons, balloon bouquets, party supplies and luxury decoration services. Same-day delivery within 140 KM. Book decorations online.",
+  description: seo.metaDescription,
 };
 
 export default function HomePage() {

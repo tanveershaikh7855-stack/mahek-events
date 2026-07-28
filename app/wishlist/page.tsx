@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { WishlistPageClient } from "@/components/wishlist/wishlist-page-client";
+import { wishlistPage, business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Wishlist | Mahek Decorator",
-  description: "Your saved items. Keep track of your favorite balloons, bouquets, and party supplies.",
+  title: `${wishlistPage.title} | ${business.name}`,
+  description: wishlistPage.emptyDescription,
 };
 
 export default function WishlistPage() {

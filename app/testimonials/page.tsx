@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { TestimonialsClient } from "@/components/testimonials/testimonials-client";
+import { testimonialsPage, business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Testimonials | Mahek Decorator",
-  description: "Read reviews from our happy customers across Mumbai. 5000+ satisfied customers for balloons and decoration services.",
+  title: `Testimonials | ${business.name}`,
+  description: testimonialsPage.subtitle,
 };
 
 export default function TestimonialsPage() {

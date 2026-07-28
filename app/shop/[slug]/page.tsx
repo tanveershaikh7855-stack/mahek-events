@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import { FALLBACK_PRODUCTS } from "@/lib/seed";
 import { formatPrice } from "@/lib/utils";
+import { business } from "@/lib/content";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) return { title: "Product Not Found" };
 
   return {
-    title: `${product.name} | Mahek Decorator`,
+    title: `${product.name} | ${business.name}`,
     description: product.shortDesc,
     openGraph: {
       title: product.name,

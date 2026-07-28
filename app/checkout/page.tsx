@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { CheckoutPageClient } from "@/components/checkout/checkout-page-client";
+import { checkoutPage, business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Checkout | Mahek Decorator",
-  description: "Secure checkout for premium helium balloons and party supplies. COD, UPI, and card payments accepted.",
+  title: `${checkoutPage.title} | ${business.name}`,
+  description: checkoutPage.secureNote,
 };
 
 export default function CheckoutPage() {

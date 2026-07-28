@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Calendar, MapPin, Users  } from "lucide-react";import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_SERVICES } from "@/lib/seed";
+import { servicesPage } from "@/lib/content";
 import { cn, formatPrice } from "@/lib/utils";
 
 const serviceImages: Record<string, string> = {
@@ -40,7 +41,7 @@ export function ServicesPageClient() {
             transition={{ delay: 0.1 }}
             className="body-large mt-4"
           >
-            From intimate celebrations to grand events, our expert stylists create unforgettable experiences.
+            {servicesPage.subtitle}
           </motion.p>
         </div>
       </section>
@@ -112,13 +113,13 @@ export function ServicesPageClient() {
             viewport={{ once: true }}
             className="p-8 md:p-12 rounded-3xl bg-forest-light border border-forest/10"
           >
-            <Calendar className="w-12 h-12 text-forest mx-auto mb-4" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-ink mb-4 tracking-tight">
-              Ready to Transform Your Event?
-            </h2>
-            <p className="text-secondary-text mb-8 max-w-lg mx-auto">
-              Tell us about your event and we&apos;ll create a custom decoration plan that matches your vision and budget.
-            </p>
+              <Calendar className="w-12 h-12 text-forest mx-auto mb-4" />
+              <h2 className="text-2xl md:text-3xl font-semibold text-ink mb-4 tracking-tight">
+                {servicesPage.cta.title}
+              </h2>
+              <p className="text-secondary-text mb-8 max-w-lg mx-auto">
+                {servicesPage.cta.description}
+              </p>
             <Button size="lg" className="bg-forest text-white hover:bg-forest-hover rounded-full px-8 transition-all duration-300 hover:shadow-lg hover:shadow-forest/20" asChild>
               <Link href="/booking" className="flex items-center gap-2">
                 Book Your Decoration <ArrowRight className="w-5 h-5" />

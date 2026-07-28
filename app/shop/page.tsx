@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { ShopPageClient } from "@/components/shop/shop-page-client";
+import { seo, business } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Shop Premium Helium Balloons & Party Supplies",
-  description:
-    "Browse our curated collection of helium balloons, balloon bouquets, flower arrangements, and party supplies. Same-day delivery within 140 KM.",
+  description: seo.metaDescription,
 };
 
 export default function ShopPage() {

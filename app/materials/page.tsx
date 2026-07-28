@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { MATERIAL_CATEGORIES } from "@/lib/constants";
 import Link from "next/link";
+import { business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Decorative Materials | Mahek Decorator",
+  title: `Decorative Materials | ${business.name}`,
   description:
     "Browse premium decorative materials — balloons, flower stands, metal frames, LED numbers, lighting, stage props and more for birthdays, weddings and corporate events.",
 };

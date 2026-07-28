@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star, CheckCircle, Quote } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/constants";
+import { testimonialsPage } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 export function TestimonialsClient() {
@@ -24,7 +25,7 @@ export function TestimonialsClient() {
             transition={{ delay: 0.1 }}
             className="body-large mt-4"
           >
-            Trusted by thousands across Mumbai for premium balloons and decorations.
+            {testimonialsPage.subtitle}
           </motion.p>
         </div>
       </section>
@@ -71,8 +72,8 @@ export function TestimonialsClient() {
             transition={{ delay: 0.4 }}
             className="mt-12 p-8 rounded-3xl bg-forest-light border border-forest/10 text-center"
           >
-            <p className="text-lg font-semibold text-ink">Join 5000+ happy customers</p>
-            <p className="text-secondary-text mt-2">Your satisfaction is our priority. Every review drives us to do better.</p>
+            <p className="text-lg font-semibold text-ink">{testimonialsPage.cta.title}</p>
+            <p className="text-secondary-text mt-2">{testimonialsPage.cta.subtitle}</p>
           </motion.div>
         </div>
       </section>

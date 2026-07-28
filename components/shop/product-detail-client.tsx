@@ -211,7 +211,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <Separator className="mb-6" />
 
             {/* Variants */}
-            {product.variants &&
+            {product.variants && product.variants.length > 0 &&
               product.variants.map((variant) => (
                 <div key={variant.label} className="mb-6">
                   <div className="flex items-center justify-between mb-3">

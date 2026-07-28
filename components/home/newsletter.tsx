@@ -6,6 +6,7 @@ import { Mail, Check, Loader2 } from "lucide-react";
 import { ArrowRight } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { newsletter } from "@/lib/content";
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
@@ -34,10 +35,10 @@ export function Newsletter() {
               <Mail className="w-6 h-6 text-gold" />
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3 tracking-tight">
-              Stay Inspired
+              {newsletter.badge}
             </h2>
             <p className="text-white/50 text-sm leading-relaxed mb-7">
-              Decoration ideas, exclusive offers, and new products. No spam.
+              {newsletter.subtitle}
             </p>
           </motion.div>
 
@@ -53,7 +54,7 @@ export function Newsletter() {
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               <Input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={newsletter.placeholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -72,7 +73,7 @@ export function Newsletter() {
                 <Check className="w-4 h-4" />
               ) : (
                 <span className="flex items-center gap-1.5">
-                  Subscribe <ArrowRight className="w-3.5 h-3.5" />
+                  {newsletter.button} <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               )}
             </Button>
@@ -85,7 +86,7 @@ export function Newsletter() {
             transition={{ delay: 0.12 }}
             className="text-white/25 text-[11px] mt-4"
           >
-            By subscribing, you agree to our Privacy Policy.
+            {newsletter.disclaimer}
           </motion.p>
         </div>
       </div>

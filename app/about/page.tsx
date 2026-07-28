@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { AboutClient } from "@/components/about/about-client";
+import { about, business } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "About Us | Mahek Decorator",
-  description: "Learn about Mahek Decorator - our story, mission, and dedication to creating beautiful celebrations with premium helium balloons and decoration services.",
+  title: `About Us | ${business.name}`,
+  description: about.description,
 };
 
 export default function AboutPage() {
