@@ -16,7 +16,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function HeroCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 350 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 200 });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const onSelect = useCallback(() => {
@@ -58,7 +58,7 @@ export function HeroCarousel() {
                   src={s.image}
                   alt={s.title}
                   fill
-                  className={`object-cover transition-transform duration-[2000ms] ease-out ${
+                  className={`object-cover transition-transform duration-[1200ms] ease-out ${
                     selectedIndex === i ? "scale-105" : "scale-100"
                   }`}
                   priority={i === 0}
@@ -80,7 +80,7 @@ export function HeroCarousel() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       className="max-w-lg"
                     >
                       {s.badge && (
@@ -122,7 +122,7 @@ export function HeroCarousel() {
                     initial={{ opacity: 0, x: 20, y: 10 }}
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10"
                   >
                     <div className="backdrop-blur-xl bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
