@@ -134,6 +134,61 @@ export const hero = {
   ],
 } as const;
 
+export type HeroSlide = {
+  image: string;
+  title: string;
+  subtitle: string;
+  badge?: string;
+  price?: string;
+  cta?: { label: string; href: string };
+  infoCard: { icon: string; label: string; sublabel: string };
+};
+
+export const heroCarousel: HeroSlide[] = [
+  {
+    image: "/images/birthday-arch.png",
+    title: "Luxury Birthday Decoration",
+    subtitle: "Elegant balloon styling for memorable celebrations.",
+    badge: "Best Seller",
+    price: "Starting ₹2,499",
+    cta: { label: "Book Now", href: "/booking" },
+    infoCard: { icon: "truck", label: "Same-Day Delivery", sublabel: "Within 140 KM" },
+  },
+  {
+    image: "/images/wedding-room.png",
+    title: "Wedding Room Decor",
+    subtitle: "Transform your space into a romantic paradise.",
+    badge: "Premium",
+    price: "Starting ₹14,999",
+    cta: { label: "View Packages", href: "/services/wedding" },
+    infoCard: { icon: "star", label: "4.9 Rating", sublabel: "5000+ Happy Customers" },
+  },
+  {
+    image: "/images/baby-shower-arch.png",
+    title: "Baby Shower Elegance",
+    subtitle: "Soft pastel themes for your little one's arrival.",
+    badge: "Trending",
+    cta: { label: "Explore", href: "/services/baby-shower" },
+    infoCard: { icon: "heart", label: "Custom Designs", sublabel: "Tailored to Your Theme" },
+  },
+  {
+    image: "/images/balloon-wall.png",
+    title: "Premium Balloon Artistry",
+    subtitle: "Chrome, foil & helium balloons in every color.",
+    badge: "New Collection",
+    cta: { label: "Shop Balloons", href: "/shop" },
+    infoCard: { icon: "map", label: "140 KM Coverage", sublabel: "Pune & Beyond" },
+  },
+  {
+    image: "/images/birthday-bouquet.png",
+    title: "Curated Balloon Bouquets",
+    subtitle: "Hand-tied arrangements for every occasion.",
+    price: "Starting ₹699",
+    cta: { label: "Browse Collection", href: "/shop" },
+    infoCard: { icon: "truck", label: "Free Delivery", sublabel: "Orders above ₹499" },
+  },
+];
+
 // ── FEATURES BAR ──────────────────────────────────────────────
 export const featuresBar = [
   { title: "Same Day Delivery", description: "Order before 2 PM" },

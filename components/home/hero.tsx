@@ -2,10 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { Truck, ArrowRight, Star, MapPin, Shield, Clock } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { hero, business } from "@/lib/content";
+import { HeroCarousel } from "./hero-carousel";
 
 // Explicit tuple — inferred as number[], which framer-motion's Easing rejects.
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -117,35 +117,7 @@ export function Hero() {
             transition={{ duration: 0.8, ease, delay: 0.1 }}
             className="lg:col-span-7 order-1 lg:order-2"
           >
-            <div className="relative w-full aspect-[16/10] lg:aspect-[16/9] rounded-3xl overflow-hidden shadow-[0_12px_60px_-12px_rgba(0,0,0,0.12)]">
-              <Image
-                src={hero.image}
-                alt="Premium helium balloon arrangement"
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 1024px) 100vw, 55vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
-
-              {/* Floating delivery badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.5, ease }}
-                className="absolute bottom-5 right-5 lg:bottom-8 lg:right-8"
-              >
-                <div className="glass-panel rounded-2xl px-4 py-3 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-forest flex items-center justify-center">
-                    <Truck className="w-4.5 h-4.5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-ink">{hero.features[0]}</p>
-                    <p className="text-[11px] text-secondary-text">Within {business.deliveryRadiusKm} KM</p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+            <HeroCarousel />
           </motion.div>
         </div>
       </div>
