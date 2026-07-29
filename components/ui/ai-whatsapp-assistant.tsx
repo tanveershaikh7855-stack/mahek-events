@@ -134,11 +134,11 @@ export function AIWhatsAppAssistant() {
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => setIsOpen(true)}
-            className="fixed z-50 w-12 h-12 rounded-full bg-forest text-white shadow-lg shadow-forest/20 flex items-center justify-center hover:bg-forest/90 transition-colors lg:hidden"
-            style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px) + 12px)", right: "18px" }}
+            className="fixed z-50 w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/40 flex items-center justify-center hover:bg-[#20BD5A] transition-colors lg:hidden whatsapp-pulse"
+            style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px) + 12px)", right: "16px" }}
             aria-label="Open AI Assistant"
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className="w-6 h-6" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -146,13 +146,13 @@ export function AIWhatsAppAssistant() {
       {/* Desktop FAB */}
       {!isOpen && (
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-forest text-white shadow-lg shadow-forest/20 hidden lg:flex items-center justify-center hover:bg-forest/90 transition-colors"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/40 hidden lg:flex items-center justify-center hover:bg-[#20BD5A] transition-colors whatsapp-pulse"
           aria-label="Open AI Assistant"
         >
-          <MessageCircle className="w-5 h-5" />
+          <MessageCircle className="w-6 h-6" />
         </motion.button>
       )}
 
