@@ -169,7 +169,7 @@ export const heroCarousel: HeroSlide[] = [
     subtitle: "Soft pastel themes for your little one's arrival.",
     badge: "Trending",
     cta: { label: "Explore", href: "/services/baby-shower" },
-    infoCard: { icon: "heart", label: "Custom Designs", sublabel: "Tailored to Your Theme" },
+    infoCard: { icon: "star", label: "Custom Designs", sublabel: "Tailored to Your Theme" },
   },
   {
     image: "/images/balloon-wall.png",
