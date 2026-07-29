@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,9 +16,28 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   map: MapPin,
 };
 
+function useMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
+}
+
 export function HeroCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 200 });
+  const isMobile = useMobile();
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, duration: 200, watchDrag: true },
+    isMobile
+      ? [Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })]
+      : []
+  );
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -41,7 +61,6 @@ export function HeroCarousel() {
 
   return (
     <div className="relative w-full">
-      {/* Carousel viewport */}
       <div
         ref={emblaRef}
         className="overflow-hidden rounded-[28px] lg:rounded-[32px] shadow-[0_16px_64px_-16px_rgba(0,0,0,0.15)]"
@@ -52,7 +71,6 @@ export function HeroCarousel() {
               key={i}
               className="flex-[0_0_100%] min-w-0 relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9]"
             >
-              {/* Image with Ken Burns */}
               <div className="absolute inset-0 overflow-hidden">
                 <Image
                   src={s.image}
@@ -67,11 +85,9 @@ export function HeroCarousel() {
                 />
               </div>
 
-              {/* Gradient overlays */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
 
-              {/* Text overlay */}
               <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
                 <AnimatePresence mode="wait">
                   {selectedIndex === i && (
@@ -114,7 +130,6 @@ export function HeroCarousel() {
                 </AnimatePresence>
               </div>
 
-              {/* Floating info card */}
               <AnimatePresence mode="wait">
                 {selectedIndex === i && (
                   <motion.div
@@ -146,7 +161,6 @@ export function HeroCarousel() {
         </div>
       </div>
 
-      {/* Bottom controls: arrows + dots */}
       <div className="flex items-center justify-center gap-3 mt-4">
         <button
           onClick={scrollPrev}
