@@ -125,13 +125,13 @@ export function Header() {
             <div className="flex items-center gap-2.5">
               <Image
                 src="/images/logo/logo.png"
-                alt="Mahek Balloon"
-                width={160}
-                height={44}
-                className="h-[36px] md:h-[40px] w-auto object-contain"
-                priority
-              />
-              <span className="font-heading font-bold text-[0.9375rem] text-ink hidden sm:block tracking-tight">
+                    alt="Mahek Balloon"
+                    width={160}
+                    height={44}
+                    className="h-[28px] md:h-[36px] w-auto object-contain"
+                    priority
+                  />
+                  <span className="font-heading font-bold text-[0.9375rem] text-ink hidden sm:block tracking-tight">
                 Mahek Balloon
               </span>
             </div>

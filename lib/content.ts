@@ -146,22 +146,30 @@ export type HeroSlide = {
 
 export const heroCarousel: HeroSlide[] = [
   {
-    image: "/images/birthday-arch.png",
-    title: "Luxury Birthday Decoration",
-    subtitle: "Elegant balloon styling for memorable celebrations.",
-    badge: "Best Seller",
-    price: "Starting ₹2,499",
-    cta: { label: "Book Now", href: "/booking" },
+    image: "/images/hero-balloons.png",
+    title: "Premium Helium Balloons",
+    subtitle: "Elegant balloon styling for your most meaningful celebrations.",
+    badge: "Since 2015",
+    cta: { label: "Shop Balloons", href: "/shop" },
     infoCard: { icon: "truck", label: "Same-Day Delivery", sublabel: "Within 140 KM" },
   },
   {
     image: "/images/wedding-room.png",
     title: "Wedding Room Decor",
-    subtitle: "Transform your space into a romantic paradise.",
+    subtitle: "Transform your venue into a romantic paradise.",
     badge: "Premium",
     price: "Starting ₹14,999",
     cta: { label: "View Packages", href: "/services/wedding" },
     infoCard: { icon: "star", label: "4.9 Rating", sublabel: "5000+ Happy Customers" },
+  },
+  {
+    image: "/images/birthday-arch.png",
+    title: "Luxury Birthday Decoration",
+    subtitle: "Complete birthday setups with balloon arches and backdrops.",
+    badge: "Best Seller",
+    price: "Starting ₹2,499",
+    cta: { label: "Book Now", href: "/booking" },
+    infoCard: { icon: "map", label: "140 KM Coverage", sublabel: "Pune & Beyond" },
   },
   {
     image: "/images/baby-shower-arch.png",
@@ -174,17 +182,9 @@ export const heroCarousel: HeroSlide[] = [
   {
     image: "/images/balloon-wall.png",
     title: "Premium Balloon Artistry",
-    subtitle: "Chrome, foil & helium balloons in every color.",
+    subtitle: "Chrome, foil & helium balloons in every color and theme.",
     badge: "New Collection",
     cta: { label: "Shop Balloons", href: "/shop" },
-    infoCard: { icon: "map", label: "140 KM Coverage", sublabel: "Pune & Beyond" },
-  },
-  {
-    image: "/images/birthday-bouquet.png",
-    title: "Curated Balloon Bouquets",
-    subtitle: "Hand-tied arrangements for every occasion.",
-    price: "Starting ₹699",
-    cta: { label: "Browse Collection", href: "/shop" },
     infoCard: { icon: "truck", label: "Free Delivery", sublabel: "Orders above ₹499" },
   },
 ];
