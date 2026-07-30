@@ -51,7 +51,7 @@ export default function AccountPage() {
                   <Phone className="w-4 h-4" /> +91 98765 43210
                 </p>
                 <p className="text-sm text-secondary-text mt-1 flex items-center justify-center gap-1.5">
-                  <MapPin className="w-4 h-4" /> Mumbai, Maharashtra
+                  <MapPin className="w-4 h-4" /> Pune, Maharashtra
                 </p>
               </div>
             </div>

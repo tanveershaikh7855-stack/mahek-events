@@ -28,9 +28,9 @@ export function Footer() {
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Balloon"
-                width={120}
-                height={32}
-                className="h-[34px] w-auto object-contain brightness-0 invert"
+                width={882}
+                height={861}
+                className="h-12 w-auto object-contain brightness-0 invert"
               />
               <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloon</span>
             </Link>

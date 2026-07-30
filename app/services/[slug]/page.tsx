@@ -114,7 +114,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               </Button>
 
               <div className="mt-6 pt-6 border-t border-border text-sm text-secondary-text space-y-3">
-                <p>✅ Free site visit within Mumbai</p>
+                <p>✅ Free site visit within Pune</p>
                 <p>✅ Setup & takedown included</p>
                 <p>✅ Premium materials guaranteed</p>
               </div>

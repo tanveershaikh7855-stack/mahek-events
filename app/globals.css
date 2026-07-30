@@ -340,10 +340,16 @@ img[loading="lazy"]:not([src=""]) {
   opacity: 1;
 }
 
-/* Prevent content layout shift from images */
-img, video, iframe {
-  max-width: 100%;
-  height: auto;
+/* Prevent content layout shift from images.
+   Must live in @layer base: an unlayered rule outranks every layered one
+   regardless of specificity, so declaring this at the top level made
+   `height: auto` beat Tailwind's h-* utilities on every image on the site
+   (the header logo rendered at its full natural size because of it). */
+@layer base {
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 /* Focus visible styles */

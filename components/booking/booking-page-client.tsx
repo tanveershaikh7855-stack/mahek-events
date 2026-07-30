@@ -287,7 +287,7 @@ export function BookingPageClient() {
                 </p>
                 <p className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-forest" />
-                  Free consultation and site visit within Mumbai
+                  Free consultation and site visit within Pune
                 </p>
               </div>
               {errorMsg && (

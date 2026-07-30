@@ -126,9 +126,9 @@ export function Header() {
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Balloon"
-                width={160}
-                height={44}
-                className="h-[28px] md:h-[36px] w-auto object-contain"
+                width={882}
+                height={861}
+                className="h-9 md:h-11 w-auto object-contain"
                 priority
               />
             </div>
@@ -298,9 +298,9 @@ export function Header() {
                   <Image
                     src="/images/logo/logo.png"
                     alt="Mahek Balloon"
-                    width={100}
-                    height={30}
-                    className="h-[30px] w-auto object-contain"
+                    width={882}
+                    height={861}
+                    className="h-10 w-auto object-contain"
                   />
                 </div>
                 <Button
