@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-31",
+    "shortDesc":  "Elegant seasonal blooms with eucalyptus.",
+    "deliveryBadge":  "Same Day",
+    "price":  1199,
+    "description":  "A timeless arrangement of white seasonal flowers, eucalyptus and soft greenery. Wrapped in premium kraft paper.",
+    "sizes":  [
+                  "Small",
+                  "Medium",
+                  "Large"
+              ],
+    "comparePrice":  null,
+    "images":  [
+                   "/products/white-green-flower-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-5",
+    "sku":  "FB-001",
+    "tags":  [
+                 "flowers",
+                 "white",
+                 "green",
+                 "elegant"
+             ],
+    "colors":  [
+
+               ],
+    "productName":  "White \u0026 Green Flower Bouquet",
+    "stock":  20,
+    "slug":  "white-green-flower-bouquet",
+    "category":  "Flower Bouquets",
+    "reviewCount":  67,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Small",
+                                         "Medium",
+                                         "Large"
+                                     ],
+                         "label":  "Size"
+                     }
+                 ],
+    "rating":  4.9
+}

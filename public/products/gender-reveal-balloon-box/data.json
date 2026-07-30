@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-12",
+    "shortDesc":  "Surprise balloon box with confetti poppers.",
+    "deliveryBadge":  "Same Day",
+    "price":  1199,
+    "description":  "A beautifully wrapped box that releases pink or blue balloons when opened. Includes confetti poppers and a cake topper.",
+    "sizes":  null,
+    "comparePrice":  1299,
+    "images":  [
+                   "/products/gender-reveal-balloon-box/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-2",
+    "sku":  "BB-002",
+    "tags":  [
+                 "gender-reveal",
+                 "surprise",
+                 "baby",
+                 "confetti"
+             ],
+    "colors":  [
+                   "Boy",
+                   "Girl",
+                   "Twins"
+               ],
+    "productName":  "Gender Reveal Balloon Box",
+    "stock":  25,
+    "slug":  "gender-reveal-balloon-box",
+    "category":  "Balloon Bouquets",
+    "reviewCount":  53,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Boy",
+                                         "Girl",
+                                         "Twins"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

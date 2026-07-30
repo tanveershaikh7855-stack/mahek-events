@@ -1,0 +1,46 @@
+﻿{
+    "id":  "prod-16",
+    "shortDesc":  "Mirror-finish gold chrome balloons.",
+    "deliveryBadge":  "Same Day",
+    "price":  349,
+    "description":  "Premium chrome-finish latex balloons with stunning mirror-like gold shine. 12 inch size, pack of 10.",
+    "sizes":  null,
+    "comparePrice":  399,
+    "images":  [
+                   "/products/chrome-gold-latex-12/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-6",
+    "sku":  "CH-001",
+    "tags":  [
+                 "chrome",
+                 "gold",
+                 "mirror",
+                 "metallic"
+             ],
+    "colors":  [
+                   "Gold",
+                   "Silver",
+                   "Rose Gold",
+                   "Copper",
+                   "Blue"
+               ],
+    "productName":  "Chrome Gold Latex 12 inch",
+    "stock":  150,
+    "slug":  "chrome-gold-latex-12",
+    "category":  "Chrome Balloons",
+    "reviewCount":  124,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold",
+                                         "Silver",
+                                         "Rose Gold",
+                                         "Copper",
+                                         "Blue"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

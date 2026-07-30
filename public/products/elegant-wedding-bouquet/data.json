@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-13",
+    "shortDesc":  "White and gold balloon bouquet for weddings.",
+    "deliveryBadge":  "Same Day",
+    "price":  2199,
+    "description":  "Sophisticated wedding balloon bouquet featuring white, gold and pearl balloons with silk ribbon accents.",
+    "sizes":  null,
+    "comparePrice":  2499,
+    "images":  [
+                   "/products/elegant-wedding-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-2",
+    "sku":  "BB-003",
+    "tags":  [
+                 "wedding",
+                 "elegant",
+                 "white",
+                 "gold"
+             ],
+    "colors":  [
+                   "Classic",
+                   "Modern",
+                   "Rustic"
+               ],
+    "productName":  "Elegant Wedding Bouquet",
+    "stock":  15,
+    "slug":  "elegant-wedding-bouquet",
+    "category":  "Balloon Bouquets",
+    "reviewCount":  41,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Classic",
+                                         "Modern",
+                                         "Rustic"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.9
+}

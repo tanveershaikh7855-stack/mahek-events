@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-1",
+    "shortDesc":  "12 premium helium balloons in soft pastel tones.",
+    "deliveryBadge":  "Same Day",
+    "price":  699,
+    "description":  "A refined bunch of 12 helium-filled balloons in blush, ivory and soft peach. Tied with satin ribbon and weighted for easy placement.",
+    "sizes":  null,
+    "comparePrice":  799,
+    "images":  [
+                   "/products/pastel-helium-balloon-bunch/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-1",
+    "sku":  "HB-001",
+    "tags":  [
+                 "pastel",
+                 "helium",
+                 "birthday",
+                 "elegant"
+             ],
+    "colors":  [
+                   "Pastel Mix",
+                   "Rose Gold",
+                   "Ivory",
+                   "Lavender"
+               ],
+    "productName":  "Pastel Helium Balloon Bunch",
+    "stock":  50,
+    "slug":  "pastel-helium-balloon-bunch",
+    "category":  "Helium Balloons",
+    "reviewCount":  128,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Pastel Mix",
+                                         "Rose Gold",
+                                         "Ivory",
+                                         "Lavender"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.9
+}

@@ -1,0 +1,38 @@
+﻿{
+    "id":  "prod-11",
+    "shortDesc":  "Luxury birthday balloon bouquet with confetti accents.",
+    "deliveryBadge":  "Same Day",
+    "price":  1299,
+    "description":  "Make birthdays unforgettable with this rose gold and confetti balloon bouquet. Includes number option and premium box packaging.",
+    "sizes":  null,
+    "comparePrice":  1499,
+    "images":  [
+                   "/products/rose-gold-birthday-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-2",
+    "sku":  "BB-001",
+    "tags":  [
+                 "rose-gold",
+                 "birthday",
+                 "luxury",
+                 "confetti"
+             ],
+    "colors":  [
+                   "Rose Gold"
+               ],
+    "productName":  "Rose Gold Birthday Bouquet",
+    "stock":  30,
+    "slug":  "rose-gold-birthday-bouquet",
+    "category":  "Balloon Bouquets",
+    "reviewCount":  86,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Rose Gold"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

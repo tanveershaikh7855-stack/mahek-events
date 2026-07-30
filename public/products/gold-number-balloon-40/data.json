@@ -1,0 +1,48 @@
+﻿{
+    "id":  "prod-25",
+    "shortDesc":  "Large gold foil number balloon.",
+    "deliveryBadge":  "Same Day",
+    "price":  249,
+    "description":  "Premium 40-inch gold foil number balloon. Self-sealing, reusable. Choose any digit 0-9.",
+    "sizes":  null,
+    "comparePrice":  299,
+    "images":  [
+                   "/products/gold-number-balloon-40/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-9",
+    "sku":  "NB-001",
+    "tags":  [
+                 "number",
+                 "gold",
+                 "milestone",
+                 "birthday"
+             ],
+    "colors":  [
+                   "Gold",
+                   "Silver",
+                   "Rose Gold",
+                   "Black",
+                   "Blue",
+                   "Pink"
+               ],
+    "productName":  "Gold Number Balloon 40 inch",
+    "stock":  200,
+    "slug":  "gold-number-balloon-40",
+    "category":  "Number Balloons",
+    "reviewCount":  345,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold",
+                                         "Silver",
+                                         "Rose Gold",
+                                         "Black",
+                                         "Blue",
+                                         "Pink"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

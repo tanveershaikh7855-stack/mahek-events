@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-7",
+    "shortDesc":  "DIY helium balloon garland with strip tape.",
+    "deliveryBadge":  "Same Day",
+    "price":  1099,
+    "description":  "Everything you need to create a stunning balloon garland. Includes 50 balloons, decorating strip, glue dots and ribbon.",
+    "sizes":  null,
+    "comparePrice":  1299,
+    "images":  [
+                   "/products/helium-balloon-garland-kit/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-1",
+    "sku":  "HB-007",
+    "tags":  [
+                 "diy",
+                 "garland",
+                 "kit",
+                 "decorating"
+             ],
+    "colors":  [
+                   "Eucalyptus Green",
+                   "Blush Pink",
+                   "Gold \u0026 White",
+                   "Sage Green"
+               ],
+    "productName":  "Helium Balloon Garland Kit",
+    "stock":  25,
+    "slug":  "helium-balloon-garland-kit",
+    "category":  "Helium Balloons",
+    "reviewCount":  74,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Eucalyptus Green",
+                                         "Blush Pink",
+                                         "Gold \u0026 White",
+                                         "Sage Green"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.7
+}

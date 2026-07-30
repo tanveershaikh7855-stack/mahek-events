@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-28",
+    "shortDesc":  "Complete candle and balloon room setup kit.",
+    "deliveryBadge":  "Same Day",
+    "price":  2999,
+    "description":  "Everything needed for an intimate proposal: balloons, candles, rose petals, fairy lights and a marquee \u0027Marry Me\u0027 sign.",
+    "sizes":  null,
+    "comparePrice":  3499,
+    "images":  [
+                   "/products/proposal-room-decoration-kit/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-4",
+    "sku":  "PS-001",
+    "tags":  [
+                 "proposal",
+                 "room",
+                 "romantic",
+                 "kit"
+             ],
+    "colors":  [
+                   "Classic Red",
+                   "White \u0026 Gold",
+                   "Blush"
+               ],
+    "productName":  "Proposal Room Decoration Kit",
+    "stock":  15,
+    "slug":  "proposal-room-decoration-kit",
+    "category":  "Party Supplies",
+    "reviewCount":  34,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Classic Red",
+                                         "White \u0026 Gold",
+                                         "Blush"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  5
+}

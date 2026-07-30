@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-2",
+    "shortDesc":  "Reflective chrome foil balloons for premium decor.",
+    "deliveryBadge":  "Same Day",
+    "price":  599,
+    "description":  "Set of 6 chrome foil balloons in your choice of silver, gold or rose gold. Perfect for milestone celebrations.",
+    "sizes":  null,
+    "comparePrice":  null,
+    "images":  [
+                   "/products/chrome-foil-balloon-set/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-1",
+    "sku":  "HB-002",
+    "tags":  [
+                 "chrome",
+                 "foil",
+                 "premium",
+                 "milestone"
+             ],
+    "colors":  [
+                   "Silver",
+                   "Gold",
+                   "Rose Gold",
+                   "Copper"
+               ],
+    "productName":  "Chrome Foil Balloon Set",
+    "stock":  100,
+    "slug":  "chrome-foil-balloon-set",
+    "category":  "Helium Balloons",
+    "reviewCount":  42,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Silver",
+                                         "Gold",
+                                         "Rose Gold",
+                                         "Copper"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.7
+}

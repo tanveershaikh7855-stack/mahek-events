@@ -1,0 +1,46 @@
+﻿{
+    "id":  "prod-3",
+    "shortDesc":  "Oversized latex balloon for dramatic effect.",
+    "deliveryBadge":  "Same Day",
+    "price":  349,
+    "description":  "A show-stopping 36-inch giant helium balloon. Available in solid colors with optional ribbon tail.",
+    "sizes":  null,
+    "comparePrice":  null,
+    "images":  [
+                   "/products/giant-helium-balloon-36/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-1",
+    "sku":  "HB-003",
+    "tags":  [
+                 "giant",
+                 "latex",
+                 "dramatic",
+                 "statement"
+             ],
+    "colors":  [
+                   "White",
+                   "Black",
+                   "Gold",
+                   "Red",
+                   "Pink"
+               ],
+    "productName":  "Giant Helium Balloon 36 inch",
+    "stock":  80,
+    "slug":  "giant-helium-balloon-36",
+    "category":  "Helium Balloons",
+    "reviewCount":  67,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "White",
+                                         "Black",
+                                         "Gold",
+                                         "Red",
+                                         "Pink"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.6
+}

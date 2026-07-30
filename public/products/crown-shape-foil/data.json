@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-23",
+    "shortDesc":  "Royal crown-shaped balloon.",
+    "deliveryBadge":  "Same Day",
+    "price":  249,
+    "description":  "Elegant crown-shaped foil balloon for birthday royalty. Gold metallic finish. 24 inch.",
+    "sizes":  null,
+    "comparePrice":  null,
+    "images":  [
+                   "/products/crown-shape-foil/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-8",
+    "sku":  "SH-002",
+    "tags":  [
+                 "shape",
+                 "crown",
+                 "royal",
+                 "gold"
+             ],
+    "colors":  [
+                   "Gold",
+                   "Silver",
+                   "Rose Gold"
+               ],
+    "productName":  "Crown Shape Foil Balloon",
+    "stock":  90,
+    "slug":  "crown-shape-foil",
+    "category":  "Shape Balloons",
+    "reviewCount":  89,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold",
+                                         "Silver",
+                                         "Rose Gold"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.7
+}

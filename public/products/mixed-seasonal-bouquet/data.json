@@ -1,0 +1,33 @@
+﻿{
+    "id":  "prod-33",
+    "shortDesc":  "Fresh seasonal flowers in mixed colors.",
+    "deliveryBadge":  "Same Day",
+    "price":  799,
+    "description":  "A cheerful mix of seasonal flowers hand-tied with satin ribbon. Changes with the freshest available blooms.",
+    "sizes":  null,
+    "comparePrice":  899,
+    "images":  [
+                   "/products/mixed-seasonal-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-5",
+    "sku":  "FB-003",
+    "tags":  [
+                 "flowers",
+                 "seasonal",
+                 "mixed",
+                 "fresh"
+             ],
+    "colors":  [
+
+               ],
+    "productName":  "Mixed Seasonal Bouquet",
+    "stock":  25,
+    "slug":  "mixed-seasonal-bouquet",
+    "category":  "Flower Bouquets",
+    "reviewCount":  89,
+    "variants":  [
+
+                 ],
+    "rating":  4.7
+}

@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-4",
+    "shortDesc":  "Mixed metallic helium balloons with confetti.",
+    "deliveryBadge":  "Same Day",
+    "price":  949,
+    "description":  "Bundle of 8 metallic helium balloons with confetti fill. Creates a dazzling display for any celebration.",
+    "sizes":  null,
+    "comparePrice":  1099,
+    "images":  [
+                   "/products/metallic-helium-balloon-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-1",
+    "sku":  "HB-004",
+    "tags":  [
+                 "metallic",
+                 "confetti",
+                 "dazzling",
+                 "celebration"
+             ],
+    "colors":  [
+                   "Gold \u0026 Silver",
+                   "Rose Gold",
+                   "Rainbow Metallic"
+               ],
+    "productName":  "Metallic Helium Balloon Bouquet",
+    "stock":  35,
+    "slug":  "metallic-helium-balloon-bouquet",
+    "category":  "Helium Balloons",
+    "reviewCount":  91,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold \u0026 Silver",
+                                         "Rose Gold",
+                                         "Rainbow Metallic"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

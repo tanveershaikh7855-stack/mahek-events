@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-24",
+    "shortDesc":  "Delicate butterfly-shaped balloon.",
+    "deliveryBadge":  "Same Day",
+    "price":  199,
+    "description":  "Beautiful butterfly-shaped foil balloon for garden parties and spring events. 18 inch wingspan.",
+    "sizes":  null,
+    "comparePrice":  null,
+    "images":  [
+                   "/products/butterfly-shape-foil/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-8",
+    "sku":  "SH-003",
+    "tags":  [
+                 "shape",
+                 "butterfly",
+                 "garden",
+                 "spring"
+             ],
+    "colors":  [
+                   "Pink",
+                   "Blue",
+                   "Gold",
+                   "Rainbow"
+               ],
+    "productName":  "Butterfly Shape Foil Balloon",
+    "stock":  70,
+    "slug":  "butterfly-shape-foil",
+    "category":  "Shape Balloons",
+    "reviewCount":  67,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Pink",
+                                         "Blue",
+                                         "Gold",
+                                         "Rainbow"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.6
+}

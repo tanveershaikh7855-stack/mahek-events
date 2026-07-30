@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-18",
+    "shortDesc":  "Trending rose gold chrome balloons.",
+    "deliveryBadge":  "Same Day",
+    "price":  399,
+    "description":  "Instagram-trending rose gold chrome balloons with reflective mirror finish. Pack of 10.",
+    "sizes":  null,
+    "comparePrice":  449,
+    "images":  [
+                   "/products/chrome-rose-gold-latex-12/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-6",
+    "sku":  "CH-003",
+    "tags":  [
+                 "chrome",
+                 "rose-gold",
+                 "trending",
+                 "instagram"
+             ],
+    "colors":  [
+                   "Rose Gold",
+                   "Gold",
+                   "Silver"
+               ],
+    "productName":  "Chrome Rose Gold Latex 12 inch",
+    "stock":  100,
+    "slug":  "chrome-rose-gold-latex-12",
+    "category":  "Chrome Balloons",
+    "reviewCount":  156,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Rose Gold",
+                                         "Gold",
+                                         "Silver"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.9
+}

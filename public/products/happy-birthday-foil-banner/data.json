@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-19",
+    "shortDesc":  "Gold foil happy birthday letters.",
+    "deliveryBadge":  "Same Day",
+    "price":  449,
+    "description":  "Individual gold foil letter balloons spelling Happy Birthday. Self-sealing, reusable.",
+    "sizes":  null,
+    "comparePrice":  499,
+    "images":  [
+                   "/products/happy-birthday-foil-banner/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-7",
+    "sku":  "FL-001",
+    "tags":  [
+                 "foil",
+                 "banner",
+                 "birthday",
+                 "gold"
+             ],
+    "colors":  [
+                   "Gold",
+                   "Silver",
+                   "Rose Gold",
+                   "Black"
+               ],
+    "productName":  "Happy Birthday Foil Banner",
+    "stock":  100,
+    "slug":  "happy-birthday-foil-banner",
+    "category":  "Foil Balloons",
+    "reviewCount":  189,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold",
+                                         "Silver",
+                                         "Rose Gold",
+                                         "Black"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.7
+}

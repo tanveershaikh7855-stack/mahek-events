@@ -1,0 +1,46 @@
+﻿{
+    "id":  "prod-32",
+    "shortDesc":  "Preserved roses in rose gold box.",
+    "deliveryBadge":  "Same Day",
+    "price":  2699,
+    "description":  "Eternal preserved roses arranged in a luxury rose gold box. Lasts 1-2 years without maintenance.",
+    "sizes":  [
+                  "9 Roses",
+                  "16 Roses",
+                  "25 Roses",
+                  "36 Roses"
+              ],
+    "comparePrice":  2999,
+    "images":  [
+                   "/products/rose-gold-rose-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  true,
+    "categoryId":  "cat-5",
+    "sku":  "FB-002",
+    "tags":  [
+                 "roses",
+                 "preserved",
+                 "luxury",
+                 "rose-gold"
+             ],
+    "colors":  [
+
+               ],
+    "productName":  "Rose Gold Rose Bouquet",
+    "stock":  15,
+    "slug":  "rose-gold-rose-bouquet",
+    "category":  "Flower Bouquets",
+    "reviewCount":  43,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "9 Roses",
+                                         "16 Roses",
+                                         "25 Roses",
+                                         "36 Roses"
+                                     ],
+                         "label":  "Size"
+                     }
+                 ],
+    "rating":  4.9
+}

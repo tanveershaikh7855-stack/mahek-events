@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-9",
+    "shortDesc":  "Stackable balloon column kit with base.",
+    "deliveryBadge":  "Next Day",
+    "price":  1399,
+    "description":  "Create a 6-foot balloon column with this complete kit. Includes balloons, column strip, base plate and weights.",
+    "sizes":  null,
+    "comparePrice":  1599,
+    "images":  [
+                   "/products/helium-balloon-tower-kit/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-1",
+    "sku":  "HB-009",
+    "tags":  [
+                 "tower",
+                 "column",
+                 "kit",
+                 "statement"
+             ],
+    "colors":  [
+                   "Gold \u0026 White",
+                   "Rose Gold \u0026 Blush",
+                   "Navy \u0026 Silver"
+               ],
+    "productName":  "Helium Balloon Tower Kit",
+    "stock":  15,
+    "slug":  "helium-balloon-tower-kit",
+    "category":  "Helium Balloons",
+    "reviewCount":  29,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold \u0026 White",
+                                         "Rose Gold \u0026 Blush",
+                                         "Navy \u0026 Silver"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.8
+}

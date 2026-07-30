@@ -1,0 +1,42 @@
+﻿{
+    "id":  "prod-6",
+    "shortDesc":  "UV-reactive neon balloons for night events.",
+    "deliveryBadge":  "Next Day",
+    "price":  599,
+    "description":  "Set of 15 neon latex balloons that glow under UV light. Perfect for night parties and themed events.",
+    "sizes":  null,
+    "comparePrice":  699,
+    "images":  [
+                   "/products/neon-glow-helium-balloons/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-1",
+    "sku":  "HB-006",
+    "tags":  [
+                 "neon",
+                 "glow",
+                 "uv",
+                 "night-party"
+             ],
+    "colors":  [
+                   "Neon Pink \u0026 Blue",
+                   "Neon Green \u0026 Yellow",
+                   "Mixed Neon"
+               ],
+    "productName":  "Neon Glow Helium Balloons",
+    "stock":  60,
+    "slug":  "neon-glow-helium-balloons",
+    "category":  "Helium Balloons",
+    "reviewCount":  38,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Neon Pink \u0026 Blue",
+                                         "Neon Green \u0026 Yellow",
+                                         "Mixed Neon"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.5
+}

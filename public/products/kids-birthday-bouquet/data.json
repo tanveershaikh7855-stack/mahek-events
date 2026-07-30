@@ -1,0 +1,46 @@
+﻿{
+    "id":  "prod-14",
+    "shortDesc":  "Colorful balloon bouquet for children.",
+    "deliveryBadge":  "Same Day",
+    "price":  849,
+    "description":  "A fun, vibrant balloon bouquet with cartoon-themed foil balloons, latex balloons and a mini gift bag.",
+    "sizes":  null,
+    "comparePrice":  999,
+    "images":  [
+                   "/products/kids-birthday-bouquet/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-2",
+    "sku":  "BB-004",
+    "tags":  [
+                 "kids",
+                 "colorful",
+                 "cartoon",
+                 "fun"
+             ],
+    "colors":  [
+                   "Unicorn",
+                   "Dinosaur",
+                   "Space",
+                   "Princess",
+                   "Cars"
+               ],
+    "productName":  "Kids Birthday Bouquet",
+    "stock":  40,
+    "slug":  "kids-birthday-bouquet",
+    "category":  "Balloon Bouquets",
+    "reviewCount":  112,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Unicorn",
+                                         "Dinosaur",
+                                         "Space",
+                                         "Princess",
+                                         "Cars"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.7
+}

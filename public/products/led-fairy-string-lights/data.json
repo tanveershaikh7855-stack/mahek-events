@@ -1,0 +1,33 @@
+﻿{
+    "id":  "prod-30",
+    "shortDesc":  "10-meter warm white fairy lights.",
+    "deliveryBadge":  "Same Day",
+    "price":  349,
+    "description":  "Battery-operated warm white LED fairy lights. Waterproof, flexible and perfect for event decor.",
+    "sizes":  null,
+    "comparePrice":  399,
+    "images":  [
+                   "/products/led-fairy-string-lights/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-4",
+    "sku":  "PS-003",
+    "tags":  [
+                 "led",
+                 "fairy-lights",
+                 "warm",
+                 "decor"
+             ],
+    "colors":  [
+
+               ],
+    "productName":  "LED Fairy String Lights",
+    "stock":  100,
+    "slug":  "led-fairy-string-lights",
+    "category":  "Party Supplies",
+    "reviewCount":  178,
+    "variants":  [
+
+                 ],
+    "rating":  4.6
+}

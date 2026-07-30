@@ -1,0 +1,44 @@
+﻿{
+    "id":  "prod-20",
+    "shortDesc":  "Metallic star-shaped foil balloon.",
+    "deliveryBadge":  "Same Day",
+    "price":  349,
+    "description":  "Beautiful 5-point star foil balloon in metallic finish. Self-sealing valve. Pack of 6.",
+    "sizes":  null,
+    "comparePrice":  null,
+    "images":  [
+                   "/products/star-foil-balloon-18/images/placeholder.gif"
+               ],
+    "isFeatured":  false,
+    "categoryId":  "cat-7",
+    "sku":  "FL-002",
+    "tags":  [
+                 "foil",
+                 "star",
+                 "metallic",
+                 "pack"
+             ],
+    "colors":  [
+                   "Gold",
+                   "Silver",
+                   "Rose Gold",
+                   "Red"
+               ],
+    "productName":  "Star Foil Balloon 18 inch",
+    "stock":  120,
+    "slug":  "star-foil-balloon-18",
+    "category":  "Foil Balloons",
+    "reviewCount":  98,
+    "variants":  [
+                     {
+                         "options":  [
+                                         "Gold",
+                                         "Silver",
+                                         "Rose Gold",
+                                         "Red"
+                                     ],
+                         "label":  "Color"
+                     }
+                 ],
+    "rating":  4.6
+}
