@@ -15,10 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SERVICE_CATEGORIES, BRAND } from "@/lib/constants";
+import { submitBooking } from "@/lib/actions";
 
 export function BookingPageClient() {
   const [step, setStep] = useState<"form" | "success">("form");
   const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [bookingNumber, setBookingNumber] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -35,12 +38,43 @@ export function BookingPageClient() {
     setFormData((prev) => ({ ...prev, [field]: value ?? "" }));
   }, []);
 
+  // Build a pre-filled WhatsApp click-to-chat link from the current form values.
+  // This is the secondary booking path — it works with no API keys, so a
+  // customer can always reach us on WhatsApp even if the form submit fails.
+  const whatsappBookingUrl = () => {
+    const lines = [
+      "Hi Mahek Balloon! I would like to book a decoration.",
+      formData.name && `Name: ${formData.name}`,
+      formData.phone && `Phone: ${formData.phone}`,
+      formData.event && `Event: ${formData.event}`,
+      formData.venue && `Venue: ${formData.venue}`,
+      (formData.date || formData.time) && `Date: ${formData.date} ${formData.time}`,
+      formData.budget && `Budget: ₹${formData.budget}`,
+      formData.instructions && `Notes: ${formData.instructions}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    return `https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(lines)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setErrorMsg(null);
+
+    const fd = new FormData();
+    for (const [key, value] of Object.entries(formData)) fd.set(key, value);
+
+    const result = await submitBooking(null, fd);
     setSubmitting(false);
-    setStep("success");
+
+    if (result.success) {
+      setBookingNumber(result.bookingNumber);
+      setStep("success");
+    } else {
+      const firstError = Object.values(result.errors).flat()[0];
+      setErrorMsg(firstError ?? "We could not save your booking. Please try again or use WhatsApp below.");
+    }
   };
 
   if (step === "success") {
@@ -61,6 +95,9 @@ export function BookingPageClient() {
               Our team will confirm via WhatsApp and email within 2 hours.
             </p>
             <div className="p-4 rounded-2xl bg-secondary text-left text-sm space-y-2 mb-6">
+              {bookingNumber && (
+                <p><strong>Booking Reference:</strong> {bookingNumber}</p>
+              )}
               <p><strong>Event:</strong> {formData.event}</p>
               <p><strong>Venue:</strong> {formData.venue}</p>
               <p><strong>Date:</strong> {formData.date} at {formData.time}</p>
@@ -253,6 +290,11 @@ export function BookingPageClient() {
                   Free consultation and site visit within Mumbai
                 </p>
               </div>
+              {errorMsg && (
+                <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                  {errorMsg}
+                </p>
+              )}
               <Button
                 type="submit"
                 size="lg"
@@ -264,6 +306,30 @@ export function BookingPageClient() {
                 ) : (
                   "Submit Booking Request"
                 )}
+              </Button>
+
+              <div className="mt-3 flex items-center gap-3">
+                <span className="h-px flex-1 bg-black/[0.06]" />
+                <span className="text-xs text-secondary-text">or</span>
+                <span className="h-px flex-1 bg-black/[0.06]" />
+              </div>
+
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                className="mt-3 w-full rounded-full border-forest/30 text-forest hover:bg-forest/5"
+                asChild
+              >
+                <a
+                  href={whatsappBookingUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Book on WhatsApp
+                </a>
               </Button>
             </motion.div>
           </form>
