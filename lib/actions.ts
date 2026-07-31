@@ -78,6 +78,8 @@ export async function submitBooking(
         eventTime: data.time,
         budget: data.budget ? new Prisma.Decimal(data.budget) : null,
         instructions: data.instructions ? sanitize(data.instructions) : null,
+        customerName: sanitize(data.name),
+        customerPhone: data.phone,
         customer: {
           connectOrCreate: {
             where: { phone: data.phone },
@@ -291,9 +293,8 @@ export async function submitCheckout(
           shippingAddress: address,
           billingAddress: data.billingSameAsShipping ? Prisma.JsonNull : address,
           notes: data.notes ? sanitize(data.notes) : null,
-          // Must use the relation form, not the `couponId` scalar — mixing a
-          // scalar FK with a nested `customer` relation puts Prisma into its
-          // "unchecked" input variant, which rejects the relation.
+          customerName: sanitize(data.name),
+          customerPhone: data.phone,
           coupon: pricing.couponId
             ? { connect: { id: pricing.couponId } }
             : undefined,

@@ -6,15 +6,8 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Truck, Star, Heart, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { heroCarousel } from "@/lib/content";
-
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  truck: Truck,
-  star: Star,
-  heart: Heart,
-  map: MapPin,
-};
 
 function useMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -56,9 +49,6 @@ export function HeroCarousel() {
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
-  const slide = heroCarousel[selectedIndex] || heroCarousel[0];
-  const IconComp = ICON_MAP[slide.infoCard.icon] || Truck;
-
   return (
     <div className="relative w-full">
       <div
@@ -85,8 +75,7 @@ export function HeroCarousel() {
                 />
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
               <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
                 <AnimatePresence mode="wait">
@@ -99,63 +88,24 @@ export function HeroCarousel() {
                       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       className="max-w-lg"
                     >
-                      {s.badge && (
-                        <span className="inline-block mb-3 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[11px] font-semibold text-white tracking-wide uppercase">
-                          {s.badge}
-                        </span>
-                      )}
                       <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2 drop-shadow-lg">
                         {s.title}
                       </h2>
                       <p className="text-sm sm:text-base text-white/80 mb-3 max-w-md drop-shadow">
                         {s.subtitle}
                       </p>
-                      <div className="flex flex-wrap items-center gap-3">
-                        {s.price && (
-                          <span className="text-sm font-semibold text-white/90">
-                            {s.price}
-                          </span>
-                        )}
-                        {s.cta && (
-                          <Link
-                            href={s.cta.href}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shadow-lg"
-                          >
-                            {s.cta.label}
-                          </Link>
-                        )}
-                      </div>
+                      {s.cta && (
+                        <Link
+                          href={s.cta.href}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shadow-lg"
+                        >
+                          {s.cta.label}
+                        </Link>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-
-              <AnimatePresence mode="wait">
-                {selectedIndex === i && (
-                  <motion.div
-                    key={`card-${i}`}
-                    initial={{ opacity: 0, x: 20, y: 10 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10"
-                  >
-                    <div className="backdrop-blur-xl bg-white/15 border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
-                      <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-                        <IconComp className="w-4.5 h-4.5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-white">
-                          {s.infoCard.label}
-                        </p>
-                        <p className="text-[11px] text-white/70">
-                          {s.infoCard.sublabel}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           ))}
         </div>

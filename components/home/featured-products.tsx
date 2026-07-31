@@ -35,12 +35,13 @@ function ProductCard({ product, priority }: ProductCardProps) {
       <div className="relative aspect-[4/5] overflow-hidden bg-surface">
         <Link href={`/shop/${product.slug}`} className="block" aria-label={`View ${product.name}`}>
           <Image
-            src={product.images[0]}
+            src={product.images[0] ?? "/images/IMG-20260728-WA0032.webp"}
             alt={product.name}
             fill
             className="object-cover image-zoom"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
             priority={priority}
+            unoptimized={(product.images[0] ?? "").startsWith("data:")}
           />
         </Link>
 
@@ -114,8 +115,13 @@ function ProductCard({ product, priority }: ProductCardProps) {
   );
 }
 
-export function FeaturedProducts() {
-  const featuredProducts = FALLBACK_PRODUCTS.filter((p) => p.isFeatured).slice(0, 8);
+export function FeaturedProducts({
+  products,
+}: {
+  products?: typeof FALLBACK_PRODUCTS;
+}) {
+  const source = products && products.length ? products : FALLBACK_PRODUCTS;
+  const featuredProducts = source.filter((p) => p.isFeatured).slice(0, 8);
 
   return (
     <section className="section-spacing bg-background">

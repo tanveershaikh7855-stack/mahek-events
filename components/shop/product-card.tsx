@@ -103,7 +103,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
       <div className="relative aspect-[4/5] overflow-hidden bg-surface">
         <Link href={`/shop/${product.slug}`} className="block relative w-full h-full" aria-label={product.name}>
           <Image
-            src={product.images[0]}
+            src={product.images[0] ?? "/images/IMG-20260728-WA0032.webp"}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -113,6 +113,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
             )}
             priority={priority}
             loading={priority ? "eager" : "lazy"}
+            unoptimized={(product.images[0] ?? "").startsWith("data:")}
           />
         </Link>
 

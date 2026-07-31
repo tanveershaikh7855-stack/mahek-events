@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, Filter, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { FALLBACK_GALLERY } from "@/lib/seed";
 import { galleryCategories } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -16,14 +15,16 @@ const CATEGORIES = [
   ...galleryCategories.filter((c) => c !== "All Work").map((c) => ({ value: c.toLowerCase().replace(/ /g, "-"), label: c })),
 ];
 
-export function GalleryPageClient() {
+export type GalleryItem = { id: string; image: string; title: string; category: string };
+
+export function GalleryPageClient({ images }: { images: GalleryItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    if (selectedCategory === "all") return FALLBACK_GALLERY;
-    return FALLBACK_GALLERY.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === "all") return images;
+    return images.filter((item) => item.category === selectedCategory);
+  }, [images, selectedCategory]);
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">
@@ -93,6 +94,7 @@ export function GalleryPageClient() {
                     className="object-cover image-zoom"
                     sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     loading="lazy"
+                    unoptimized={item.image.startsWith("data:")}
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Search className="w-8 h-8 text-white" />
@@ -134,6 +136,7 @@ export function GalleryPageClient() {
                   className="object-contain"
                   sizes="90vw"
                   priority
+                  unoptimized={lightboxImage.startsWith("data:")}
                 />
               </div>
             </DialogContent>

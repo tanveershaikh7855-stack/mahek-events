@@ -79,6 +79,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const discount = calculateDiscountPercent(product.basePrice, product.salePrice);
   const inWishlist = isInWishlist(product.id);
 
+  // A product may have no image yet (optional in admin); keep the gallery safe.
+  const images = product.images.length > 0 ? product.images : ["/images/IMG-20260728-WA0032.webp"];
+  const isDataUrl = (s: string) => s.startsWith("data:");
+
   const relatedProducts = FALLBACK_PRODUCTS.filter(
     (p) => p.categoryId === product.categoryId && p.id !== product.id
   ).slice(0, 4);
@@ -89,7 +93,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       name: product.name,
       slug: product.slug,
       price,
-      image: product.images[0],
+      image: images[0],
       variant: Object.values(selectedVariants).join(" - "),
     });
     setQuantity(1);
@@ -114,12 +118,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <div className="space-y-4">
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-secondary">
               <Image
-                src={product.images[selectedImage]}
+                src={images[selectedImage] ?? images[0]}
                 alt={product.name}
                 fill
                 className="object-cover"
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                unoptimized={isDataUrl(images[selectedImage] ?? images[0])}
               />
               {discount > 0 && (
                 <Badge className="absolute top-4 left-4 bg-forest text-white text-sm px-3 py-1.5 rounded-lg">
@@ -127,9 +132,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 </Badge>
               )}
             </div>
-            {product.images.length > 1 && (
+            {images.length > 1 && (
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                {product.images.map((img, i) => (
+                {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
@@ -146,6 +151,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                       fill
                       className="object-cover"
                       sizes="80px"
+                      unoptimized={isDataUrl(img)}
                     />
                   </button>
                 ))}
@@ -308,7 +314,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   name: product.name,
                   slug: product.slug,
                   price,
-                  image: product.images[0],
+                  image: images[0],
                   addedAt: Date.now(),
                 })
               }

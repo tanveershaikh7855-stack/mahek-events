@@ -7,7 +7,6 @@ import { X, Calendar, Clock, User, Phone, Mail, MapPin, ClipboardCheck, CreditCa
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
@@ -42,7 +41,6 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
     phone: "",
     email: "",
     address: "",
-    eventType: "",
     eventDate: "",
     eventTime: "",
     quantity: 1,
@@ -100,7 +98,7 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
     form.set("name", data.name);
     form.set("phone", data.phone.replace(/\D/g, "").slice(-10));
     form.set("email", data.email);
-    form.set("event", data.eventType || "other");
+    form.set("event", "Product Order");
     form.set("venue", data.address);
     form.set("date", data.eventDate);
     form.set("time", data.eventTime);
@@ -199,24 +197,6 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                       <MapPin className="absolute left-3 top-3 w-4 h-4 text-secondary-text" />
                       <Input id="booking-address" placeholder="House no, street, city" className="pl-10" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} />
                     </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="booking-event">Event Type</Label>
-                    <Select value={data.eventType} onValueChange={(v) => setData({ ...data, eventType: v ?? "" })}>
-                      <SelectTrigger className="mt-1" id="booking-event">
-                        <SelectValue placeholder="Select event type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="birthday">Birthday</SelectItem>
-                        <SelectItem value="wedding">Wedding</SelectItem>
-                        <SelectItem value="anniversary">Anniversary</SelectItem>
-                        <SelectItem value="baby-shower">Baby Shower</SelectItem>
-                        <SelectItem value="corporate">Corporate Event</SelectItem>
-                        <SelectItem value="proposal">Proposal</SelectItem>
-                        <SelectItem value="festival">Festival</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="booking-quantity">Quantity</Label>

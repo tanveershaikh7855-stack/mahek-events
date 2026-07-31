@@ -123,14 +123,14 @@ export const hero = {
   image: "/images/IMG-20260728-WA0032.webp",
   stats: [
     { value: "5000+", label: "Happy Customers" },
-    { value: "140 KM", label: "Delivery Radius" },
+    { value: "11+", label: "Years Experience" },
     { value: "4.9", label: "Customer Rating" },
   ],
   features: [
     "Same-Day Delivery",
     "Secure Payment",
     "On-Time Setup",
-    "140 KM Coverage",
+    "Premium Quality",
   ],
 } as const;
 
@@ -192,7 +192,7 @@ export const heroCarousel: HeroSlide[] = [
 // ── FEATURES BAR ──────────────────────────────────────────────
 export const featuresBar = [
   { title: "Same Day Delivery", description: "Order before 2 PM" },
-  { title: "140 KM Coverage", description: "Pune & beyond" },
+  { title: "Wide Coverage", description: "Pune & beyond" },
   { title: "Secure Payment", description: "COD, UPI, Cards" },
   { title: "Dedicated Support", description: "Mon-Sat 9AM-8PM" },
   { title: "On-Time Setup", description: "Punctual service" },

@@ -8,20 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/shop/product-card";
 import { FALLBACK_PRODUCTS } from "@/lib/seed";
+import type { Product } from "@/lib/content";
 
-export function SearchPageClient() {
+export function SearchPageClient({ products }: { products?: Product[] }) {
+  const ALL = products && products.length ? products : FALLBACK_PRODUCTS;
   const [q, setQ] = useState("");
 
   const results = useMemo(() => {
     if (!q.trim()) return [];
     const query = q.toLowerCase();
-    return FALLBACK_PRODUCTS.filter(
+    return ALL.filter(
       (p) =>
         p.name.toLowerCase().includes(query) ||
         p.shortDesc.toLowerCase().includes(query) ||
         p.sku.toLowerCase().includes(query)
     );
-  }, [q]);
+  }, [q, ALL]);
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">

@@ -21,10 +21,11 @@ import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/shop/product-card";
 import { QuickView } from "@/components/shop/quick-view";
 import { FALLBACK_PRODUCTS, FALLBACK_CATEGORIES } from "@/lib/seed";
+import type { Product } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-const ALL_CATEGORIES = FALLBACK_CATEGORIES.filter((c) => c.type === "PRODUCT");
-const ALL_PRODUCTS = FALLBACK_PRODUCTS;
+type ShopCategory = { id: string; name: string; slug: string; type: string };
+
 const PRODUCTS_PER_PAGE = 12;
 
 type SortOption = "popular" | "price-low" | "price-high" | "newest" | "rating" | "name-az";
@@ -55,7 +56,19 @@ function ProductCardSkeleton() {
   );
 }
 
-export function ShopPageClient() {
+export function ShopPageClient({
+  products,
+  categories,
+}: {
+  products?: Product[];
+  categories?: ShopCategory[];
+}) {
+  const ALL_PRODUCTS = products && products.length ? products : FALLBACK_PRODUCTS;
+  const ALL_CATEGORIES =
+    categories && categories.length
+      ? categories
+      : FALLBACK_CATEGORIES.filter((c) => c.type === "PRODUCT");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("popular");

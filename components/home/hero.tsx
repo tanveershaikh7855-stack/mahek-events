@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Truck, ArrowRight, Star, MapPin, Shield, Clock } from "lucide-react";
+import { Truck, ArrowRight, Star, Shield, Clock, Award } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { hero, business } from "@/lib/content";
 import { HeroCarousel } from "./hero-carousel";
@@ -14,7 +14,7 @@ const TRUST_BAR = [
   { icon: Truck, text: hero.features[0] },
   { icon: Shield, text: hero.features[1] },
   { icon: Clock, text: hero.features[2] },
-  { icon: MapPin, text: hero.features[3] },
+  { icon: Award, text: hero.features[3] },
 ];
 
 export function Hero() {
@@ -97,10 +97,10 @@ export function Hero() {
               {hero.stats.map((stat, i) => (
                 <div key={stat.label}>
                   <p className="text-2xl font-extrabold text-ink tracking-tight">
-                    {stat.value}{stat.label.includes("KM") && <span className="text-xs font-semibold">KM</span>}
+                    {stat.value}
                     {i === hero.stats.length - 1 && <Star className="w-4 h-4 text-gold fill-gold inline ml-1.5" />}
                   </p>
-                  <p className="text-[11px] text-secondary-text mt-0.5">{stat.label.replace(" KM", "")}</p>
+                  <p className="text-[11px] text-secondary-text mt-0.5">{stat.label}</p>
                 </div>
               )).reduce((acc, el, i) => {
                 if (i > 0) acc.push(<div key={`sep-${i}`} className="w-px h-9 bg-black/[0.06]" />);

@@ -126,6 +126,13 @@ model Order {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  // Snapshot of who ordered, denormalised from Customer. customerId is
+  // SetNull on delete, so without this an order loses all identity the moment
+  // the customer row goes; it also makes the admin/table views readable
+  // without a join.
+  customerName  String?
+  customerPhone String?
+
   customerId String?
   customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
   couponId   String?
@@ -203,6 +210,10 @@ model Booking {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Denormalised from Customer so admin views show the name without a join.
+  customerName  String?
+  customerPhone String?
 
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
