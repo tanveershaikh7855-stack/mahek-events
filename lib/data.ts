@@ -155,6 +155,18 @@ export async function getGallery(category?: string) {
   );
 }
 
+/** Active gallery videos for the public /videos page (DB-only; no fallbacks). */
+export async function getGalleryVideos() {
+  return withFallback(
+    async () =>
+      prisma.galleryImage.findMany({
+        where: { isActive: true, mediaType: "VIDEO" },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      }),
+    [] as Awaited<ReturnType<typeof prisma.galleryImage.findMany>>,
+  );
+}
+
 export async function getDeliveryCharge(distanceKm: number, orderValue: number) {
   const charges = FALLBACK_DELIVERY_CHARGES;
   const slab = charges.find((c) => distanceKm >= c.minDistance && distanceKm <= c.maxDistance);

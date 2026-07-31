@@ -59,9 +59,13 @@ function ProductCardSkeleton() {
 export function ShopPageClient({
   products,
   categories,
+  heading = "Shop",
+  blurb,
 }: {
   products?: Product[];
   categories?: ShopCategory[];
+  heading?: string;
+  blurb?: string;
 }) {
   const ALL_PRODUCTS = products && products.length ? products : FALLBACK_PRODUCTS;
   const ALL_CATEGORIES =
@@ -151,9 +155,9 @@ export function ShopPageClient({
         <div className="container-tight">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="heading-section text-ink">Shop</h1>
+              <h1 className="heading-section text-ink">{heading}</h1>
               <p className="text-sm text-secondary-text mt-1">
-                {filtered.length} {filtered.length === 1 ? "product" : "products"} available
+                {blurb ?? `${filtered.length} ${filtered.length === 1 ? "product" : "products"} available`}
               </p>
             </div>
             <div className="flex items-center gap-3">

@@ -74,6 +74,7 @@ function revalidateAdmin(...extra: string[]) {
 function revalidateStorefrontProducts() {
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/flowers");
   revalidatePath("/search");
   revalidatePath("/shop/[slug]", "page");
 }
@@ -513,7 +514,7 @@ export async function saveGalleryImage(id: string | null, formData: FormData): P
     } else {
       await prisma.galleryImage.create({ data });
     }
-    revalidateAdmin("/admin/gallery", "/gallery", "/");
+    revalidateAdmin("/admin/gallery", "/gallery", "/videos", "/");
     return ok(id ? "Image updated" : "Image added");
   } catch (e) {
     console.error("[saveGalleryImage]", e);
@@ -525,7 +526,7 @@ export async function deleteGalleryImage(id: string): Promise<Result> {
   await requireAdmin();
   try {
     await prisma.galleryImage.delete({ where: { id } });
-    revalidateAdmin("/admin/gallery", "/gallery", "/");
+    revalidateAdmin("/admin/gallery", "/gallery", "/videos", "/");
     return ok("Image deleted");
   } catch (e) {
     console.error("[deleteGalleryImage]", e);
@@ -537,7 +538,7 @@ export async function toggleGalleryActive(id: string, isActive: boolean): Promis
   await requireAdmin();
   try {
     await prisma.galleryImage.update({ where: { id }, data: { isActive } });
-    revalidateAdmin("/admin/gallery", "/gallery", "/");
+    revalidateAdmin("/admin/gallery", "/gallery", "/videos", "/");
     return ok(isActive ? "Image shown" : "Image hidden");
   } catch (e) {
     console.error("[toggleGalleryActive]", e);

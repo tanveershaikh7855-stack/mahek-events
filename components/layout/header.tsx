@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -60,6 +61,11 @@ function MegaMenu() {
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  // The mobile menu must portal to <body>: the <header> uses backdrop-blur,
+  // which makes it a containing block for position:fixed children, collapsing
+  // the full-height menu to the header's ~56px and hiding it. `mounted` gates
+  // the portal so SSR and the first client render match.
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [materialMenuOpen, setMaterialMenuOpen] = useState(false);
@@ -102,6 +108,8 @@ export function Header() {
       window.scrollTo(0, lockedScrollY.current);
     }
   }, [mobileMenuOpen]);
+
+  useEffect(() => setMounted(true), []);
 
   // Safety net: never leave the body locked if the header unmounts while open.
   useEffect(() => {
@@ -300,22 +308,24 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm lg:hidden"
+                  onClick={() => setMobileMenuOpen(false)}
+                />
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 right-0 z-50 w-[85%] max-w-sm bg-white shadow-[-8px_0_40px_-12px_rgba(0,0,0,0.12)] lg:hidden flex flex-col"
+              className="fixed inset-y-0 right-0 z-[70] w-[85%] max-w-sm bg-white shadow-[-8px_0_40px_-12px_rgba(0,0,0,0.12)] lg:hidden flex flex-col"
             >
               <div className="flex items-center justify-between p-5 border-b border-border/30">
                 <div className="flex items-center gap-2.5">
@@ -424,7 +434,7 @@ export function Header() {
                       <Package className="w-4 h-4 text-forest" />
                     </div>
                     <div>
-                      <p className="font-medium text-ink text-sm">140 KM Delivery</p>
+                      <p className="font-medium text-ink text-sm">Fast Delivery</p>
                       <p className="text-xs text-secondary-text">Same day available</p>
                     </div>
                   </div>
@@ -451,7 +461,9 @@ export function Header() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+          </AnimatePresence>,
+          document.body,
+        )}
 
       {materialMenuOpen && (
         <div className="hidden lg:block fixed inset-0 z-30" onClick={() => setMaterialMenuOpen(false)} />
