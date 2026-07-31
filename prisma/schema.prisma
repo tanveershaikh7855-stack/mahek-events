@@ -277,17 +277,25 @@ model Review {
 }
 
 model GalleryImage {
-  id        String   @id @default(cuid())
+  id        String      @id @default(cuid())
   title     String?
   image     String
   category  String
-  isActive  Boolean  @default(true)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+  mediaType MediaKind   @default(IMAGE)
+  // For a video: an optional still shown before playback / in grids.
+  poster    String?
+  isActive  Boolean     @default(true)
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
 
   @@index([category])
   @@index([isActive])
   @@map("gallery_images")
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
 }
 
 model DeliveryCharge {

@@ -13,6 +13,8 @@ export default async function GalleryPage() {
     id: g.id,
     title: g.title,
     image: g.image,
+    mediaType: g.mediaType,
+    poster: g.poster,
     category: g.category,
     sortOrder: g.sortOrder,
     isActive: g.isActive,

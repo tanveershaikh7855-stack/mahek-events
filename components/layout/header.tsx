@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -78,31 +78,42 @@ export function Header() {
     setMaterialMenuOpen(false);
   }, [pathname]);
 
+  // Scroll position is kept in a ref, not in document.body.style.top. The old
+  // version read the saved position back out of the DOM in the close branch,
+  // but the effect's own cleanup (which runs before every re-run) had already
+  // wiped it — so rapid open/close taps raced and left the body stuck at
+  // `position: fixed`, freezing the page behind a half-open menu.
+  const lockedScrollY = useRef(0);
   useEffect(() => {
+    const body = document.body;
     if (mobileMenuOpen) {
-      const scrollY = window.scrollY;
-      document.body.classList.add("menu-open");
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.position = "fixed";
-      document.body.style.left = "0";
-      document.body.style.right = "0";
+      lockedScrollY.current = window.scrollY;
+      body.classList.add("menu-open");
+      body.style.position = "fixed";
+      body.style.top = `-${lockedScrollY.current}px`;
+      body.style.left = "0";
+      body.style.right = "0";
     } else {
-      const top = parseInt(document.body.style.top || "0", 10) * -1;
-      document.body.classList.remove("menu-open");
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      if (top) window.scrollTo(0, top);
+      body.classList.remove("menu-open");
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      window.scrollTo(0, lockedScrollY.current);
     }
-    return () => {
-      document.body.classList.remove("menu-open");
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-    };
   }, [mobileMenuOpen]);
+
+  // Safety net: never leave the body locked if the header unmounts while open.
+  useEffect(() => {
+    return () => {
+      const body = document.body;
+      body.classList.remove("menu-open");
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+    };
+  }, []);
 
   const navLinks = NAV_LINKS;
 

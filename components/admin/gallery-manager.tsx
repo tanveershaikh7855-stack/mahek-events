@@ -24,6 +24,8 @@ export type GalleryRow = {
   id: string;
   title: string | null;
   image: string;
+  mediaType: "IMAGE" | "VIDEO";
+  poster: string | null;
   category: string;
   sortOrder: number;
   isActive: boolean;
@@ -53,6 +55,9 @@ function GalleryDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const [pending, start] = useTransition();
+  const [mediaType, setMediaType] = useState<"IMAGE" | "VIDEO">(
+    item?.mediaType ?? "IMAGE",
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,12 +82,26 @@ function GalleryDialog({
           }
           className="space-y-4"
         >
+          <input type="hidden" name="mediaType" value={mediaType} />
+
           <ImageUploader
             name="image"
-            label="Image *"
+            label="Image or video *"
             defaultValue={item?.image ? [item.image] : []}
+            defaultKind={item?.mediaType === "VIDEO" ? "video" : "image"}
             multiple={false}
+            allowVideo
+            onKindChange={(k) => setMediaType(k === "video" ? "VIDEO" : "IMAGE")}
           />
+
+          {mediaType === "VIDEO" && (
+            <ImageUploader
+              name="poster"
+              label="Video cover image (optional)"
+              defaultValue={item?.poster ? [item.poster] : []}
+              multiple={false}
+            />
+          )}
 
           <div>
             <label className={labelCls}>Title / caption</label>
@@ -208,14 +227,30 @@ export function GalleryManager({ images }: { images: GalleryRow[] }) {
               className="rounded-2xl border border-border bg-white overflow-hidden"
             >
               <div className="relative aspect-[4/3] bg-secondary">
-                <Image
-                  src={item.image}
-                  alt={item.title ?? "Gallery image"}
-                  fill
-                  sizes="240px"
-                  className="object-cover"
-                  unoptimized={item.image.startsWith("data:")}
-                />
+                {item.mediaType === "VIDEO" ? (
+                  <>
+                    <video
+                      src={item.image}
+                      poster={item.poster ?? undefined}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                    <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                      ▶ VIDEO
+                    </span>
+                  </>
+                ) : (
+                  <Image
+                    src={item.image}
+                    alt={item.title ?? "Gallery image"}
+                    fill
+                    sizes="240px"
+                    className="object-cover"
+                    unoptimized={item.image.startsWith("data:")}
+                  />
+                )}
                 <div className="absolute top-2 left-2">
                   <ActiveToggle item={item} />
                 </div>

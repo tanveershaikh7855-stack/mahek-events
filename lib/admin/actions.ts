@@ -481,7 +481,9 @@ export async function deleteCoupon(id: string): Promise<Result> {
 
 const gallerySchema = z.object({
   title: z.string().max(200).optional(),
-  image: z.string().min(1, "Add an image"),
+  image: z.string().min(1, "Add an image or video"),
+  mediaType: z.enum(["IMAGE", "VIDEO"]).default("IMAGE"),
+  poster: z.string().optional(),
   category: z.string().trim().min(1, "Choose a category").default("all"),
   sortOrder: z.coerce.number().int().default(0),
   isActive: z.union([z.literal("on"), z.literal("")]).optional(),
@@ -490,14 +492,17 @@ const gallerySchema = z.object({
 export async function saveGalleryImage(id: string | null, formData: FormData): Promise<Result> {
   await requireAdmin();
   const raw = Object.fromEntries(formData.entries());
-  // The uploader stores newline-joined values; a gallery slot holds one image.
+  // The uploader stores newline-joined values; a gallery slot holds one item.
   if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
+  if (typeof raw.poster === "string") raw.poster = raw.poster.split("\n")[0]?.trim() ?? "";
   const parsed = gallerySchema.safeParse(raw);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the gallery fields");
   const d = parsed.data;
   const data = {
     title: d.title || null,
     image: d.image,
+    mediaType: d.mediaType,
+    poster: d.poster || null,
     category: d.category,
     sortOrder: d.sortOrder,
     isActive: d.isActive === "on",

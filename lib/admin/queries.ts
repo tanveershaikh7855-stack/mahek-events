@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
@@ -72,17 +73,31 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   };
 }
 
-/** Small counts used to badge the sidebar nav. */
+/**
+ * Sidebar badge counts. These ran on EVERY admin page load — five separate
+ * round-trips to Supabase (Singapore) before the page could render, which is a
+ * big part of why navigating the admin felt slow. They are only decorative
+ * badges, so a 30s cache is fine; the auth check stays outside the cache so it
+ * still runs per request.
+ */
+const loadNavCounts = unstable_cache(
+  async () => {
+    const [orders, bookings, products, customers, reviews] = await Promise.all([
+      prisma.order.count({ where: { status: "PENDING" } }),
+      prisma.booking.count({ where: { status: "NEW" } }),
+      prisma.product.count({ where: { isActive: true } }),
+      prisma.customer.count(),
+      prisma.review.count({ where: { isVerified: false } }),
+    ]);
+    return { orders, bookings, products, customers, reviews };
+  },
+  ["admin-nav-counts"],
+  { revalidate: 30, tags: ["admin-nav-counts"] },
+);
+
 export async function getNavCounts() {
   await requireAdmin();
-  const [orders, bookings, products, customers, reviews] = await Promise.all([
-    prisma.order.count({ where: { status: "PENDING" } }),
-    prisma.booking.count({ where: { status: "NEW" } }),
-    prisma.product.count({ where: { isActive: true } }),
-    prisma.customer.count(),
-    prisma.review.count({ where: { isVerified: false } }),
-  ]);
-  return { orders, bookings, products, customers, reviews };
+  return loadNavCounts();
 }
 
 export async function getRecentOrders(limit = 6) {

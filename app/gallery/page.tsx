@@ -28,6 +28,11 @@ export default async function GalleryPage() {
       image: safeSrc(g.image),
       title: g.title ?? "",
       category: g.category,
+      // Static fallback rows (from lib/content.ts) have no mediaType field.
+      mediaType: ("mediaType" in g && g.mediaType === "VIDEO" ? "VIDEO" : "IMAGE") as
+        | "IMAGE"
+        | "VIDEO",
+      poster: "poster" in g && g.poster ? safeSrc(g.poster) : null,
     }));
   return <GalleryPageClient images={images} />;
 }

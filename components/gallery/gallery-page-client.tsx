@@ -15,11 +15,18 @@ const CATEGORIES = [
   ...galleryCategories.filter((c) => c !== "All Work").map((c) => ({ value: c.toLowerCase().replace(/ /g, "-"), label: c })),
 ];
 
-export type GalleryItem = { id: string; image: string; title: string; category: string };
+export type GalleryItem = {
+  id: string;
+  image: string;
+  title: string;
+  category: string;
+  mediaType?: "IMAGE" | "VIDEO";
+  poster?: string | null;
+};
 
 export function GalleryPageClient({ images }: { images: GalleryItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
 
   const filtered = useMemo(() => {
     if (selectedCategory === "all") return images;
@@ -84,18 +91,40 @@ export function GalleryPageClient({ images }: { images: GalleryItem[] }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.04, duration: 0.5 }}
                 className="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer"
-                onClick={() => setLightboxImage(item.image)}
+                onClick={() => setLightboxItem(item)}
               >
                 <div className="relative w-full" style={{ aspectRatio: index % 3 === 0 ? "3/4" : "4/5" }}>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover image-zoom"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    loading="lazy"
-                    unoptimized={item.image.startsWith("data:")}
-                  />
+                  {item.mediaType === "VIDEO" ? (
+                    <>
+                      <video
+                        src={item.image}
+                        poster={item.poster ?? undefined}
+                        className="absolute inset-0 w-full h-full object-cover image-zoom"
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.pause();
+                          e.currentTarget.currentTime = 0;
+                        }}
+                      />
+                      <span className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
+                        ▶ Video
+                      </span>
+                    </>
+                  ) : (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover image-zoom"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      loading="lazy"
+                      unoptimized={item.image.startsWith("data:")}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Search className="w-8 h-8 text-white" />
                   </div>
@@ -122,22 +151,33 @@ export function GalleryPageClient({ images }: { images: GalleryItem[] }) {
       </section>
 
       <AnimatePresence>
-        {lightboxImage && (
-          <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        {lightboxItem && (
+          <Dialog open={!!lightboxItem} onOpenChange={() => setLightboxItem(null)}>
             <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-black/95 border-none">
               <DialogClose className="absolute top-4 right-4 z-10 text-white hover:text-white/70">
                 <X className="w-6 h-6" />
               </DialogClose>
               <div className="relative w-full h-[90vh] flex items-center justify-center">
-                <Image
-                  src={lightboxImage}
-                  alt="Gallery image"
-                  fill
-                  className="object-contain"
-                  sizes="90vw"
-                  priority
-                  unoptimized={lightboxImage.startsWith("data:")}
-                />
+                {lightboxItem.mediaType === "VIDEO" ? (
+                  <video
+                    src={lightboxItem.image}
+                    poster={lightboxItem.poster ?? undefined}
+                    className="max-w-full max-h-full"
+                    controls
+                    autoPlay
+                    playsInline
+                  />
+                ) : (
+                  <Image
+                    src={lightboxItem.image}
+                    alt={lightboxItem.title || "Gallery image"}
+                    fill
+                    className="object-contain"
+                    sizes="90vw"
+                    priority
+                    unoptimized={lightboxItem.image.startsWith("data:")}
+                  />
+                )}
               </div>
             </DialogContent>
           </Dialog>

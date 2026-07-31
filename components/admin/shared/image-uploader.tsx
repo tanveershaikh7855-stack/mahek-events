@@ -61,18 +61,26 @@ async function compressToBlob(file: File): Promise<Blob> {
   return blob ?? file;
 }
 
-async function uploadFile(file: File): Promise<string> {
-  const blob = await compressToBlob(file);
+type UploadKind = "image" | "video";
+
+async function uploadFile(file: File): Promise<{ url: string; kind: UploadKind }> {
+  const isVideo = file.type.startsWith("video/");
+  // Videos are sent as-is (canvas can't re-encode them); images get downscaled.
+  const payload = isVideo ? file : await compressToBlob(file);
   const body = new FormData();
-  body.append("file", new File([blob], file.name, { type: blob.type || file.type }));
+  body.append("file", new File([payload], file.name, { type: payload.type || file.type }));
 
   const res = await fetch("/api/admin/media", { method: "POST", body });
   if (!res.ok) {
     const detail = await res.json().catch(() => null);
     throw new Error(detail?.error ?? "Upload failed");
   }
-  const { url } = (await res.json()) as { url: string };
-  return url;
+  const { url, kind } = (await res.json()) as { url: string; kind?: UploadKind };
+  return { url, kind: kind ?? (isVideo ? "video" : "image") };
+}
+
+function looksLikeVideo(url: string): boolean {
+  return /\.(mp4|webm|mov)(\?|$)/i.test(url);
 }
 
 function readAsDataUrl(file: File): Promise<string> {
@@ -89,19 +97,36 @@ export function ImageUploader({
   defaultValue = [],
   multiple = true,
   label = "Images",
+  allowVideo = false,
+  defaultKind = "image",
+  onKindChange,
 }: {
   name: string;
   defaultValue?: string[];
   multiple?: boolean;
   label?: string;
+  allowVideo?: boolean;
+  defaultKind?: UploadKind;
+  onKindChange?: (kind: UploadKind) => void;
 }) {
   const [images, setImages] = useState<string[]>(defaultValue);
+  const [kinds, setKinds] = useState<Record<string, UploadKind>>(() =>
+    Object.fromEntries(defaultValue.map((u) => [u, defaultKind])),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const commit = (next: string[]) => setImages(multiple ? next : next.slice(-1));
+  const kindOf = (url: string): UploadKind =>
+    kinds[url] ?? (looksLikeVideo(url) ? "video" : "image");
+
+  const commit = (next: string[]) => {
+    const trimmed = multiple ? next : next.slice(-1);
+    setImages(trimmed);
+    const last = trimmed[trimmed.length - 1];
+    if (last) onKindChange?.(kindOf(last));
+  };
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -109,10 +134,16 @@ export function ImageUploader({
     setError("");
     try {
       const uploaded: string[] = [];
+      const newKinds: Record<string, UploadKind> = {};
       for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) continue;
-        uploaded.push(await uploadFile(file));
+        const isImage = file.type.startsWith("image/");
+        const isVideo = allowVideo && file.type.startsWith("video/");
+        if (!isImage && !isVideo) continue;
+        const { url, kind } = await uploadFile(file);
+        uploaded.push(url);
+        newKinds[url] = kind;
       }
+      setKinds((prev) => ({ ...prev, ...newKinds }));
       commit(multiple ? [...images, ...uploaded] : uploaded);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
@@ -145,16 +176,31 @@ export function ImageUploader({
             {images.map((src, i) => (
               <div
                 key={i}
-                className="relative aspect-square rounded-lg overflow-hidden border border-border bg-white group"
+                className="relative aspect-square rounded-lg overflow-hidden border border-border bg-black/5 group"
               >
-                <Image
-                  src={src}
-                  alt={`Image ${i + 1}`}
-                  fill
-                  sizes="120px"
-                  className="object-cover"
-                  unoptimized
-                />
+                {kindOf(src) === "video" ? (
+                  <>
+                    <video
+                      src={src}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                    <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-semibold text-white">
+                      VIDEO
+                    </span>
+                  </>
+                ) : (
+                  <Image
+                    src={src}
+                    alt={`Media ${i + 1}`}
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                    unoptimized
+                  />
+                )}
                 <button
                   type="button"
                   onClick={() => removeAt(i)}
@@ -185,17 +231,25 @@ export function ImageUploader({
             ) : (
               <UploadCloud className="w-4 h-4 text-forest" />
             )}
-            {busy ? "Processing…" : multiple ? "Upload images" : "Upload image"}
+            {busy
+              ? "Uploading…"
+              : allowVideo
+                ? "Upload image or video"
+                : multiple
+                  ? "Upload images"
+                  : "Upload image"}
           </button>
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={allowVideo ? "image/*,video/mp4,video/webm,video/quicktime" : "image/*"}
             multiple={multiple}
             hidden
             onChange={(e) => handleFiles(e.target.files)}
           />
-          <span className="text-[11px] text-secondary-text">or paste a path below</span>
+          <span className="text-[11px] text-secondary-text">
+            {allowVideo ? "images or a short clip (≤4 MB)" : "or paste a path below"}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 mt-2">
