@@ -8,27 +8,27 @@ import { cn } from "@/lib/utils";
 /**
  * Client-side image picker used across the admin.
  *
- * There is no external object store wired up (Cloudinary/S3 slots are empty) and
- * Vercel's runtime filesystem is read-only, so uploads are resized in the
- * browser with a canvas and stored inline as base64 data URLs. Keeping them
- * small (max 1280px, JPEG q0.82) means a product's two or three images stay a
- * few hundred KB total — fine for the `images` JSON column and for <Image>,
- * which serves data: URLs as-is.
+ * Images are downscaled in the browser (max 1600px, JPEG q0.82) and then POSTed
+ * to /api/admin/media, which stores the bytes and hands back a short URL like
+ * "/api/media/<id>". Only that URL is saved on the product/gallery row.
  *
- * The selected values are written newline-joined into a hidden input so the
- * existing server actions (which split on newlines/commas) keep working with no
- * change. Existing image paths (e.g. "/images/foo.webp") are preserved and can
- * be mixed with freshly uploaded ones.
+ * An earlier version inlined the image as a base64 data URL instead. That put
+ * the full image into the page HTML *and* the RSC payload — five photos added
+ * ~600 KB to the homepage — and none of it was cacheable. The media route sets
+ * an immutable cache header, so the bytes are fetched once and reused.
+ *
+ * Values are written newline-joined into a hidden input, so the existing server
+ * actions keep working unchanged, and manually typed paths
+ * (e.g. "/images/foo.webp") can still be mixed in.
  */
 
-const MAX_DIMENSION = 1280;
+const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
 
-async function compressToDataUrl(file: File): Promise<string> {
-  // SVGs and gifs don't survive canvas re-encoding well — keep them verbatim.
-  if (file.type === "image/svg+xml" || file.type === "image/gif") {
-    return readAsDataUrl(file);
-  }
+/** Downscales and re-encodes to keep uploads small. Returns a Blob to POST. */
+async function compressToBlob(file: File): Promise<Blob> {
+  // GIFs (animation) and SVGs don't survive canvas re-encoding — send as-is.
+  if (file.type === "image/svg+xml" || file.type === "image/gif") return file;
 
   const dataUrl = await readAsDataUrl(file);
   const img = document.createElement("img");
@@ -49,12 +49,30 @@ async function compressToDataUrl(file: File): Promise<string> {
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return dataUrl;
+  if (!ctx) return file;
   // Flatten transparency onto white so PNGs with alpha don't turn black as JPEG.
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
   ctx.drawImage(img, 0, 0, width, height);
-  return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY),
+  );
+  return blob ?? file;
+}
+
+async function uploadFile(file: File): Promise<string> {
+  const blob = await compressToBlob(file);
+  const body = new FormData();
+  body.append("file", new File([blob], file.name, { type: blob.type || file.type }));
+
+  const res = await fetch("/api/admin/media", { method: "POST", body });
+  if (!res.ok) {
+    const detail = await res.json().catch(() => null);
+    throw new Error(detail?.error ?? "Upload failed");
+  }
+  const { url } = (await res.json()) as { url: string };
+  return url;
 }
 
 function readAsDataUrl(file: File): Promise<string> {
@@ -90,12 +108,12 @@ export function ImageUploader({
     setBusy(true);
     setError("");
     try {
-      const encoded: string[] = [];
+      const uploaded: string[] = [];
       for (const file of Array.from(files)) {
         if (!file.type.startsWith("image/")) continue;
-        encoded.push(await compressToDataUrl(file));
+        uploaded.push(await uploadFile(file));
       }
-      commit(multiple ? [...images, ...encoded] : encoded);
+      commit(multiple ? [...images, ...uploaded] : uploaded);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
     } finally {

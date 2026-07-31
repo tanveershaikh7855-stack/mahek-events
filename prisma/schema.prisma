@@ -311,6 +311,23 @@ model Subscriber {
   @@map("subscribers")
 }
 
+/// Uploaded image bytes.
+///
+/// Uploads used to be embedded in product/gallery rows as base64 data URLs,
+/// which meant every image was inlined into the HTML *and* the RSC payload —
+/// five photos added ~600 KB to the homepage. Rows here are served by
+/// /api/media/[id] with an immutable cache header, so pages carry only a short
+/// URL and browsers/CDN cache the bytes separately.
+model Media {
+  id        String   @id @default(cuid())
+  mimeType  String
+  data      Bytes
+  size      Int
+  createdAt DateTime @default(now())
+
+  @@map("media")
+}
+
 model Setting {
   id    String @id @default(cuid())
   key   String @unique
