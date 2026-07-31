@@ -5,6 +5,9 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import * as email from "@/lib/notifications/email";
+import * as whatsapp from "@/lib/notifications/whatsapp";
+import { formatPrice } from "@/lib/formatters";
 
 /**
  * Admin write layer. Every action calls requireAdmin() as its first statement,
@@ -19,6 +22,21 @@ function ok(message?: string): Result {
 }
 function fail(error: string): Result {
   return { ok: false, error };
+}
+
+/**
+ * Fires customer notifications without ever failing the admin action that
+ * triggered them — the database write has already committed by this point, so a
+ * bounced email must not surface as "could not update the order". Nulls are
+ * allowed so callers can skip a channel inline (e.g. no phone on file).
+ */
+async function notifyQuietly(...tasks: (Promise<unknown> | null)[]): Promise<void> {
+  const results = await Promise.allSettled(tasks.filter(Boolean) as Promise<unknown>[]);
+  for (const result of results) {
+    if (result.status === "rejected") {
+      console.error("[admin notify] delivery failed:", result.reason);
+    }
+  }
 }
 
 /**
@@ -48,6 +66,18 @@ function revalidateAdmin(...extra: string[]) {
   for (const path of extra) revalidatePath(path);
 }
 
+/**
+ * Storefront pages are cached (ISR) rather than force-dynamic, so a write has
+ * to explicitly bust every page that renders product data — otherwise an admin
+ * edit would not show until the revalidate window expired.
+ */
+function revalidateStorefrontProducts() {
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath("/search");
+  revalidatePath("/shop/[slug]", "page");
+}
+
 // ── ORDERS ────────────────────────────────────────────────────
 
 const ORDER_STATUSES = [
@@ -67,13 +97,33 @@ export async function updateOrderStatus(id: string, status: string): Promise<Res
   const parsed = z.enum(ORDER_STATUSES).safeParse(status);
   if (!parsed.success) return fail("Invalid status");
   try {
-    await prisma.order.update({
+    const order = await prisma.order.update({
       where: { id },
       data: {
         status: parsed.data,
         confirmedAt: parsed.data === "CONFIRMED" ? new Date() : undefined,
       },
+      include: { customer: { select: { email: true, name: true } } },
     });
+
+    if (parsed.data === "CANCELLED") {
+      await notifyQuietly(
+        email.sendCancellationEmail({
+          reference: order.orderNumber,
+          customerName: order.customerName ?? order.customer?.name ?? "there",
+          customerEmail: order.customer?.email,
+          kind: "order",
+        }),
+        order.customerPhone
+          ? whatsapp.sendText(
+              order.customerPhone,
+              `Your Mahek Balloon order ${order.orderNumber} has been cancelled. ` +
+                `Any advance paid will be refunded. Questions? Call +91 8087867988.`,
+            )
+          : null,
+      );
+    }
+
     revalidateAdmin("/admin/orders");
     return ok("Order updated");
   } catch (e) {
@@ -87,13 +137,39 @@ export async function updateOrderPayment(id: string, paymentStatus: string): Pro
   const parsed = z.enum(PAYMENT_STATUSES).safeParse(paymentStatus);
   if (!parsed.success) return fail("Invalid payment status");
   try {
-    await prisma.order.update({
+    const order = await prisma.order.update({
       where: { id },
       data: {
         paymentStatus: parsed.data,
         paidAt: parsed.data === "PAID" ? new Date() : undefined,
       },
+      include: { customer: { select: { email: true, name: true } } },
     });
+
+    if (parsed.data === "PAID" || parsed.data === "PARTIALLY_PAID") {
+      const fullyPaid = parsed.data === "PAID";
+      const amount = fullyPaid ? Number(order.total) : Number(order.advanceAmount);
+      await notifyQuietly(
+        email.sendPaymentReceivedEmail({
+          reference: order.orderNumber,
+          customerName: order.customerName ?? order.customer?.name ?? "there",
+          customerEmail: order.customer?.email,
+          amountPaid: amount,
+          balanceDue: fullyPaid ? 0 : Number(order.balanceDue),
+          fullyPaid,
+        }),
+        order.customerPhone
+          ? whatsapp.sendText(
+              order.customerPhone,
+              `Mahek Balloon: we have received ${formatPrice(amount)} for order ${order.orderNumber}. ` +
+                (fullyPaid
+                  ? "Your order is paid in full. Thank you!"
+                  : `Balance of ${formatPrice(Number(order.balanceDue))} is due on delivery.`),
+            )
+          : null,
+      );
+    }
+
     revalidateAdmin("/admin/orders");
     return ok("Payment updated");
   } catch (e) {
@@ -111,13 +187,56 @@ export async function updateBookingStatus(id: string, status: string): Promise<R
   const parsed = z.enum(BOOKING_STATUSES).safeParse(status);
   if (!parsed.success) return fail("Invalid status");
   try {
-    await prisma.booking.update({
+    const booking = await prisma.booking.update({
       where: { id },
       data: {
         status: parsed.data,
         confirmedAt: parsed.data === "CONFIRMED" ? new Date() : undefined,
       },
+      include: { customer: { select: { email: true, name: true } } },
     });
+
+    const who = booking.customerName ?? booking.customer?.name ?? "there";
+
+    if (parsed.data === "CONFIRMED") {
+      await notifyQuietly(
+        email.sendBookingConfirmedEmail({
+          bookingNumber: booking.bookingNumber,
+          customerName: who,
+          customerEmail: booking.customer?.email,
+          eventType: booking.eventType,
+          eventDate: booking.eventDate?.toISOString().slice(0, 10) ?? null,
+          quotedAmount: booking.quotedAmount ? Number(booking.quotedAmount) : null,
+          advanceAmount: booking.advanceAmount ? Number(booking.advanceAmount) : null,
+        }),
+        booking.customerPhone
+          ? whatsapp.sendText(
+              booking.customerPhone,
+              `Mahek Balloon: your ${booking.eventType} booking ${booking.bookingNumber} is CONFIRMED. ` +
+                `We will call before the event to finalise setup timing.`,
+            )
+          : null,
+      );
+    }
+
+    if (parsed.data === "CANCELLED") {
+      await notifyQuietly(
+        email.sendCancellationEmail({
+          reference: booking.bookingNumber,
+          customerName: who,
+          customerEmail: booking.customer?.email,
+          kind: "booking",
+        }),
+        booking.customerPhone
+          ? whatsapp.sendText(
+              booking.customerPhone,
+              `Your Mahek Balloon booking ${booking.bookingNumber} has been cancelled. ` +
+                `Questions? Call +91 8087867988.`,
+            )
+          : null,
+      );
+    }
+
     revalidateAdmin("/admin/bookings");
     return ok("Booking updated");
   } catch (e) {
@@ -206,7 +325,8 @@ export async function saveProduct(id: string | null, formData: FormData): Promis
       if (clash) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
       await prisma.product.create({ data: { ...data, slug } });
     }
-    revalidateAdmin("/admin/products", "/shop");
+    revalidateAdmin("/admin/products");
+    revalidateStorefrontProducts();
     return ok(id ? "Product updated" : "Product created");
   } catch (e) {
     console.error("[saveProduct]", e);
@@ -221,7 +341,8 @@ export async function deleteProduct(id: string): Promise<Result> {
   await requireAdmin();
   try {
     await prisma.product.delete({ where: { id } });
-    revalidateAdmin("/admin/products", "/shop");
+    revalidateAdmin("/admin/products");
+    revalidateStorefrontProducts();
     return ok("Product deleted");
   } catch (e) {
     console.error("[deleteProduct]", e);
@@ -233,7 +354,8 @@ export async function toggleProductActive(id: string, isActive: boolean): Promis
   await requireAdmin();
   try {
     await prisma.product.update({ where: { id }, data: { isActive } });
-    revalidateAdmin("/admin/products", "/shop");
+    revalidateAdmin("/admin/products");
+    revalidateStorefrontProducts();
     return ok(isActive ? "Product published" : "Product hidden");
   } catch (e) {
     console.error("[toggleProductActive]", e);
@@ -272,7 +394,8 @@ export async function saveCategory(id: string | null, formData: FormData): Promi
       if (clash) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
       await prisma.category.create({ data: { ...data, slug } });
     }
-    revalidateAdmin("/admin/products", "/shop");
+    revalidateAdmin("/admin/products");
+    revalidateStorefrontProducts();
     return ok(id ? "Category updated" : "Category created");
   } catch (e) {
     console.error("[saveCategory]", e);
@@ -286,7 +409,8 @@ export async function deleteCategory(id: string): Promise<Result> {
     const count = await prisma.product.count({ where: { categoryId: id } });
     if (count > 0) return fail(`Move or delete the ${count} product(s) in this category first`);
     await prisma.category.delete({ where: { id } });
-    revalidateAdmin("/admin/products", "/shop");
+    revalidateAdmin("/admin/products");
+    revalidateStorefrontProducts();
     return ok("Category deleted");
   } catch (e) {
     console.error("[deleteCategory]", e);

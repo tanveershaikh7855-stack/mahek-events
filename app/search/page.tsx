@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   robots: "noindex",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function SearchPage() {
   const products = await getStoreProducts();

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Hero } from "@/components/home/hero";
-import { DecorativeMaterialsSection } from "@/components/home/decorative-materials";
+import { FlowerBouquetsSection } from "@/components/home/flower-bouquets";
 import { FeaturesBar } from "@/components/home/features-bar";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { FeaturedProducts } from "@/components/home/featured-products";
@@ -18,15 +18,21 @@ export const metadata: Metadata = {
   description: seo.metaDescription,
 };
 
-export const dynamic = "force-dynamic";
+// Cached HTML, rebuilt in the background. Admin writes call revalidatePath, so
+// edits still appear immediately — without paying a Supabase round-trip on
+// every single visit (which is what force-dynamic was doing).
+export const revalidate = 3600;
 
 export default async function HomePage() {
-  const products = await getStoreProducts({ featured: true, limit: 8 });
+  const [products, bouquets] = await Promise.all([
+    getStoreProducts({ featured: true, limit: 8 }),
+    getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
+  ]);
 
   return (
     <>
       <Hero />
-      <DecorativeMaterialsSection />
+      <FlowerBouquetsSection products={bouquets} />
       <FeaturesBar />
       <CategoryGrid />
       <FeaturedProducts products={products} />

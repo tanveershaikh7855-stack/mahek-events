@@ -22,18 +22,24 @@ export const authConfig = {
      */
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
-      const isLoggedIn = Boolean(auth?.user);
+      const role = auth?.user?.role;
+      // Customer accounts share the same session store as staff, so "logged in"
+      // is not sufficient for /admin — the role has to be a staff role.
+      const isStaff = role === "ADMIN" || role === "STAFF";
       const isAdminArea = pathname.startsWith("/admin");
       const isLoginPage = pathname === "/admin/login";
 
       if (isLoginPage) {
         // Bounce already-authenticated staff away from the login screen.
-        return isLoggedIn
+        return isStaff
           ? Response.redirect(new URL("/admin", request.nextUrl))
           : true;
       }
 
-      if (isAdminArea) return isLoggedIn;
+      if (isAdminArea) return isStaff;
+
+      // Customer-only areas.
+      if (pathname.startsWith("/account")) return Boolean(auth?.user);
 
       return true;
     },

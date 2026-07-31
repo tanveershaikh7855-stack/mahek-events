@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import {
   bookingSchema,
@@ -127,6 +129,85 @@ export async function submitBooking(
     return formError(
       "We could not save your booking just now. Please call us on +91 8087867988 and we will take the details directly.",
     );
+  }
+}
+
+// ── CUSTOMER ACCOUNTS ─────────────────────────────────────────
+
+const registerSchema = z
+  .object({
+    name: z.string().trim().min(2, "Enter your name"),
+    email: z.string().trim().toLowerCase().email("Enter a valid email"),
+    phone: z
+      .string()
+      .trim()
+      .regex(/^\d{10}$/, "Enter a 10-digit phone number"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+  })
+  .strip();
+
+/**
+ * Creates a storefront shopper account.
+ *
+ * A Customer row may already exist from a guest checkout or booking (they are
+ * upserted by phone), in which case this claims that record by setting a
+ * password rather than failing on the unique phone constraint — otherwise a
+ * returning customer could never register.
+ */
+export async function registerCustomer(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = registerSchema.safeParse(Object.fromEntries(formData.entries()));
+  if (!parsed.success) {
+    return { success: false, errors: fieldErrors(parsed.error.flatten().fieldErrors) };
+  }
+  const data = parsed.data;
+
+  try {
+    const existing = await prisma.customer.findFirst({
+      where: { OR: [{ email: data.email }, { phone: data.phone }] },
+    });
+
+    if (existing?.password) {
+      return formError("An account with that email or phone already exists. Please sign in.");
+    }
+
+    const hash = await bcrypt.hash(data.password, 10);
+
+    if (existing) {
+      await prisma.customer.update({
+        where: { id: existing.id },
+        data: {
+          name: sanitize(data.name),
+          email: data.email,
+          phone: data.phone,
+          password: hash,
+        },
+      });
+    } else {
+      await prisma.customer.create({
+        data: {
+          name: sanitize(data.name),
+          email: data.email,
+          phone: data.phone,
+          password: hash,
+        },
+      });
+    }
+
+    await notify([
+      email.sendAdminAlert("New customer registered", [
+        `Name: ${data.name}`,
+        `Email: ${data.email}`,
+        `Phone: ${data.phone}`,
+      ]),
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[registerCustomer] failed:", error);
+    return formError("Could not create your account. Please try again.");
   }
 }
 

@@ -1,6 +1,6 @@
 ﻿import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone, Clock } from "lucide-react";
+import { Mail, MapPin, Phone, Clock, Lock } from "lucide-react";
 import { BRAND, FOOTER_LINKS, WHY_CHOOSE_US } from "@/lib/constants";
 import { footer } from "@/lib/content";
 
@@ -130,9 +130,21 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/[0.06]">
-            <p className="text-white/30 text-xs">
-              &copy; {currentYear} {BRAND.name}. All rights reserved.
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-white/30 text-xs">
+                &copy; {currentYear} {BRAND.name}. All rights reserved.
+              </p>
+              {/* Staff entry point. /admin is middleware-protected, so this
+                  bounces to the login screen and only opens the dashboard once
+                  credentials verify. */}
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-medium text-white/50 transition-colors hover:border-white/35 hover:text-white"
+              >
+                <Lock className="w-3 h-3" />
+                Admin
+              </Link>
+            </div>
             <div className="flex items-center gap-5 text-xs text-white/30">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" />

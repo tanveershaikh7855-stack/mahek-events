@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ProductDetailClient } from "@/components/shop/product-detail-client";
-import { getStoreProductBySlug } from "@/lib/data";
-import { getProduct } from "@/lib/product-loader";
+import { getStoreProductBySlug, getStoreProducts } from "@/lib/data";
+import { getProduct, getAllProductSlugs } from "@/lib/product-loader";
 import { business } from "@/lib/content";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 // DB-first (so admin edits show), falling back to the static/filesystem product.
 async function loadProduct(slug: string) {
@@ -20,6 +20,21 @@ async function loadProduct(slug: string) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Prerender every known product page at build time so a visitor never waits on
+ * a cold Supabase round-trip. Slugs come from the database, falling back to the
+ * bundled catalogue when the DB is unreachable during a build.
+ */
+export async function generateStaticParams() {
+  try {
+    const products = await getStoreProducts();
+    if (products.length > 0) return products.map((p) => ({ slug: p.slug }));
+  } catch {
+    // fall through to the static catalogue
+  }
+  return getAllProductSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -179,6 +179,109 @@ export function sendBookingReceivedEmail(
   return send(data.customerEmail, `Booking ${data.bookingNumber} received`, html);
 }
 
+/** Sent when staff move a booking to CONFIRMED. */
+export function sendBookingConfirmedEmail(data: {
+  bookingNumber: string;
+  customerName: string;
+  customerEmail?: string | null;
+  eventType: string;
+  eventDate?: string | null;
+  quotedAmount?: number | null;
+  advanceAmount?: number | null;
+}): Promise<SendResult> {
+  if (!data.customerEmail) {
+    return Promise.resolve({ ok: false, error: "No customer email on booking" });
+  }
+  const html = layout(
+    `Booking ${data.bookingNumber} is confirmed`,
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)}, great news — your
+      ${escapeHtml(data.eventType)} decoration booking is <strong>confirmed</strong>.</p>
+     <table style="width:100%;border-collapse:collapse;margin:16px 0">
+       ${row("Booking", data.bookingNumber)}
+       ${data.eventDate ? row("Event date", data.eventDate) : ""}
+       ${data.quotedAmount ? row("Quoted amount", formatPrice(data.quotedAmount)) : ""}
+       ${data.advanceAmount ? row("Advance", formatPrice(data.advanceAmount), true) : ""}
+     </table>
+     <p style="font-size:14px;line-height:1.6">Our team will reach out before the event to finalise setup timing.</p>`,
+  );
+  return send(data.customerEmail, `Booking ${data.bookingNumber} confirmed`, html);
+}
+
+/** Sent when an order or booking is cancelled. */
+export function sendCancellationEmail(data: {
+  reference: string;
+  customerName: string;
+  customerEmail?: string | null;
+  kind: "order" | "booking";
+  reason?: string | null;
+}): Promise<SendResult> {
+  if (!data.customerEmail) {
+    return Promise.resolve({ ok: false, error: "No customer email" });
+  }
+  const noun = data.kind === "order" ? "Order" : "Booking";
+  const html = layout(
+    `${noun} ${data.reference} cancelled`,
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)}, your ${noun.toLowerCase()}
+      <strong>${escapeHtml(data.reference)}</strong> has been cancelled.</p>
+     ${data.reason ? `<p style="font-size:14px;line-height:1.6">Reason: ${escapeHtml(data.reason)}</p>` : ""}
+     <p style="font-size:14px;line-height:1.6">Any advance already paid will be refunded per our refund policy.
+      If this was not expected, please call us on +91 8087867988.</p>`,
+  );
+  return send(data.customerEmail, `${noun} ${data.reference} cancelled`, html);
+}
+
+/** Sent when a payment (advance or full) is recorded against an order. */
+export function sendPaymentReceivedEmail(data: {
+  reference: string;
+  customerName: string;
+  customerEmail?: string | null;
+  amountPaid: number;
+  balanceDue?: number | null;
+  fullyPaid?: boolean;
+}): Promise<SendResult> {
+  if (!data.customerEmail) {
+    return Promise.resolve({ ok: false, error: "No customer email" });
+  }
+  const html = layout(
+    `Payment received for ${data.reference}`,
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)}, we have received your payment of
+      <strong>${escapeHtml(formatPrice(data.amountPaid))}</strong>. Thank you.</p>
+     <table style="width:100%;border-collapse:collapse;margin:16px 0">
+       ${row("Reference", data.reference)}
+       ${row("Amount received", formatPrice(data.amountPaid), true)}
+       ${
+         data.fullyPaid
+           ? row("Status", "Paid in full", true)
+           : data.balanceDue != null
+             ? row("Balance remaining", formatPrice(data.balanceDue))
+             : ""
+       }
+     </table>`,
+  );
+  return send(data.customerEmail, `Payment received — ${data.reference}`, html);
+}
+
+/** Security notice sent when an admin/staff account signs in. */
+export function sendLoginAlertEmail(data: {
+  email: string;
+  name: string;
+  at: Date;
+}): Promise<SendResult> {
+  const when = data.at.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+  const html = layout(
+    "New sign-in to your admin account",
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.name)}, your Mahek Balloon admin account was
+      just signed in.</p>
+     <table style="width:100%;border-collapse:collapse;margin:16px 0">
+       ${row("Account", data.email)}
+       ${row("Time (IST)", when)}
+     </table>
+     <p style="font-size:14px;line-height:1.6">If this was you, no action is needed. If not, change the password
+      immediately.</p>`,
+  );
+  return send(data.email, "New sign-in to your Mahek Balloon admin", html);
+}
+
 /** Internal alert so the shop notices a new order/booking without polling the DB. */
 export function sendAdminAlert(subject: string, lines: string[]): Promise<SendResult> {
   if (!env.ADMIN_EMAIL) {

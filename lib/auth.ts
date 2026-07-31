@@ -5,6 +5,7 @@ import { prisma } from "./prisma";
 import { loginSchema } from "./validators";
 import { authConfig } from "./auth.config";
 import { env, authSecret } from "./env";
+import * as email from "./notifications/email";
 
 /**
  * A bcrypt hash of a random string. Used to burn a constant amount of CPU when
@@ -74,7 +75,65 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
+
+    /**
+     * Storefront shopper accounts. Kept as a separate provider so a customer
+     * record can never satisfy the admin credential path, and issued the
+     * CUSTOMER role which lib/auth.config.ts refuses for /admin.
+     */
+    Credentials({
+      id: "customer",
+      name: "Customer",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const parsed = loginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
+
+        const email = parsed.data.email.trim().toLowerCase();
+        const customer = await prisma.customer.findUnique({ where: { email } });
+
+        // Constant-time-ish: always compare, even when there is no such record
+        // or the account has no password (created via checkout rather than
+        // registration), so timing does not reveal which emails exist.
+        const ok = await bcrypt.compare(
+          parsed.data.password,
+          customer?.password ?? DUMMY_HASH,
+        );
+        if (!customer || !customer.password || !ok) return null;
+
+        return {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          role: "CUSTOMER" as const,
+        };
+      },
+    }),
   ],
+  events: {
+    /**
+     * Security notice on every successful admin sign-in. Deliberately not
+     * awaited into the auth response path beyond a catch — a failing mail
+     * provider must never block someone from logging in.
+     */
+    async signIn({ user }) {
+      if (!user?.email) return;
+      // Staff only — shoppers do not need a security notice on every sign-in.
+      if (user.role !== "ADMIN" && user.role !== "STAFF") return;
+      try {
+        await email.sendLoginAlertEmail({
+          email: user.email,
+          name: user.name ?? "Admin",
+          at: new Date(),
+        });
+      } catch (error) {
+        console.error("[auth] login alert failed:", error);
+      }
+    },
+  },
 });
 
 /**

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, ChevronDown, Shield, HeadphonesIcon, Package } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, ChevronDown, Shield, HeadphonesIcon, Package, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
@@ -170,6 +170,19 @@ export function Header() {
             >
               <Link href="/search" aria-label="Search">
                 <Search className="w-[18px] h-[18px]" />
+              </Link>
+            </Button>
+
+            {/* Account. /account is session-gated, so this lands on the sign-in
+                screen for signed-out visitors. */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full text-secondary-text hover:text-ink hover:bg-black/[0.03]"
+              asChild
+            >
+              <Link href="/account" aria-label="My account">
+                <UserRound className="w-[18px] h-[18px]" />
               </Link>
             </Button>
 

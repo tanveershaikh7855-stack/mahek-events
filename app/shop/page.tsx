@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: seo.metaDescription,
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function ShopPage() {
   const [products, categories] = await Promise.all([

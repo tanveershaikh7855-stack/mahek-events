@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Browse our portfolio of balloon decorations, event styling, and celebration setups. See real projects for birthdays, weddings, proposals and more.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 // next/image rejects a relative src without a leading slash; keep bad admin
 // input from crashing the page.
