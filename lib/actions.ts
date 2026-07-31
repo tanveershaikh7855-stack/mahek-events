@@ -279,6 +279,44 @@ export async function subscribe(
   }
 }
 
+// ── COUPON PREVIEW ────────────────────────────────────────────
+
+/**
+ * Live coupon check for the checkout page. Prices the cart with and without the
+ * code (authoritatively, from DB prices) so the customer sees the real discount
+ * before placing the order. submitCheckout re-validates the same code, so this
+ * is only for display — a tampered response cannot change what is charged.
+ */
+export async function previewCoupon(
+  code: string,
+  items: CartItem[],
+): Promise<
+  | { ok: true; code: string; discount: number; total: number; advanceAmount: number }
+  | { ok: false; error: string }
+> {
+  if (!code.trim()) return { ok: false, error: "Enter a coupon code" };
+  try {
+    const priced = await priceCart({ items, couponCode: code });
+    if (!priced.couponCode || priced.discount <= 0) {
+      return {
+        ok: false,
+        error: "That code is invalid, expired, or doesn't apply to this cart.",
+      };
+    }
+    return {
+      ok: true,
+      code: priced.couponCode,
+      discount: priced.discount,
+      total: priced.total,
+      advanceAmount: priced.advanceAmount,
+    };
+  } catch (error) {
+    if (error instanceof PricingError) return { ok: false, error: error.message };
+    console.error("[previewCoupon] failed:", error);
+    return { ok: false, error: "Could not check that code. Please try again." };
+  }
+}
+
 // ── CHECKOUT ──────────────────────────────────────────────────
 
 export type CheckoutSuccess = {

@@ -23,9 +23,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tag, X as XIcon } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
-import { submitCheckout } from "@/lib/actions";
+import { submitCheckout, previewCoupon } from "@/lib/actions";
 import { ADVANCE_PERCENT } from "@/lib/constants";
 
 const PAYMENT_METHODS = [
@@ -46,13 +47,41 @@ export function CheckoutPageClient() {
   } | null>(null);
   const [error, setError] = useState("");
 
+  // Coupon state. `applied` holds the server-verified discount; couponCode is
+  // submitted with the order and re-validated server-side.
+  const [couponInput, setCouponInput] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [couponPending, setCouponPending] = useState(false);
+  const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
+
   // Indicative only — the server recomputes every figure from the database and
   // its numbers are the ones charged. See lib/pricing.ts.
   const gst = subtotal * 0.05;
   const delivery = subtotal >= 999 ? 0 : 99;
-  const total = subtotal + gst + delivery;
+  const discount = applied?.discount ?? 0;
+  const total = Math.max(0, subtotal - discount) + gst + delivery;
   const advance = Math.round((total * ADVANCE_PERCENT) / 100);
   const balance = total - advance;
+
+  const applyCoupon = async () => {
+    setCouponError("");
+    setCouponPending(true);
+    const res = await previewCoupon(couponInput, items);
+    setCouponPending(false);
+    if (!res.ok) {
+      setApplied(null);
+      setCouponError(res.error);
+      return;
+    }
+    setApplied({ code: res.code, discount: res.discount });
+    setCouponInput(res.code);
+  };
+
+  const removeCoupon = () => {
+    setApplied(null);
+    setCouponInput("");
+    setCouponError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -279,11 +308,68 @@ export function CheckoutPageClient() {
 
                   <Separator />
 
+                  {/* Coupon. The verified code is submitted with the order. */}
+                  <input type="hidden" name="couponCode" value={applied?.code ?? ""} />
+                  {applied ? (
+                    <div className="flex items-center justify-between rounded-xl bg-forest-light border border-forest/20 px-3 py-2.5">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Tag className="w-4 h-4 text-forest" />
+                        <span className="font-semibold text-forest">{applied.code}</span>
+                        <span className="text-secondary-text">applied</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeCoupon}
+                        className="text-secondary-text hover:text-ink"
+                        aria-label="Remove coupon"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-text" />
+                          <input
+                            value={couponInput}
+                            onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                applyCoupon();
+                              }
+                            }}
+                            placeholder="Coupon code"
+                            className="w-full rounded-xl border border-border bg-white pl-9 pr-3 py-2.5 text-sm uppercase focus:outline-none focus:border-forest"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={applyCoupon}
+                          disabled={couponPending || !couponInput.trim()}
+                          className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white hover:bg-ink/90 disabled:opacity-50"
+                        >
+                          {couponPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                        </button>
+                      </div>
+                      {couponError && <p className="text-xs text-red-600 mt-1.5">{couponError}</p>}
+                    </div>
+                  )}
+
+                  <Separator />
+
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-secondary-text">Subtotal</span>
                       <span>{formatPrice(subtotal)}</span>
                     </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between text-forest">
+                        <span>Discount ({applied?.code})</span>
+                        <span>-{formatPrice(discount)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-secondary-text">GST (5%)</span>
                       <span>{formatPrice(gst)}</span>
