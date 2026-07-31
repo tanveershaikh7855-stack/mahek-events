@@ -30,8 +30,11 @@ export default async function HomePage() {
     getGallery("all"),
   ]);
 
+  // Only what the preview grid actually renders. Passing every row (and every
+  // long description) shipped the whole catalogue in the RSC payload.
   const galleryImages = galleryRows
     .filter((g) => g.image && g.image.trim())
+    .slice(0, 12)
     .map((g) => ({
       id: String(g.id),
       image: g.image,
@@ -39,13 +42,17 @@ export default async function HomePage() {
       category: g.category,
     }));
 
+  // Card views never show the long description — drop it from the payload.
+  const trim = <T extends { description: string }>(list: T[]) =>
+    list.map((p) => ({ ...p, description: "" }));
+
   return (
     <>
       <Hero />
-      <FlowerBouquetsSection products={bouquets} />
+      <FlowerBouquetsSection products={trim(bouquets)} />
       <FeaturesBar />
       <CategoryGrid />
-      <FeaturedProducts products={products} />
+      <FeaturedProducts products={trim(products)} />
       <ServicesSection />
       <GalleryPreview images={galleryImages} />
       <WhyChooseUs />

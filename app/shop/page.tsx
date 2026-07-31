@@ -15,5 +15,8 @@ export default async function ShopPage() {
     getStoreProducts(),
     getStoreProductCategories(),
   ]);
-  return <ShopPageClient products={products} categories={categories} />;
+  // The grid never renders the long description; omitting it keeps the RSC
+  // payload for the whole catalogue small.
+  const light = products.map((p) => ({ ...p, description: "" }));
+  return <ShopPageClient products={light} categories={categories} />;
 }
