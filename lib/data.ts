@@ -215,8 +215,19 @@ function normalizeImageSrc(src: string): string | null {
   return `/${s}`;
 }
 
+/**
+ * Image lists never split on commas — base64 data URLs contain one. Only a
+ * newline separates entries.
+ */
 function toImageArray(v: unknown): string[] {
-  return toStringArray(v)
+  const raw = Array.isArray(v)
+    ? v.filter((x): x is string => typeof x === "string")
+    : typeof v === "string"
+      ? v.split("\n")
+      : [];
+  return raw
+    .map((s) => s.trim())
+    .filter(Boolean)
     .map(normalizeImageSrc)
     .filter((s): s is string => Boolean(s));
 }

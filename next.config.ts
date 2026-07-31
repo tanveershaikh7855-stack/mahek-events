@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
     // Only packages actually imported by this project. `@radix-ui/react-icons`
     // and `recharts` were listed here but appear in no source file.
     optimizePackageImports: ["framer-motion", "lucide-react", "@base-ui/react"],
+    serverActions: {
+      // Admin image uploads are posted inline as base64 data URLs. The default
+      // 1 MB Server Action body cap rejected them, so saving a product with a
+      // photo failed silently.
+      bodySizeLimit: "12mb",
+    },
   },
   // `typescript.ignoreBuildErrors: true` was set here, which let 16 real type
   // errors ship. Those are fixed; the escape hatch is gone so they cannot

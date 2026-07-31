@@ -287,10 +287,16 @@ const productSchema = z.object({
   isFeatured: z.union([z.literal("on"), z.literal("")]).optional(),
 });
 
+/**
+ * Splits on newlines ONLY. A base64 data URL contains a comma
+ * ("data:image/jpeg;base64,/9j/...") so splitting on commas — as this used to —
+ * tore every uploaded image into two broken fragments. The uploader always
+ * joins with newlines, so that is the only separator we need.
+ */
 function parseImages(raw?: string): string[] {
   if (!raw) return [];
   return raw
-    .split(/[\n,]/)
+    .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
 }
@@ -502,7 +508,7 @@ export async function saveGalleryImage(id: string | null, formData: FormData): P
     } else {
       await prisma.galleryImage.create({ data });
     }
-    revalidateAdmin("/admin/gallery", "/gallery");
+    revalidateAdmin("/admin/gallery", "/gallery", "/");
     return ok(id ? "Image updated" : "Image added");
   } catch (e) {
     console.error("[saveGalleryImage]", e);
@@ -514,7 +520,7 @@ export async function deleteGalleryImage(id: string): Promise<Result> {
   await requireAdmin();
   try {
     await prisma.galleryImage.delete({ where: { id } });
-    revalidateAdmin("/admin/gallery", "/gallery");
+    revalidateAdmin("/admin/gallery", "/gallery", "/");
     return ok("Image deleted");
   } catch (e) {
     console.error("[deleteGalleryImage]", e);
@@ -526,7 +532,7 @@ export async function toggleGalleryActive(id: string, isActive: boolean): Promis
   await requireAdmin();
   try {
     await prisma.galleryImage.update({ where: { id }, data: { isActive } });
-    revalidateAdmin("/admin/gallery", "/gallery");
+    revalidateAdmin("/admin/gallery", "/gallery", "/");
     return ok(isActive ? "Image shown" : "Image hidden");
   } catch (e) {
     console.error("[toggleGalleryActive]", e);

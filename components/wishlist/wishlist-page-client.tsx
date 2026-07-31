@@ -64,6 +64,7 @@ export function WishlistPageClient() {
                 <Link href={`/shop/${item.slug}`} className="relative aspect-square overflow-hidden bg-secondary block">
                   <Image
                     src={item.image}
+                    unoptimized={String(item.image).startsWith("data:")}
                     alt={item.name}
                     fill
                     className="object-cover image-zoom"

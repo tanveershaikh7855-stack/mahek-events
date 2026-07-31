@@ -7,7 +7,11 @@ import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_GALLERY } from "@/lib/seed";
 import { cn } from "@/lib/utils";
 
-export function GalleryPreview() {
+type PreviewImage = { id: string; image: string; title: string; category: string };
+
+export function GalleryPreview({ images }: { images?: PreviewImage[] }) {
+  // Falls back to the bundled set until the admin has published gallery rows.
+  const source = images && images.length ? images : FALLBACK_GALLERY;
   return (
     <section className="section-spacing bg-white">
       <div className="container-tight">
@@ -47,7 +51,7 @@ export function GalleryPreview() {
 
         <div className="relative">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" role="list">
-            {FALLBACK_GALLERY.slice(0, 12).map((item, index) => (
+            {source.slice(0, 12).map((item, index) => (
               <motion.article
                 key={item.id}
                 initial={{ opacity: 0, scale: 0.97 }}
@@ -73,6 +77,7 @@ export function GalleryPreview() {
                       fill
                       className="object-cover image-zoom"
                       sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      unoptimized={item.image.startsWith("data:")}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400">

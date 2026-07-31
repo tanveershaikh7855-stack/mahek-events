@@ -71,6 +71,7 @@ export function CartPageClient() {
                   <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
                     <Image
                       src={item.image}
+                      unoptimized={String(item.image).startsWith("data:")}
                       alt={item.name}
                       fill
                       className="object-cover"
