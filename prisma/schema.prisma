@@ -336,6 +336,34 @@ model Media {
   @@map("media")
 }
 
+/// Themed promotional pages — "Vacation", "Rainy Season", "Exclusive", etc.
+/// Fully admin-managed. An offer can showcase products from a linked category
+/// and surface a coupon code the customer copies at checkout.
+model Offer {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  badge         String? // short tag e.g. "Vacation Special"
+  subtitle      String?   @db.VarChar(300)
+  description   String?   @db.Text
+  image         String? // banner, via the media uploader
+  discountLabel String? // free text e.g. "Up to 30% OFF"
+  couponCode    String? // code shown on the page; validated at checkout as usual
+  ctaLabel      String?
+  ctaHref       String?
+  categorySlug  String? // products from this category are shown on the offer page
+  startDate     DateTime?
+  endDate       DateTime?
+  isActive      Boolean   @default(true)
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([slug])
+  @@map("offers")
+}
+
 model Setting {
   id    String @id @default(cuid())
   key   String @unique

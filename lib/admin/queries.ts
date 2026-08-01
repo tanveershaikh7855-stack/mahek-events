@@ -194,6 +194,13 @@ export async function getAdminGallery() {
   });
 }
 
+export async function getAdminOffers() {
+  await requireAdmin();
+  return prisma.offer.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
+}
+
 export async function getReviews() {
   await requireAdmin();
   return prisma.review.findMany({

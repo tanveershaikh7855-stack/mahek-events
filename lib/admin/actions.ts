@@ -546,6 +546,89 @@ export async function toggleGalleryActive(id: string, isActive: boolean): Promis
   }
 }
 
+// ── OFFERS ────────────────────────────────────────────────────
+
+const offerSchema = z.object({
+  title: z.string().trim().min(2, "Title is required"),
+  badge: z.string().max(60).optional(),
+  subtitle: z.string().max(300).optional(),
+  description: z.string().max(5000).optional(),
+  image: z.string().optional(),
+  discountLabel: z.string().max(60).optional(),
+  couponCode: z.string().max(40).optional(),
+  ctaLabel: z.string().max(40).optional(),
+  ctaHref: z.string().max(200).optional(),
+  categorySlug: z.string().max(80).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  sortOrder: z.coerce.number().int().default(0),
+  isActive: z.union([z.literal("on"), z.literal("")]).optional(),
+});
+
+export async function saveOffer(id: string | null, formData: FormData): Promise<Result> {
+  await requireAdmin();
+  const raw = Object.fromEntries(formData.entries());
+  if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
+  const parsed = offerSchema.safeParse(raw);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the offer fields");
+  const d = parsed.data;
+  const data = {
+    title: d.title,
+    badge: d.badge || null,
+    subtitle: d.subtitle || null,
+    description: d.description || null,
+    image: d.image || null,
+    discountLabel: d.discountLabel || null,
+    couponCode: d.couponCode ? d.couponCode.toUpperCase() : null,
+    ctaLabel: d.ctaLabel || null,
+    ctaHref: d.ctaHref || null,
+    categorySlug: d.categorySlug || null,
+    startDate: d.startDate ? new Date(d.startDate) : null,
+    endDate: d.endDate ? new Date(d.endDate) : null,
+    sortOrder: d.sortOrder,
+    isActive: d.isActive === "on",
+  };
+  try {
+    if (id) {
+      await prisma.offer.update({ where: { id }, data });
+    } else {
+      let slug = slugify(d.title);
+      const clash = await prisma.offer.findUnique({ where: { slug } });
+      if (clash) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+      await prisma.offer.create({ data: { ...data, slug } });
+    }
+    revalidateAdmin("/admin/offers", "/offers", "/");
+    return ok(id ? "Offer updated" : "Offer created");
+  } catch (e) {
+    console.error("[saveOffer]", e);
+    return fail("Could not save the offer");
+  }
+}
+
+export async function deleteOffer(id: string): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.offer.delete({ where: { id } });
+    revalidateAdmin("/admin/offers", "/offers", "/");
+    return ok("Offer deleted");
+  } catch (e) {
+    console.error("[deleteOffer]", e);
+    return fail("Could not delete the offer");
+  }
+}
+
+export async function toggleOfferActive(id: string, isActive: boolean): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.offer.update({ where: { id }, data: { isActive } });
+    revalidateAdmin("/admin/offers", "/offers", "/");
+    return ok(isActive ? "Offer published" : "Offer hidden");
+  } catch (e) {
+    console.error("[toggleOfferActive]", e);
+    return fail("Could not update the offer");
+  }
+}
+
 // ── REVIEWS ───────────────────────────────────────────────────
 
 export async function setReviewVerified(id: string, isVerified: boolean): Promise<Result> {

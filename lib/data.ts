@@ -155,6 +155,34 @@ export async function getGallery(category?: string) {
   );
 }
 
+/** Active offers for the public /offers page, newest-priority first. */
+export async function getOffers() {
+  return withFallback(
+    async () => {
+      const now = new Date();
+      const rows = await prisma.offer.findMany({
+        where: {
+          isActive: true,
+          AND: [
+            { OR: [{ startDate: null }, { startDate: { lte: now } }] },
+            { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          ],
+        },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      });
+      return rows;
+    },
+    [] as Awaited<ReturnType<typeof prisma.offer.findMany>>,
+  );
+}
+
+export async function getOfferBySlug(slug: string) {
+  return withFallback(
+    async () => prisma.offer.findUnique({ where: { slug } }),
+    null as Awaited<ReturnType<typeof prisma.offer.findUnique>>,
+  );
+}
+
 /** Active gallery videos for the public /videos page (DB-only; no fallbacks). */
 export async function getGalleryVideos() {
   return withFallback(
