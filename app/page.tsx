@@ -13,7 +13,7 @@ import { Newsletter } from "@/components/home/newsletter";
 import { HomeInfoSection } from "@/components/home/home-info";
 import { ReviewVideosCarousel } from "@/components/home/review-videos-carousel";
 import { seo, business } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers, getReviewVideos } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Premium Helium Balloons & Decoration Services",
@@ -26,13 +26,22 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows, reviewRows] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
     getOffers(),
     getReviewVideos({ limit: 12 }),
+    getCategories("PRODUCT"),
+    getCategories("SERVICE"),
   ]);
+
+  const collectImages = (rows: { slug: string; image?: string | null }[]) =>
+    Object.fromEntries(
+      rows.filter((r) => r.image && r.image.trim()).map((r) => [r.slug, r.image as string]),
+    );
+  const productImages = collectImages(productCats);
+  const serviceImages = collectImages(serviceCats);
 
   const reviewVideos = reviewRows.map((r) => ({
     id: r.id,
@@ -79,7 +88,7 @@ export default async function HomePage() {
       <OffersHighlight offers={homeOffers} />
       <FlowerBouquetsSection products={trim(bouquets)} />
       <FeaturesBar />
-      <CategoryGrid />
+      <CategoryGrid productImages={productImages} serviceImages={serviceImages} />
       <FeaturedProducts products={trim(products)} />
       <ServicesSection />
       <GalleryPreview images={galleryImages} />

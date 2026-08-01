@@ -376,19 +376,24 @@ const categorySchema = z.object({
   name: z.string().trim().min(2, "Name is required"),
   type: z.enum(["PRODUCT", "SERVICE", "EVENT"]).default("PRODUCT"),
   description: z.string().max(1000).optional(),
+  image: z.string().optional(),
   sortOrder: z.coerce.number().int().default(0),
   isActive: z.union([z.literal("on"), z.literal("")]).optional(),
 });
 
 export async function saveCategory(id: string | null, formData: FormData): Promise<Result> {
   await requireAdmin();
-  const parsed = categorySchema.safeParse(Object.fromEntries(formData.entries()));
+  const raw = Object.fromEntries(formData.entries());
+  // Uploader stores a newline-joined list; a category holds a single image.
+  if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
+  const parsed = categorySchema.safeParse(raw);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the category fields");
   const d = parsed.data;
   const data = {
     name: d.name,
     type: d.type,
     description: d.description || null,
+    image: d.image || null,
     sortOrder: d.sortOrder,
     isActive: d.isActive === "on",
   };
@@ -403,6 +408,7 @@ export async function saveCategory(id: string | null, formData: FormData): Promi
     }
     revalidateAdmin("/admin/products");
     revalidateStorefrontProducts();
+    revalidatePath("/", "layout");
     return ok(id ? "Category updated" : "Category created");
   } catch (e) {
     console.error("[saveCategory]", e);

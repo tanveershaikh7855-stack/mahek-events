@@ -44,6 +44,7 @@ export type CategoryRow = {
   slug: string;
   type: string;
   description: string | null;
+  image: string | null;
   sortOrder: number;
   isActive: boolean;
   productCount: number;
@@ -287,6 +288,12 @@ function CategoryDialog({
               className={cn(field, "resize-none")}
             />
           </div>
+          <ImageUploader
+            name="image"
+            label="Category image"
+            defaultValue={category?.image ? [category.image] : []}
+            multiple={false}
+          />
           <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
@@ -542,8 +549,22 @@ export function ProductsManager({
                     {categories.map((c) => (
                       <tr key={c.id} className="border-t border-border">
                         <td className="px-4 py-3">
-                          <p className="font-medium text-ink">{c.name}</p>
-                          <p className="text-xs text-secondary-text">{c.slug}</p>
+                          <div className="flex items-center gap-3">
+                            {c.image ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={c.image}
+                                alt=""
+                                className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-secondary border border-border shrink-0" />
+                            )}
+                            <div>
+                              <p className="font-medium text-ink">{c.name}</p>
+                              <p className="text-xs text-secondary-text">{c.slug}</p>
+                            </div>
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-secondary-text">{c.type}</td>
                         <td className="px-4 py-3 text-ink">{c.productCount}</td>

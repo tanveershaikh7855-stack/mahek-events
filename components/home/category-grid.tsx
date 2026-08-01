@@ -22,6 +22,12 @@ const serviceImages: Record<string, string> = {
   wedding: "/images/wedding-room.png",
 };
 
+/**
+ * Admin-uploaded category images override the hard-coded fallbacks above,
+ * so editing the image in /admin/products (Categories tab) changes the tile.
+ */
+export type CategoryImageOverrides = Record<string, string>;
+
 function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
   name: string; slug: string; subtitle: string; image: string; type: "product" | "service"; itemCount?: number;
 }) {
@@ -60,7 +66,13 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
   );
 }
 
-export function CategoryGrid() {
+export function CategoryGrid({
+  productImages = {},
+  serviceImages: serviceImagesOverride = {},
+}: {
+  productImages?: CategoryImageOverrides;
+  serviceImages?: CategoryImageOverrides;
+} = {}) {
   return (
     <section className="section-spacing bg-background">
       <div className="container-tight">
@@ -111,7 +123,7 @@ export function CategoryGrid() {
                 name={cat.name}
                 slug={cat.slug}
                 subtitle={cat.subtitle}
-                image={categoryImages[cat.slug] || `/images/balloon-wall.png`}
+                image={productImages[cat.slug] || categoryImages[cat.slug] || `/images/balloon-wall.png`}
                 type="product"
                 itemCount={20}
               />
@@ -167,7 +179,7 @@ export function CategoryGrid() {
                   name={cat.name}
                   slug={cat.slug}
                   subtitle={cat.subtitle}
-                  image={serviceImages[cat.slug] || `/images/birthday-arch.png`}
+                  image={serviceImagesOverride[cat.slug] || serviceImages[cat.slug] || `/images/birthday-arch.png`}
                   type="service"
                 />
               </motion.div>

@@ -32,6 +32,7 @@ export default async function ProductsPage() {
     slug: c.slug,
     type: c.type,
     description: c.description,
+    image: c.image,
     sortOrder: c.sortOrder,
     isActive: c.isActive,
     productCount: c._count.products,
