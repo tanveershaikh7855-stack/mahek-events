@@ -63,13 +63,65 @@ async function compressToBlob(file: File): Promise<Blob> {
 
 type UploadKind = "image" | "video";
 
+type CloudinarySign = {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  folder: string;
+  signature: string;
+};
+
+/**
+ * Uploads directly to Cloudinary using a server-issued signature. Returns null
+ * (so the caller falls back to the built-in store) when Cloudinary isn't
+ * configured or the request can't be signed.
+ */
+async function uploadToCloudinary(
+  file: Blob,
+  isVideo: boolean,
+): Promise<{ url: string; kind: UploadKind } | null> {
+  let sign: CloudinarySign;
+  try {
+    const res = await fetch("/api/admin/cloudinary/sign", { method: "POST" });
+    if (!res.ok) return null; // 501 = not configured, or 401
+    sign = (await res.json()) as CloudinarySign;
+  } catch {
+    return null;
+  }
+  if (!sign.cloudName) return null;
+
+  const body = new FormData();
+  body.append("file", file);
+  body.append("api_key", sign.apiKey);
+  body.append("timestamp", String(sign.timestamp));
+  body.append("signature", sign.signature);
+  body.append("folder", sign.folder);
+
+  // `auto` lets Cloudinary detect image vs video from the bytes.
+  const endpoint = `https://api.cloudinary.com/v1_1/${sign.cloudName}/auto/upload`;
+  const res = await fetch(endpoint, { method: "POST", body });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { secure_url?: string; resource_type?: string };
+  if (!data.secure_url) return null;
+  return {
+    url: data.secure_url,
+    kind: data.resource_type === "video" || isVideo ? "video" : "image",
+  };
+}
+
 async function uploadFile(file: File): Promise<{ url: string; kind: UploadKind }> {
   const isVideo = file.type.startsWith("video/");
   // Videos are sent as-is (canvas can't re-encode them); images get downscaled.
   const payload = isVideo ? file : await compressToBlob(file);
-  const body = new FormData();
-  body.append("file", new File([payload], file.name, { type: payload.type || file.type }));
+  const named = new File([payload], file.name, { type: payload.type || file.type });
 
+  // Prefer Cloudinary when configured — it has no 4 MB cap and serves via CDN.
+  const cloud = await uploadToCloudinary(named, isVideo);
+  if (cloud) return cloud;
+
+  // Fallback: built-in Supabase-backed media store (4 MB cap).
+  const body = new FormData();
+  body.append("file", named);
   const res = await fetch("/api/admin/media", { method: "POST", body });
   if (!res.ok) {
     const detail = await res.json().catch(() => null);
