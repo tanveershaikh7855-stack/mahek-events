@@ -12,7 +12,7 @@ import { Testimonials } from "@/components/home/testimonials";
 import { Newsletter } from "@/components/home/newsletter";
 import { HomeInfoSection } from "@/components/home/home-info";
 import { ReviewVideosCarousel } from "@/components/home/review-videos-carousel";
-import { seo } from "@/lib/content";
+import { seo, business } from "@/lib/content";
 import { getStoreProducts, getGallery, getOffers, getReviewVideos } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -84,7 +84,7 @@ export default async function HomePage() {
       <ServicesSection />
       <GalleryPreview images={galleryImages} />
       <WhyChooseUs />
-      <ReviewVideosCarousel videos={reviewVideos} />
+      <ReviewVideosCarousel videos={reviewVideos} googleReviewUrl={business.googleReviewUrl} />
       <Testimonials />
       <HomeInfoSection />
       <Newsletter />

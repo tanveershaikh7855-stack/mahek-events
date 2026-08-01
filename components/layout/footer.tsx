@@ -1,6 +1,6 @@
 ﻿import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone, Clock, Lock } from "lucide-react";
+import { Mail, MapPin, Phone, Clock, Lock, Star } from "lucide-react";
 import { BRAND, FOOTER_LINKS, WHY_CHOOSE_US } from "@/lib/constants";
 import { footer } from "@/lib/content";
 
@@ -71,6 +71,11 @@ export function Footer() {
               <a href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all duration-200" aria-label="WhatsApp">
                 <SocialIcon d={WHATSAPP_PATH} />
               </a>
+              {BRAND.googleReviewUrl && (
+                <a href={BRAND.googleReviewUrl} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all duration-200" aria-label="Review us on Google">
+                  <Star className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </div>
 

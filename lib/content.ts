@@ -28,6 +28,8 @@ export const business = {
   pincode: "411004",
   googleMapsUrl:
     "https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7",
+  // Where the "Write a Google Review" button sends customers.
+  googleReviewUrl: "https://share.google/zCi9pK84FhA4ApnKO",
   googleMapsEmbed:
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.3!2d73.8567!3d18.5074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf0e3a4b5c1d%3A0x1234567890abcdef!2sSaras%20Baug%2C%20Pune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin",
 } as const;
