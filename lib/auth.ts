@@ -50,7 +50,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               role: "ADMIN" as const,
             };
           }
-          return null;
         }
 
         // 2. Database-backed staff accounts.
