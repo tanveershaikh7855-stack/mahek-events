@@ -5,7 +5,11 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { seo, business } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site-url";
+import { StructuredData } from "@/components/seo/structured-data";
 import "./globals.css";
+
+const siteUrl = getSiteUrl();
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,7 +25,10 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(seo.siteUrl),
+  // Points to wherever the site is actually reachable (NEXT_PUBLIC_SITE_URL),
+  // so canonical/OG URLs resolve; falls back to the brand domain in dev.
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
   title: {
     default: seo.metaTitle,
     template: `%s | ${business.name}`,
@@ -37,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: seo.siteUrl,
+    url: siteUrl,
     siteName: business.name,
     title: seo.metaTitle,
     description: seo.metaDescription,
@@ -56,9 +63,11 @@ export const metadata: Metadata = {
     description: seo.metaDescription,
     images: [seo.ogImage],
   },
-  verification: {
-    google: "google-site-verification-code",
-  },
+  // Real Search Console token supplied via env; omitted otherwise so a
+  // placeholder meta tag never ships.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -86,6 +95,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/images/logo/logo.png" />
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
+        <StructuredData />
         <Providers>
           <Header />
           <main id="main-content" className="min-h-screen pt-14 md:pt-16 pb-16 lg:pb-0">
