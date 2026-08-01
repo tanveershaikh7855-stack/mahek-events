@@ -478,6 +478,149 @@ export async function deleteCoupon(id: string): Promise<Result> {
   }
 }
 
+// ── REVIEW VIDEOS ─────────────────────────────────────────────
+
+/**
+ * A URL that the browser can render as video. Accepts:
+ *  - `/api/media/<id>` from the built-in uploader (Supabase-backed, cached),
+ *  - a Cloudinary/other https MP4 or a YouTube watch/embed URL.
+ * That keeps the model open to moving off Supabase byte storage without a
+ * schema change.
+ */
+const videoUrlSchema = z
+  .string()
+  .trim()
+  .min(1, "Add a video")
+  .refine(
+    (v) =>
+      v.startsWith("/api/media/") ||
+      /^https?:\/\//i.test(v) ||
+      v.startsWith("/"),
+    "Enter a valid video URL",
+  );
+
+const reviewVideoSchema = z.object({
+  customerName: z.string().trim().min(2, "Customer name is required"),
+  eventType: z.string().trim().min(1, "Event type is required"),
+  rating: z.coerce.number().int().min(1).max(5).default(5),
+  reviewText: z.string().max(2000).optional(),
+  videoUrl: videoUrlSchema,
+  poster: z.string().trim().optional(),
+  duration: optionalNumber({ int: true }),
+  isFeatured: z.union([z.literal("on"), z.literal("")]).optional(),
+  isActive: z.union([z.literal("on"), z.literal("")]).optional(),
+  sortOrder: z.coerce.number().int().default(0),
+});
+
+function firstUrl(raw?: string): string {
+  if (!raw) return "";
+  return raw.split("\n")[0]?.trim() ?? "";
+}
+
+export async function saveReviewVideo(
+  id: string | null,
+  formData: FormData,
+): Promise<Result> {
+  await requireAdmin();
+  const raw = Object.fromEntries(formData.entries());
+  // The uploader writes a newline-joined list; a review has one video and one
+  // poster.
+  if (typeof raw.videoUrl === "string") raw.videoUrl = firstUrl(raw.videoUrl);
+  if (typeof raw.poster === "string") raw.poster = firstUrl(raw.poster);
+  const parsed = reviewVideoSchema.safeParse(raw);
+  if (!parsed.success) {
+    return fail(parsed.error.issues[0]?.message ?? "Check the review fields");
+  }
+  const d = parsed.data;
+  const data = {
+    customerName: d.customerName,
+    eventType: d.eventType,
+    rating: d.rating,
+    reviewText: d.reviewText || null,
+    videoUrl: d.videoUrl,
+    poster: d.poster || null,
+    duration: d.duration ?? null,
+    isFeatured: d.isFeatured === "on",
+    isActive: d.isActive === "on",
+    sortOrder: d.sortOrder,
+  };
+  try {
+    if (id) {
+      await prisma.reviewVideo.update({ where: { id }, data });
+    } else {
+      await prisma.reviewVideo.create({ data });
+    }
+    revalidateAdmin("/admin/review-videos", "/", "/reviews");
+    return ok(id ? "Review updated" : "Review added");
+  } catch (e) {
+    console.error("[saveReviewVideo]", e);
+    return fail("Could not save the review");
+  }
+}
+
+export async function deleteReviewVideo(id: string): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.reviewVideo.delete({ where: { id } });
+    revalidateAdmin("/admin/review-videos", "/", "/reviews");
+    return ok("Review deleted");
+  } catch (e) {
+    console.error("[deleteReviewVideo]", e);
+    return fail("Could not delete the review");
+  }
+}
+
+export async function toggleReviewVideoActive(
+  id: string,
+  isActive: boolean,
+): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.reviewVideo.update({ where: { id }, data: { isActive } });
+    revalidateAdmin("/admin/review-videos", "/", "/reviews");
+    return ok(isActive ? "Review shown" : "Review hidden");
+  } catch (e) {
+    console.error("[toggleReviewVideoActive]", e);
+    return fail("Could not update the review");
+  }
+}
+
+export async function toggleReviewVideoFeatured(
+  id: string,
+  isFeatured: boolean,
+): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.reviewVideo.update({ where: { id }, data: { isFeatured } });
+    revalidateAdmin("/admin/review-videos", "/", "/reviews");
+    return ok(isFeatured ? "Marked as featured" : "Removed from featured");
+  } catch (e) {
+    console.error("[toggleReviewVideoFeatured]", e);
+    return fail("Could not update the review");
+  }
+}
+
+/**
+ * Persist a drag-and-drop ordering. `ids` is the array in the new visual
+ * order; the row at position N gets `sortOrder = N`.
+ */
+export async function reorderReviewVideos(ids: string[]): Promise<Result> {
+  await requireAdmin();
+  if (!Array.isArray(ids) || ids.length === 0) return fail("Nothing to reorder");
+  try {
+    await prisma.$transaction(
+      ids.map((id, index) =>
+        prisma.reviewVideo.update({ where: { id }, data: { sortOrder: index } }),
+      ),
+    );
+    revalidateAdmin("/admin/review-videos", "/", "/reviews");
+    return ok("Order saved");
+  } catch (e) {
+    console.error("[reorderReviewVideos]", e);
+    return fail("Could not save the order");
+  }
+}
+
 // ── GALLERY ───────────────────────────────────────────────────
 
 const gallerySchema = z.object({

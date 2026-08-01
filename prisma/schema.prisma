@@ -336,6 +336,32 @@ model Media {
   @@map("media")
 }
 
+/// Customer review videos rendered in a public carousel.
+///
+/// `videoUrl` accepts anything the browser can load — a `/api/media/<id>` URL
+/// from the built-in uploader, a Cloudinary MP4 URL, or a YouTube watch URL —
+/// so the shop can move to Cloudinary later without a schema change.
+model ReviewVideo {
+  id           String   @id @default(cuid())
+  customerName String
+  eventType    String // birthday, wedding, baby-shower, corporate, proposal, other
+  rating       Int      @default(5) // 1-5
+  reviewText   String?  @db.Text
+  videoUrl     String
+  poster       String? // thumbnail image URL
+  duration     Int? // seconds, optional
+  isFeatured   Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("review_videos")
+}
+
 /// Themed promotional pages — "Vacation", "Rainy Season", "Exclusive", etc.
 /// Fully admin-managed. An offer can showcase products from a linked category
 /// and surface a coupon code the customer copies at checkout.

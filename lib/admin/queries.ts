@@ -187,6 +187,13 @@ export async function getCoupons() {
   return prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
 }
 
+export async function getAdminReviewVideos() {
+  await requireAdmin();
+  return prisma.reviewVideo.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
+}
+
 export async function getAdminGallery() {
   await requireAdmin();
   return prisma.galleryImage.findMany({

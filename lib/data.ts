@@ -195,6 +195,22 @@ export async function getGalleryVideos() {
   );
 }
 
+/** Active customer review videos for the public carousel. */
+export async function getReviewVideos(options?: { featuredOnly?: boolean; limit?: number }) {
+  return withFallback(
+    async () =>
+      prisma.reviewVideo.findMany({
+        where: {
+          isActive: true,
+          ...(options?.featuredOnly ? { isFeatured: true } : {}),
+        },
+        orderBy: [{ isFeatured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
+        take: options?.limit,
+      }),
+    [] as Awaited<ReturnType<typeof prisma.reviewVideo.findMany>>,
+  );
+}
+
 export async function getDeliveryCharge(distanceKm: number, orderValue: number) {
   const charges = FALLBACK_DELIVERY_CHARGES;
   const slab = charges.find((c) => distanceKm >= c.minDistance && distanceKm <= c.maxDistance);

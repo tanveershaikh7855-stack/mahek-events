@@ -11,8 +11,9 @@ import { WhyChooseUs } from "@/components/home/why-choose-us";
 import { Testimonials } from "@/components/home/testimonials";
 import { Newsletter } from "@/components/home/newsletter";
 import { HomeInfoSection } from "@/components/home/home-info";
+import { ReviewVideosCarousel } from "@/components/home/review-videos-carousel";
 import { seo } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Premium Helium Balloons & Decoration Services",
@@ -25,12 +26,23 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
     getOffers(),
+    getReviewVideos({ limit: 12 }),
   ]);
+
+  const reviewVideos = reviewRows.map((r) => ({
+    id: r.id,
+    customerName: r.customerName,
+    eventType: r.eventType,
+    rating: r.rating,
+    reviewText: r.reviewText,
+    videoUrl: r.videoUrl,
+    poster: r.poster,
+  }));
 
   // Only ship what the highlight strip renders (first + 3 tiles).
   const homeOffers = offerRows.slice(0, 4).map((o) => ({
@@ -72,6 +84,7 @@ export default async function HomePage() {
       <ServicesSection />
       <GalleryPreview images={galleryImages} />
       <WhyChooseUs />
+      <ReviewVideosCarousel videos={reviewVideos} />
       <Testimonials />
       <HomeInfoSection />
       <Newsletter />
