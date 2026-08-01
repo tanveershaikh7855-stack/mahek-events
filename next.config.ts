@@ -40,6 +40,25 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          // Hostinger's CDN (hcdn) caches responses by URL only. Next.js
+          // serves either HTML or the RSC flight payload at the same URL
+          // depending on request headers — without Vary, the CDN mixes them
+          // and users randomly see raw RSC text like `:HL["/_next/…"]…`
+          // instead of the page. Telling the CDN to key on these headers
+          // stores them as separate cache entries.
+          {
+            key: "Vary",
+            value:
+              "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch, Next-Url, Accept-Encoding",
+          },
+        ],
+      },
+      {
+        // Admin should never be edge-cached — cookies, live data, and CSRF
+        // tokens must not be shared between users.
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
         ],
       },
     ];

@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   robots: "noindex",
 };
 
+// Never prerender or cache — CSRF cookies must be issued per request, and
+// caching an RSC response of a login page has caused CDN mixups on hcdn.
+export const dynamic = "force-dynamic";
+
 export default function AdminLoginPage() {
   // AdminLoginClient reads the `callbackUrl` query param via useSearchParams(),
   // which opts the subtree into client-side rendering and must sit behind a
