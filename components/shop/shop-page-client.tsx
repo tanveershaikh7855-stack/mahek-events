@@ -5,16 +5,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  SlidersHorizontal,
   X,
   ArrowUpDown,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Package,
-  Sparkles,
-  Grid3X3,
-  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,7 +72,6 @@ export function ShopPageClient({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
   const [currentPage, setCurrentPage] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -179,22 +173,15 @@ export function ShopPageClient({
                   </button>
                 )}
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                className="hidden md:flex h-11 w-11 rounded-xl"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-              </Button>
             </div>
           </div>
 
-          {/* Category Filters */}
-          <div className={cn(
-            "flex flex-wrap gap-2 mt-5 transition-all duration-300",
-            showFilters ? "max-h-96 opacity-100" : "max-h-20 md:max-h-none opacity-100"
-          )}>
+          {/* Category Filters.
+              Previously this row was clamped with `max-h-20` but WITHOUT
+              `overflow-hidden`, so on mobile the wrapping chips spilled out of
+              the 80px box and overlapped the sort dropdown below. Letting the
+              row wrap naturally removes the overlap entirely. */}
+          <div className="flex flex-wrap gap-2 mt-5">
             <button
               onClick={() => handleCategorySelect(null)}
               className={cn(

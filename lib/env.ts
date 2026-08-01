@@ -31,6 +31,11 @@ const schema = z.object({
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD_HASH: z.string().optional(),
 
+  // Google OAuth (optional). When both are set, "Continue with Google" appears
+  // on the customer login/register pages. Absent → the button is hidden.
+  AUTH_GOOGLE_ID: z.string().optional(),
+  AUTH_GOOGLE_SECRET: z.string().optional(),
+
   // Email
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
@@ -83,6 +88,7 @@ export const features = {
   email: Boolean(env.RESEND_API_KEY),
   whatsapp: Boolean(env.WHATSAPP_API_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID),
   cloudinary: Boolean(env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),
+  google: Boolean(env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET),
 } as const;
 
 export const authSecret = env.AUTH_SECRET ?? env.NEXTAUTH_SECRET;

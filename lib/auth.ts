@@ -1,10 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { loginSchema } from "./validators";
 import { authConfig } from "./auth.config";
-import { env, authSecret } from "./env";
+import { env, authSecret, features } from "./env";
 import * as email from "./notifications/email";
 
 /**
@@ -18,6 +19,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   secret: authSecret,
   providers: [
+    // Google is only registered when both credentials are present, so the app
+    // still boots (and builds) without them — the button is hidden client-side.
+    ...(features.google
+      ? [
+          Google({
+            clientId: env.AUTH_GOOGLE_ID,
+            clientSecret: env.AUTH_GOOGLE_SECRET,
+          }),
+        ]
+      : []),
     Credentials({
       name: "Admin",
       credentials: {
@@ -112,6 +123,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    /**
+     * Google sign-ins have no Customer row yet. Upsert one keyed on the Google
+     * email, then stamp the NextAuth `user` with our own customer id + CUSTOMER
+     * role so the jwt/session callbacks (auth.config.ts) persist the right
+     * identity. Runs only in the Node runtime, so Prisma is safe here.
+     */
+    async signIn({ user, account }) {
+      if (account?.provider !== "google") return true;
+
+      const googleEmail = user.email?.trim().toLowerCase();
+      if (!googleEmail) return false;
+
+      const customer = await prisma.customer.upsert({
+        where: { email: googleEmail },
+        update: { name: user.name ?? undefined },
+        create: { name: user.name ?? "Customer", email: googleEmail },
+      });
+
+      user.id = customer.id;
+      user.role = "CUSTOMER";
+      return true;
+    },
+  },
   events: {
     /**
      * Security notice on every successful admin sign-in. Deliberately not

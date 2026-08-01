@@ -79,7 +79,9 @@ model Customer {
   id        String   @id @default(cuid())
   name      String
   email     String?  @unique
-  phone     String   @unique
+  // Optional: Google sign-in creates a customer with no phone yet. Postgres
+  // allows multiple NULLs under a UNIQUE constraint, so this stays unique.
+  phone     String?  @unique
   password  String? // bcrypt hash — for optional customer account login
   address   Json?    @default("[]")
   wishlist  Json?    @default("[]")

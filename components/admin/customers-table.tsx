@@ -9,7 +9,7 @@ export type CustomerRow = {
   id: string;
   name: string;
   email: string | null;
-  phone: string;
+  phone: string | null;
   orders: number;
   bookings: number;
   createdAt: string;
@@ -24,7 +24,7 @@ export function CustomersTable({ customers }: { customers: CustomerRow[] }) {
     return customers.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
-        c.phone.includes(q) ||
+        (c.phone ?? "").includes(q) ||
         (c.email ?? "").toLowerCase().includes(q),
     );
   }, [customers, query]);
@@ -72,24 +72,28 @@ export function CustomersTable({ customers }: { customers: CustomerRow[] }) {
                 <tr key={c.id} className="border-t border-border">
                   <td className="px-4 py-3 font-medium text-ink">{c.name}</td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <a
-                        href={`tel:${c.phone}`}
-                        className="text-xs text-secondary-text hover:text-forest inline-flex items-center gap-1"
-                      >
-                        <Phone className="w-3 h-3" />
-                        {c.phone}
-                      </a>
-                      <a
-                        href={`https://wa.me/91${c.phone}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-600 hover:text-green-700"
-                        aria-label="WhatsApp"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
+                    {c.phone ? (
+                      <div className="flex items-center gap-3">
+                        <a
+                          href={`tel:${c.phone}`}
+                          className="text-xs text-secondary-text hover:text-forest inline-flex items-center gap-1"
+                        >
+                          <Phone className="w-3 h-3" />
+                          {c.phone}
+                        </a>
+                        <a
+                          href={`https://wa.me/91${c.phone}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-600 hover:text-green-700"
+                          aria-label="WhatsApp"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-secondary-text">—</span>
+                    )}
                     {c.email && (
                       <a
                         href={`mailto:${c.email}`}

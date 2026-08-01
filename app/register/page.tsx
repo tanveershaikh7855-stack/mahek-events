@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CustomerAuthForm } from "@/components/auth/customer-auth-form";
 import { business } from "@/lib/content";
+import { features } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: `Create account | ${business.name}`,
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <Suspense>
-      <CustomerAuthForm mode="register" />
+      <CustomerAuthForm mode="register" googleEnabled={features.google} />
     </Suspense>
   );
 }
