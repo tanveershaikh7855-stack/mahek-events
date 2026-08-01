@@ -6,7 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, ChevronDown, Shield, HeadphonesIcon, Package, UserRound } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, ChevronDown, Shield, HeadphonesIcon, Package, UserRound, LogOut, LogIn } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
@@ -71,6 +72,10 @@ export function Header() {
   const [materialMenuOpen, setMaterialMenuOpen] = useState(false);
   const { itemCount } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const { data: session, status } = useSession();
+  // Only ever treat customers as "logged in" for the storefront auth UI —
+  // staff sessions belong to /admin, not the shopper header.
+  const isCustomer = status === "authenticated" && session?.user?.role === "CUSTOMER";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -239,6 +244,28 @@ export function Header() {
 
             <div className="w-px h-5 bg-black/[0.06] mx-2" />
 
+            {isCustomer ? (
+              <Button
+                variant="ghost"
+                className="h-9 px-3 rounded-full text-secondary-text hover:text-ink hover:bg-black/[0.03] text-[0.8125rem] font-medium gap-1.5"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                <LogOut className="w-4 h-4" />
+                Log out
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                className="h-9 px-3 rounded-full text-secondary-text hover:text-ink hover:bg-black/[0.03] text-[0.8125rem] font-medium gap-1.5"
+                asChild
+              >
+                <Link href="/login">
+                  <LogIn className="w-4 h-4" />
+                  Sign in
+                </Link>
+              </Button>
+            )}
+
             <Button className="h-9 px-5 rounded-full bg-forest text-white font-semibold text-[0.8125rem] hover:bg-forest-hover transition-all duration-300 hover:shadow-lg hover:shadow-forest/20" asChild>
               <Link href="/booking">
                 Book Decoration
@@ -389,6 +416,53 @@ export function Header() {
                     </div>
                   );
                 })}
+
+                {/* Auth — signed-out shoppers had no way to sign in / sign up,
+                    and signed-in ones had no way to log out, from the mobile menu. */}
+                <div className="pt-4 mt-4 border-t border-border/30 space-y-1">
+                  {isCustomer ? (
+                    <>
+                      <Link
+                        href="/account"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[0.9375rem] font-medium text-secondary-text hover:text-ink hover:bg-black/[0.03]"
+                      >
+                        <UserRound className="w-5 h-5" />
+                        My Account
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          signOut({ callbackUrl: "/" });
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[0.9375rem] font-medium text-secondary-text hover:text-ink hover:bg-black/[0.03]"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        Log out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[0.9375rem] font-semibold text-white bg-forest hover:bg-forest-hover transition-colors"
+                      >
+                        <LogIn className="w-5 h-5" />
+                        Sign in
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[0.9375rem] font-medium text-secondary-text hover:text-ink hover:bg-black/[0.03]"
+                      >
+                        <UserRound className="w-5 h-5" />
+                        Create account
+                      </Link>
+                    </>
+                  )}
+                </div>
 
                 <div className="pt-4 mt-4 border-t border-border/30 space-y-1">
                   <Link

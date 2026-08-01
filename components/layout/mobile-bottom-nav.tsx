@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingBag, Search, Heart, Calendar } from "lucide-react";
+import { Home, ShoppingBag, Heart, Calendar, UserRound } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Home, label: "Home", href: "/" },
-  { icon: Search, label: "Search", href: "/search" },
   { icon: Calendar, label: "Book", href: "/booking" },
   { icon: ShoppingBag, label: "Cart", href: "/cart" },
   { icon: Heart, label: "Wishlist", href: "/wishlist" },
+  // Routes to the account page, which redirects signed-out visitors to /login —
+  // so this single tab covers sign-in, sign-up and account for mobile users.
+  { icon: UserRound, label: "Account", href: "/account" },
 ];
 
 export function MobileBottomNav() {
