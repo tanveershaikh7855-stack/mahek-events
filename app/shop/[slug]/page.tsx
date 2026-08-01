@@ -56,5 +56,13 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = await loadProduct(slug);
   if (!product) notFound();
-  return <ProductDetailClient product={product as never} />;
+
+  // DB-backed related products from the same category, so admin edits appear
+  // in the "Related Products" strip instead of the frozen fallback list.
+  const all = await getStoreProducts();
+  const related = all
+    .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
+    .slice(0, 4);
+
+  return <ProductDetailClient product={product as never} related={related as never} />;
 }

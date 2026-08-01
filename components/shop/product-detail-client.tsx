@@ -64,9 +64,10 @@ interface ProductDetailClientProps {
     variants: Array<{ label: string; options: string[] }>;
     specifications?: Record<string, string>;
   };
+  related?: typeof FALLBACK_PRODUCTS;
 }
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, related }: ProductDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
@@ -83,9 +84,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const images = product.images.length > 0 ? product.images : ["/images/IMG-20260728-WA0032.webp"];
   const isDataUrl = (s: string) => s.startsWith("data:");
 
-  const relatedProducts = FALLBACK_PRODUCTS.filter(
-    (p) => p.categoryId === product.categoryId && p.id !== product.id
-  ).slice(0, 4);
+  // Server passes DB-backed related products; fall back to the static list only
+  // if the caller hasn't supplied any (older callers, tests).
+  const relatedProducts =
+    related && related.length > 0
+      ? related
+      : FALLBACK_PRODUCTS.filter(
+          (p) => p.categoryId === product.categoryId && p.id !== product.id,
+        ).slice(0, 4);
 
   const handleAddToCart = () => {
     addItem({
