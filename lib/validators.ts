@@ -65,10 +65,25 @@ export const checkoutSchema = z.object({
   name: z.string().trim().min(2, "Name is required"),
   phone,
   email: optionalEmail,
-  address: z.string().trim().min(5, "Address is required"),
-  city: z.string().trim().min(2, "City is required"),
-  pincode: z.string().regex(/^\d{6}$/, "Enter a valid 6-digit pincode"),
-  state: z.string().trim().min(2, "State is required"),
+  // Shop-pickup model: no delivery address is captured. These fields kept
+  // optional because customer address on file (from the customer record) is
+  // used as billing/receipt data only.
+  address: z.string().trim().optional().default(""),
+  city: z.string().trim().optional().default("Pune"),
+  pincode: z.string().optional().default(""),
+  state: z.string().trim().optional().default("Maharashtra"),
+  // Required pickup slot. Date is an ISO yyyy-mm-dd from <input type="date">;
+  // pickupTime is one of the fixed slot labels shown to the customer.
+  pickupDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a pickup date")
+    .refine((s) => {
+      const d = new Date(s + "T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return d.getTime() >= today.getTime();
+    }, "Pickup date cannot be in the past"),
+  pickupTime: z.string().trim().min(1, "Select a pickup time"),
   paymentMethod: z.enum(["COD", "UPI", "CARD"]),
   couponCode: z.string().trim().optional(),
   billingSameAsShipping: z.boolean().default(true),

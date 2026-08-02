@@ -15,6 +15,9 @@ import {
   Wallet,
   Landmark,
   Smartphone,
+  MapPin,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "@/components/ui/icons";
@@ -30,9 +33,23 @@ import { submitCheckout, previewCoupon } from "@/lib/actions";
 import { ADVANCE_PERCENT } from "@/lib/constants";
 
 const PAYMENT_METHODS = [
-  { value: "COD", label: "Cash on Delivery", icon: Wallet, desc: "Pay when you receive" },
+  { value: "COD", label: "Cash at Shop", icon: Wallet, desc: "Pay when you collect" },
   { value: "UPI", label: "UPI (GPay/PhonePe/Paytm)", icon: Smartphone, desc: "Instant payment via UPI" },
   { value: "CARD", label: "Credit/Debit Card", icon: Landmark, desc: "Visa, Mastercard, RuPay" },
+];
+
+// Shop is open Mon–Sat 9 AM–8 PM. Slots exclude the peak-fill window so the
+// shop can prep helium orders in advance.
+const PICKUP_SLOTS = [
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+  "06:00 PM",
+  "07:00 PM",
 ];
 
 export function CheckoutPageClient() {
@@ -44,7 +61,15 @@ export function CheckoutPageClient() {
     orderNumber: string;
     advanceAmount: number;
     balanceDue: number;
+    pickupDate: string;
+    pickupTime: string;
   } | null>(null);
+  // Sensible default: tomorrow, so the shop has time to prep helium fills.
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minPickupDate = tomorrow.toISOString().slice(0, 10);
+  const [pickupDate, setPickupDate] = useState(minPickupDate);
+  const [pickupTime, setPickupTime] = useState("11:00 AM");
   const [error, setError] = useState("");
 
   // Coupon state. `applied` holds the server-verified discount; couponCode is
@@ -57,9 +82,9 @@ export function CheckoutPageClient() {
   // Indicative only — the server recomputes every figure from the database and
   // its numbers are the ones charged. See lib/pricing.ts.
   const gst = subtotal * 0.05;
-  const delivery = subtotal >= 999 ? 0 : 99;
+  // Pickup-only checkout, no delivery charge.
   const discount = applied?.discount ?? 0;
-  const total = Math.max(0, subtotal - discount) + gst + delivery;
+  const total = Math.max(0, subtotal - discount) + gst;
   const advance = Math.round((total * ADVANCE_PERCENT) / 100);
   const balance = total - advance;
 
@@ -135,6 +160,8 @@ export function CheckoutPageClient() {
       orderNumber: result.orderNumber,
       advanceAmount: result.advanceAmount,
       balanceDue: result.balanceDue,
+      pickupDate,
+      pickupTime,
     });
     setSubmitting(false);
     setCompleted(true);
@@ -171,6 +198,25 @@ export function CheckoutPageClient() {
             {placedOrder && (
               <p className="text-sm font-mono text-forest mb-4">{placedOrder.orderNumber}</p>
             )}
+            {placedOrder && (
+              <div className="mb-6 p-4 rounded-xl bg-forest-light border border-forest/20 text-left">
+                <div className="flex items-center gap-2 text-forest font-semibold text-sm mb-2">
+                  <MapPin className="w-4 h-4" /> Collect from our shop
+                </div>
+                <p className="text-sm text-ink font-medium">
+                  {new Date(placedOrder.pickupDate + "T00:00:00").toLocaleDateString("en-IN", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}{" "}
+                  at <strong>{placedOrder.pickupTime}</strong>
+                </p>
+                <p className="text-xs text-secondary-text mt-1">
+                  Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004
+                </p>
+              </div>
+            )}
             <p className="text-secondary-text mb-6">
               Thank you for your order. We&apos;ve sent the details to your email and WhatsApp.
               {placedOrder && placedOrder.advanceAmount > 0 && (
@@ -178,7 +224,7 @@ export function CheckoutPageClient() {
                   {" "}Your order is confirmed once the {ADVANCE_PERCENT}% advance of{" "}
                   <strong>{formatPrice(placedOrder.advanceAmount)}</strong> is received —
                   our team will call you to arrange it.{" "}
-                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable on delivery.
+                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable when you collect the order.
                 </>
               )}
             </p>
@@ -210,7 +256,7 @@ export function CheckoutPageClient() {
                   animate={{ opacity: 1, y: 0 }}
                   className="p-6 rounded-2xl border border-border bg-white space-y-4"
                 >
-                  <h2 className="text-lg font-semibold text-ink">Shipping Information</h2>
+                  <h2 className="text-lg font-semibold text-ink">Your Details</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
@@ -224,23 +270,71 @@ export function CheckoutPageClient() {
                       <Label htmlFor="email">Email Address</Label>
                       <Input id="email" name="email" type="email" placeholder="your@email.com" />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="address">Delivery Address *</Label>
-                      <Textarea id="address" name="address" placeholder="House/Flat No., Street, Landmark" required rows={2} />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="p-6 rounded-2xl border border-border bg-white space-y-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-forest-light flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-forest" />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="city">City *</Label>
-                      <Input id="city" name="city" placeholder="Pune" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="pincode">Pincode *</Label>
-                      <Input id="pincode" name="pincode" inputMode="numeric" maxLength={6} placeholder="411004" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="state">State *</Label>
-                      <Input id="state" name="state" placeholder="Maharashtra" required />
+                    <div className="flex-1">
+                      <h2 className="text-lg font-semibold text-ink">Pickup From Shop</h2>
+                      <p className="text-sm text-secondary-text">
+                        Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004. Helium balloons
+                        stay perfect longest when collected fresh from the shop.
+                      </p>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="pickupDate" className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" /> Pickup Date *
+                      </Label>
+                      <Input
+                        id="pickupDate"
+                        name="pickupDate"
+                        type="date"
+                        min={minPickupDate}
+                        value={pickupDate}
+                        onChange={(e) => setPickupDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pickupTime" className="flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" /> Pickup Time *
+                      </Label>
+                      <select
+                        id="pickupTime"
+                        name="pickupTime"
+                        value={pickupTime}
+                        onChange={(e) => setPickupTime(e.target.value)}
+                        required
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
+                      >
+                        {PICKUP_SLOTS.map((slot) => (
+                          <option key={slot} value={slot}>
+                            {slot}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Hidden legacy address fields — validator makes them optional
+                      now, but keep them so the address JSON on the order stays
+                      populated with sane defaults for legal/receipts. */}
+                  <input type="hidden" name="address" value="Shop pickup — Saras Baug" />
+                  <input type="hidden" name="city" value="Pune" />
+                  <input type="hidden" name="pincode" value="411004" />
+                  <input type="hidden" name="state" value="Maharashtra" />
                 </motion.div>
 
                 <motion.div
@@ -376,7 +470,7 @@ export function CheckoutPageClient() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-secondary-text">Delivery</span>
-                      <span className={delivery === 0 ? "text-forest" : ""}>{delivery === 0 ? "Free" : formatPrice(delivery)}</span>
+                      <span className="text-forest">Shop pickup</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
@@ -391,7 +485,7 @@ export function CheckoutPageClient() {
                       <span>{formatPrice(advance)}</span>
                     </div>
                     <div className="flex justify-between text-secondary-text">
-                      <span>Balance on delivery</span>
+                      <span>Balance at pickup</span>
                       <span>{formatPrice(balance)}</span>
                     </div>
                   </div>
@@ -422,6 +516,7 @@ export function CheckoutPageClient() {
 
                   <div className="text-xs text-secondary-text space-y-1">
                     <p className="flex items-center gap-1"><Shield className="w-3 h-3" /> Secure & encrypted checkout</p>
+                    <p className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Collect from our Saras Baug shop</p>
                     <p className="flex items-center gap-1"><Truck className="w-3 h-3" /> WhatsApp order confirmation</p>
                   </div>
                 </div>

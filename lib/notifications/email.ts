@@ -88,6 +88,8 @@ export type OrderEmailData = {
   advanceAmount: number;
   balanceDue: number;
   paymentMethod: string;
+  pickupDate?: string | null;
+  pickupTime?: string | null;
 };
 
 /** Sent to the customer as soon as the order row is committed. */
@@ -104,22 +106,33 @@ export function sendOrderPlacedEmail(data: OrderEmailData): Promise<SendResult> 
     )
     .join("");
 
+  const pickupBox =
+    data.pickupDate && data.pickupTime
+      ? `<div style="margin:16px 0;padding:14px;border:1px solid #C9E7C9;background:#F0F8F0;border-radius:12px">
+           <p style="margin:0 0 4px;font-size:13px;color:#2F5D3A;font-weight:700">📍 Pickup from our shop</p>
+           <p style="margin:0;font-size:14px;color:#1F1F1F;line-height:1.5">
+             <strong>${escapeHtml(data.pickupDate)}</strong> at <strong>${escapeHtml(data.pickupTime)}</strong><br/>
+             Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004
+           </p>
+         </div>`
+      : "";
+
   const html = layout(
     `Order ${data.orderNumber} received`,
     `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)}, thanks for your order.
       To confirm it we collect a <strong>${Math.round((data.advanceAmount / data.total) * 100)}% advance</strong>;
-      the balance is payable on delivery.</p>
+      the balance is payable when you collect the order from our shop.</p>
+     ${pickupBox}
      <table style="width:100%;border-collapse:collapse;margin:16px 0">
        ${items}
        <tr><td colspan="2" style="border-top:1px solid #ECECEC;padding-top:8px"></td></tr>
        ${row("Subtotal", formatPrice(data.subtotal))}
        ${data.discount > 0 ? row("Discount", `-${formatPrice(data.discount)}`) : ""}
-       ${row("Delivery", data.deliveryCharge === 0 ? "Free" : formatPrice(data.deliveryCharge))}
        ${row("GST", formatPrice(data.gst))}
        ${row("Total", formatPrice(data.total), true)}
        <tr><td colspan="2" style="border-top:1px solid #ECECEC;padding-top:8px"></td></tr>
        ${row("Advance due now", formatPrice(data.advanceAmount), true)}
-       ${row("Balance on delivery", formatPrice(data.balanceDue))}
+       ${row("Balance on pickup", formatPrice(data.balanceDue))}
      </table>`,
   );
 

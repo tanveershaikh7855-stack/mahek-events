@@ -125,6 +125,11 @@ model Order {
   trackingNumber  String?
   paidAt          DateTime?
   confirmedAt     DateTime?
+
+  // Shop-pickup model: customers book a slot to collect the order fresh from
+  // Saras Baug. Optional so historical/legacy orders remain valid.
+  pickupDate DateTime?
+  pickupTime String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

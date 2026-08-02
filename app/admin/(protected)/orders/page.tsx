@@ -25,6 +25,8 @@ export default async function OrdersPage() {
     createdAt: o.createdAt.toISOString(),
     notes: o.notes,
     shippingAddress: o.shippingAddress as Record<string, string> | null,
+    pickupDate: o.pickupDate ? o.pickupDate.toISOString() : null,
+    pickupTime: o.pickupTime,
     items: o.items.map((i) => ({
       id: i.id,
       name: i.name,

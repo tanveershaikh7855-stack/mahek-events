@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, Fragment } from "react";
-import { ShoppingBag, Search, ChevronDown, Phone } from "lucide-react";
+import { ShoppingBag, Search, ChevronDown, Phone, MapPin, Calendar } from "lucide-react";
 import { updateOrderStatus, updateOrderPayment } from "@/lib/admin/actions";
 import { StatusPill, StatusSelect, EmptyState } from "./shared/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -34,6 +34,8 @@ export type OrderRow = {
   createdAt: string;
   notes: string | null;
   shippingAddress: Record<string, string> | null;
+  pickupDate: string | null;
+  pickupTime: string | null;
   items: { id: string; name: string; quantity: number; price: number }[];
 };
 
@@ -102,6 +104,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-secondary-text">Order</th>
                 <th className="text-left px-4 py-3 font-medium text-secondary-text">Customer</th>
+                <th className="text-left px-4 py-3 font-medium text-secondary-text">Pickup</th>
                 <th className="text-left px-4 py-3 font-medium text-secondary-text">Total</th>
                 <th className="text-left px-4 py-3 font-medium text-secondary-text">Payment</th>
                 <th className="text-left px-4 py-3 font-medium text-secondary-text">Status</th>
@@ -126,6 +129,24 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                           <Phone className="w-3 h-3" />
                           {o.customerPhone}
                         </a>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {o.pickupDate ? (
+                        <div className="text-xs">
+                          <p className="text-ink font-medium flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(o.pickupDate).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </p>
+                          {o.pickupTime && (
+                            <p className="text-secondary-text">{o.pickupTime}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-secondary-text">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -170,7 +191,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                   </tr>
                   {expanded === o.id && (
                     <tr className="bg-secondary/30 border-t border-border">
-                      <td colSpan={7} className="px-4 py-4">
+                      <td colSpan={8} className="px-4 py-4">
                         <div className="grid md:grid-cols-3 gap-6">
                           <div>
                             <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2">
@@ -190,19 +211,29 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2">
-                              Delivery Address
+                            <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" /> Shop Pickup
                             </h4>
-                            {o.shippingAddress ? (
+                            {o.pickupDate ? (
                               <p className="text-xs text-secondary-text leading-relaxed">
-                                {o.shippingAddress.address}
+                                <strong className="text-ink">
+                                  {new Date(o.pickupDate).toLocaleDateString("en-IN", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                  })}
+                                </strong>
+                                {o.pickupTime && (
+                                  <>
+                                    <br />
+                                    at <strong className="text-ink">{o.pickupTime}</strong>
+                                  </>
+                                )}
                                 <br />
-                                {o.shippingAddress.city} {o.shippingAddress.pincode}
-                                <br />
-                                {o.shippingAddress.state}
+                                Saras Baug, Pune 411004
                               </p>
                             ) : (
-                              <p className="text-xs text-secondary-text">Not provided</p>
+                              <p className="text-xs text-secondary-text">No pickup slot</p>
                             )}
                           </div>
                           <div>

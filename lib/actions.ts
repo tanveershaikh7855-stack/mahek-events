@@ -371,11 +371,14 @@ export async function submitCheckout(
     name: sanitize(data.name),
     phone: data.phone,
     email: data.email || "",
-    address: sanitize(data.address),
-    city: sanitize(data.city),
-    pincode: data.pincode,
-    state: sanitize(data.state),
+    address: sanitize(data.address || ""),
+    city: sanitize(data.city || "Pune"),
+    pincode: data.pincode || "",
+    state: sanitize(data.state || "Maharashtra"),
   };
+  // Parse pickup date at local midnight — the string "yyyy-mm-dd" alone
+  // becomes UTC midnight, which slips a day on IST.
+  const pickupDate = new Date(`${data.pickupDate}T00:00:00+05:30`);
 
   try {
     const order = await prisma.$transaction(async (tx) => {
@@ -416,6 +419,8 @@ export async function submitCheckout(
           shippingAddress: address,
           billingAddress: data.billingSameAsShipping ? Prisma.JsonNull : address,
           notes: data.notes ? sanitize(data.notes) : null,
+          pickupDate,
+          pickupTime: data.pickupTime,
           customerName: sanitize(data.name),
           customerPhone: data.phone,
           coupon: pricing.couponId
@@ -446,6 +451,13 @@ export async function submitCheckout(
       });
     });
 
+    const pickupHuman = pickupDate.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
     await notify([
       email.sendOrderPlacedEmail({
         orderNumber: order.orderNumber,
@@ -464,9 +476,12 @@ export async function submitCheckout(
         advanceAmount: pricing.advanceAmount,
         balanceDue: pricing.balanceDue,
         paymentMethod: data.paymentMethod,
+        pickupDate: pickupHuman,
+        pickupTime: data.pickupTime,
       }),
       email.sendAdminAlert(`New order ${order.orderNumber}`, [
         `Customer: ${data.name} (${data.phone})`,
+        `Pickup: ${pickupHuman} at ${data.pickupTime}`,
         `Total: ${formatPrice(pricing.total)}`,
         `Advance due: ${formatPrice(pricing.advanceAmount)}`,
         `Payment: ${data.paymentMethod}`,
@@ -474,8 +489,9 @@ export async function submitCheckout(
       whatsapp.sendText(
         data.phone,
         `Hi ${data.name}, Mahek Balloon has received order ${order.orderNumber} for ${formatPrice(pricing.total)}. ` +
-          `Pay the ${pricing.advancePercent}% advance of ${formatPrice(pricing.advanceAmount)} to confirm it; ` +
-          `${formatPrice(pricing.balanceDue)} is due on delivery.`,
+          `Please collect from our shop opposite Saras Baug Garden on ${pickupHuman} at ${data.pickupTime}. ` +
+          `Pay the ${pricing.advancePercent}% advance of ${formatPrice(pricing.advanceAmount)} to confirm; ` +
+          `${formatPrice(pricing.balanceDue)} on pickup.`,
       ),
     ]);
 
