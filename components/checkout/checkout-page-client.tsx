@@ -30,7 +30,7 @@ import { Tag, X as XIcon } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 import { submitCheckout, previewCoupon } from "@/lib/actions";
-import { ADVANCE_PERCENT } from "@/lib/constants";
+import { ADVANCE_PERCENT, DELIVERY_MIN_SUBTOTAL } from "@/lib/constants";
 
 const PAYMENT_METHODS = [
   { value: "COD", label: "Cash at Shop", icon: Wallet, desc: "Pay when you collect" },
@@ -61,6 +61,7 @@ export function CheckoutPageClient() {
     orderNumber: string;
     advanceAmount: number;
     balanceDue: number;
+    deliveryType: "PICKUP" | "DELIVERY";
     pickupDate: string;
     pickupTime: string;
   } | null>(null);
@@ -70,6 +71,13 @@ export function CheckoutPageClient() {
   const minPickupDate = tomorrow.toISOString().slice(0, 10);
   const [pickupDate, setPickupDate] = useState(minPickupDate);
   const [pickupTime, setPickupTime] = useState("11:00 AM");
+
+  const deliveryUnlocked = subtotal >= DELIVERY_MIN_SUBTOTAL;
+  const [deliveryType, setDeliveryType] = useState<"PICKUP" | "DELIVERY">("PICKUP");
+  // Cart drops below the threshold after a coupon or removal — snap back to pickup.
+  if (!deliveryUnlocked && deliveryType === "DELIVERY") {
+    setDeliveryType("PICKUP");
+  }
   const [error, setError] = useState("");
 
   // Coupon state. `applied` holds the server-verified discount; couponCode is
@@ -160,6 +168,7 @@ export function CheckoutPageClient() {
       orderNumber: result.orderNumber,
       advanceAmount: result.advanceAmount,
       balanceDue: result.balanceDue,
+      deliveryType,
       pickupDate,
       pickupTime,
     });
@@ -198,7 +207,7 @@ export function CheckoutPageClient() {
             {placedOrder && (
               <p className="text-sm font-mono text-forest mb-4">{placedOrder.orderNumber}</p>
             )}
-            {placedOrder && (
+            {placedOrder && placedOrder.deliveryType === "PICKUP" && (
               <div className="mb-6 p-4 rounded-xl bg-forest-light border border-forest/20 text-left">
                 <div className="flex items-center gap-2 text-forest font-semibold text-sm mb-2">
                   <MapPin className="w-4 h-4" /> Collect from our shop
@@ -213,7 +222,25 @@ export function CheckoutPageClient() {
                   at <strong>{placedOrder.pickupTime}</strong>
                 </p>
                 <p className="text-xs text-secondary-text mt-1">
-                  Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004
+                  Mahek Balloons, Saras Baug, Pune — 411004
+                </p>
+                <a
+                  href="https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-forest hover:underline"
+                >
+                  <MapPin className="w-3 h-3" /> Open in Google Maps
+                </a>
+              </div>
+            )}
+            {placedOrder && placedOrder.deliveryType === "DELIVERY" && (
+              <div className="mb-6 p-4 rounded-xl bg-forest-light border border-forest/20 text-left">
+                <div className="flex items-center gap-2 text-forest font-semibold text-sm mb-2">
+                  <Truck className="w-4 h-4" /> Home delivery
+                </div>
+                <p className="text-sm text-ink">
+                  Our team will call to confirm your delivery slot within 2 hours.
                 </p>
               </div>
             )}
@@ -279,62 +306,141 @@ export function CheckoutPageClient() {
                   transition={{ delay: 0.05 }}
                   className="p-6 rounded-2xl border border-border bg-white space-y-4"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-forest-light flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-forest" />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-lg font-semibold text-ink">Pickup From Shop</h2>
-                      <p className="text-sm text-secondary-text">
-                        Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004. Helium balloons
-                        stay perfect longest when collected fresh from the shop.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="pickupDate" className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" /> Pickup Date *
-                      </Label>
-                      <Input
-                        id="pickupDate"
-                        name="pickupDate"
-                        type="date"
-                        min={minPickupDate}
-                        value={pickupDate}
-                        onChange={(e) => setPickupDate(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="pickupTime" className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" /> Pickup Time *
-                      </Label>
-                      <select
-                        id="pickupTime"
-                        name="pickupTime"
-                        value={pickupTime}
-                        onChange={(e) => setPickupTime(e.target.value)}
-                        required
-                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
-                      >
-                        {PICKUP_SLOTS.map((slot) => (
-                          <option key={slot} value={slot}>
-                            {slot}
-                          </option>
-                        ))}
-                      </select>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-forest-light flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-forest" />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="text-lg font-semibold text-ink">
+                          {deliveryType === "PICKUP" ? "Pickup From Shop" : "Home Delivery"}
+                        </h2>
+                        <p className="text-sm text-secondary-text">
+                          {deliveryType === "PICKUP"
+                            ? "Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004."
+                            : "We'll bring the order to your door within Pune. Team will call to confirm timing."}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Hidden legacy address fields — validator makes them optional
-                      now, but keep them so the address JSON on the order stays
-                      populated with sane defaults for legal/receipts. */}
-                  <input type="hidden" name="address" value="Shop pickup — Saras Baug" />
-                  <input type="hidden" name="city" value="Pune" />
-                  <input type="hidden" name="pincode" value="411004" />
-                  <input type="hidden" name="state" value="Maharashtra" />
+                  {/* Delivery/Pickup switcher — delivery only unlocked at ₹5000+ */}
+                  <input type="hidden" name="deliveryType" value={deliveryType} />
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/40 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryType("PICKUP")}
+                      className={cn(
+                        "py-2 rounded-lg text-sm font-medium transition-all",
+                        deliveryType === "PICKUP"
+                          ? "bg-white shadow-sm text-ink"
+                          : "text-secondary-text hover:text-ink",
+                      )}
+                    >
+                      Pickup (Free)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deliveryUnlocked && setDeliveryType("DELIVERY")}
+                      disabled={!deliveryUnlocked}
+                      title={
+                        deliveryUnlocked
+                          ? undefined
+                          : `Delivery unlocks at ${formatPrice(DELIVERY_MIN_SUBTOTAL)}`
+                      }
+                      className={cn(
+                        "py-2 rounded-lg text-sm font-medium transition-all",
+                        deliveryType === "DELIVERY"
+                          ? "bg-white shadow-sm text-ink"
+                          : "text-secondary-text hover:text-ink",
+                        !deliveryUnlocked && "opacity-40 cursor-not-allowed hover:text-secondary-text",
+                      )}
+                    >
+                      Delivery {!deliveryUnlocked && `(₹${DELIVERY_MIN_SUBTOTAL}+)`}
+                    </button>
+                  </div>
+
+                  {deliveryType === "PICKUP" ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="pickupDate" className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" /> Pickup Date *
+                          </Label>
+                          <Input
+                            id="pickupDate"
+                            name="pickupDate"
+                            type="date"
+                            min={minPickupDate}
+                            value={pickupDate}
+                            onChange={(e) => setPickupDate(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="pickupTime" className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" /> Pickup Time *
+                          </Label>
+                          <select
+                            id="pickupTime"
+                            name="pickupTime"
+                            value={pickupTime}
+                            onChange={(e) => setPickupTime(e.target.value)}
+                            required
+                            className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
+                          >
+                            {PICKUP_SLOTS.map((slot) => (
+                              <option key={slot} value={slot}>
+                                {slot}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <input type="hidden" name="address" value="Shop pickup — Saras Baug" />
+                      <input type="hidden" name="city" value="Pune" />
+                      <input type="hidden" name="pincode" value="411004" />
+                      <input type="hidden" name="state" value="Maharashtra" />
+                    </>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="address">Delivery Address *</Label>
+                        <Textarea
+                          id="address"
+                          name="address"
+                          placeholder="House/Flat No., Street, Landmark"
+                          required
+                          rows={2}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="city">City *</Label>
+                        <Input id="city" name="city" placeholder="Pune" defaultValue="Pune" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="pincode">Pincode *</Label>
+                        <Input
+                          id="pincode"
+                          name="pincode"
+                          inputMode="numeric"
+                          maxLength={6}
+                          placeholder="411004"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="state">State *</Label>
+                        <Input
+                          id="state"
+                          name="state"
+                          placeholder="Maharashtra"
+                          defaultValue="Maharashtra"
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
 
                 <motion.div

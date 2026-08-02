@@ -17,6 +17,7 @@ import { priceCart, PricingError } from "./pricing";
 import * as email from "./notifications/email";
 import * as whatsapp from "./notifications/whatsapp";
 import { formatPrice } from "./formatters";
+import { DELIVERY_MIN_SUBTOTAL } from "./constants";
 
 /**
  * Strips angle brackets from free-text fields before they are stored and later
@@ -366,6 +367,14 @@ export async function submitCheckout(
     return formError("We could not price your cart. Please refresh and try again.");
   }
 
+  // Delivery is only unlocked at DELIVERY_MIN_SUBTOTAL. If the client posted
+  // DELIVERY while the cart is below the threshold, silently fall back to
+  // PICKUP rather than half-charging — the UI already prevents this.
+  const deliveryType =
+    data.deliveryType === "DELIVERY" && pricing.subtotal >= DELIVERY_MIN_SUBTOTAL
+      ? "DELIVERY"
+      : "PICKUP";
+
   const orderNumber = generateOrderNumber();
   const address = {
     name: sanitize(data.name),
@@ -377,8 +386,11 @@ export async function submitCheckout(
     state: sanitize(data.state || "Maharashtra"),
   };
   // Parse pickup date at local midnight — the string "yyyy-mm-dd" alone
-  // becomes UTC midnight, which slips a day on IST.
-  const pickupDate = new Date(`${data.pickupDate}T00:00:00+05:30`);
+  // becomes UTC midnight, which slips a day on IST. Only set when PICKUP.
+  const pickupDate =
+    deliveryType === "PICKUP" && data.pickupDate
+      ? new Date(`${data.pickupDate}T00:00:00+05:30`)
+      : null;
 
   try {
     const order = await prisma.$transaction(async (tx) => {
@@ -419,8 +431,9 @@ export async function submitCheckout(
           shippingAddress: address,
           billingAddress: data.billingSameAsShipping ? Prisma.JsonNull : address,
           notes: data.notes ? sanitize(data.notes) : null,
+          deliveryType,
           pickupDate,
-          pickupTime: data.pickupTime,
+          pickupTime: deliveryType === "PICKUP" ? data.pickupTime : null,
           customerName: sanitize(data.name),
           customerPhone: data.phone,
           coupon: pricing.couponId
@@ -451,12 +464,14 @@ export async function submitCheckout(
       });
     });
 
-    const pickupHuman = pickupDate.toLocaleDateString("en-IN", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    const pickupHuman = pickupDate
+      ? pickupDate.toLocaleDateString("en-IN", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : null;
 
     await notify([
       email.sendOrderPlacedEmail({
@@ -476,12 +491,14 @@ export async function submitCheckout(
         advanceAmount: pricing.advanceAmount,
         balanceDue: pricing.balanceDue,
         paymentMethod: data.paymentMethod,
-        pickupDate: pickupHuman,
-        pickupTime: data.pickupTime,
+        pickupDate: deliveryType === "PICKUP" ? pickupHuman : null,
+        pickupTime: deliveryType === "PICKUP" ? data.pickupTime : null,
       }),
       email.sendAdminAlert(`New order ${order.orderNumber}`, [
         `Customer: ${data.name} (${data.phone})`,
-        `Pickup: ${pickupHuman} at ${data.pickupTime}`,
+        deliveryType === "PICKUP"
+          ? `Pickup: ${pickupHuman} at ${data.pickupTime}`
+          : `Delivery: ${address.address}, ${address.city} ${address.pincode}`,
         `Total: ${formatPrice(pricing.total)}`,
         `Advance due: ${formatPrice(pricing.advanceAmount)}`,
         `Payment: ${data.paymentMethod}`,
@@ -489,9 +506,11 @@ export async function submitCheckout(
       whatsapp.sendText(
         data.phone,
         `Hi ${data.name}, Mahek Balloon has received order ${order.orderNumber} for ${formatPrice(pricing.total)}. ` +
-          `Please collect from our shop opposite Saras Baug Garden on ${pickupHuman} at ${data.pickupTime}. ` +
+          (deliveryType === "PICKUP"
+            ? `Please collect from our shop opposite Saras Baug Garden on ${pickupHuman} at ${data.pickupTime}. `
+            : `We'll deliver to your address; our team will call to confirm the slot. `) +
           `Pay the ${pricing.advancePercent}% advance of ${formatPrice(pricing.advanceAmount)} to confirm; ` +
-          `${formatPrice(pricing.balanceDue)} on pickup.`,
+          `${formatPrice(pricing.balanceDue)} on ${deliveryType === "PICKUP" ? "pickup" : "delivery"}.`,
       ),
     ]);
 

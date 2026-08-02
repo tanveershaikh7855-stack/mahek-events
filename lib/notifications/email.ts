@@ -139,6 +139,37 @@ export function sendOrderPlacedEmail(data: OrderEmailData): Promise<SendResult> 
   return send(data.customerEmail, `Order ${data.orderNumber} received`, html);
 }
 
+/**
+ * Sent whenever the admin transitions an order to a new status. Kept minimal —
+ * one short paragraph per status change, no order line items or totals repeated
+ * (the customer already has the order-placed email for that).
+ */
+export function sendOrderStatusEmail(data: {
+  orderNumber: string;
+  customerName: string;
+  customerEmail?: string | null;
+  status: string;
+  message: string;
+}): Promise<SendResult> {
+  if (!data.customerEmail) {
+    return Promise.resolve({ ok: false, error: "No customer email on order" });
+  }
+  const label = data.status.replace(/_/g, " ").toLowerCase();
+  const html = layout(
+    `Order ${data.orderNumber} — ${label}`,
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)},</p>
+     <p style="font-size:14px;line-height:1.6">${escapeHtml(data.message)}</p>
+     <p style="font-size:13px;color:#6B6B6B;margin-top:20px">
+       Questions? Reply to this email or WhatsApp +91 8087867988.
+     </p>`,
+  );
+  return send(
+    data.customerEmail,
+    `Order ${data.orderNumber} — ${label}`,
+    html,
+  );
+}
+
 /** Sent once the Stripe webhook confirms the advance actually cleared. */
 export function sendOrderConfirmedEmail(data: OrderEmailData): Promise<SendResult> {
   if (!data.customerEmail) {

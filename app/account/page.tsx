@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Calendar, Package, Phone, Mail, ShoppingBag } from "lucide-react";
+import { Calendar, Package, Phone, Mail, ShoppingBag, MapPin, Clock } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
@@ -19,6 +19,7 @@ const STATUS_STYLE: Record<string, string> = {
   NEW: "bg-yellow-100 text-yellow-700",
   CONFIRMED: "bg-forest-light text-forest",
   PROCESSING: "bg-blue-100 text-blue-700",
+  READY_FOR_PICKUP: "bg-emerald-100 text-emerald-700",
   SHIPPED: "bg-indigo-100 text-indigo-700",
   DELIVERED: "bg-green-100 text-green-700",
   COMPLETED: "bg-green-100 text-green-700",
@@ -57,6 +58,9 @@ export default async function AccountPage() {
           status: true,
           paymentStatus: true,
           createdAt: true,
+          deliveryType: true,
+          pickupDate: true,
+          pickupTime: true,
         },
       },
       bookings: {
@@ -136,8 +140,39 @@ export default async function AccountPage() {
                   </thead>
                   <tbody>
                     {customer.orders.map((o) => (
-                      <tr key={o.id} className="border-t border-border">
-                        <td className="px-4 py-3 font-medium text-ink">{o.orderNumber}</td>
+                      <tr key={o.id} className="border-t border-border align-top">
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-ink">{o.orderNumber}</p>
+                          {o.deliveryType === "PICKUP" && o.pickupDate && (
+                            <p className="text-xs text-secondary-text mt-1 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              Pickup{" "}
+                              {o.pickupDate.toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                              })}
+                              {o.pickupTime && (
+                                <>
+                                  {" "}
+                                  <Clock className="w-3 h-3" /> {o.pickupTime}
+                                </>
+                              )}
+                            </p>
+                          )}
+                          {o.deliveryType === "DELIVERY" && (
+                            <p className="text-xs text-secondary-text mt-1">Home delivery</p>
+                          )}
+                          {o.status === "READY_FOR_PICKUP" && (
+                            <a
+                              href="https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-forest hover:underline"
+                            >
+                              <MapPin className="w-3 h-3" /> Directions to shop
+                            </a>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-secondary-text">
                           {o.createdAt.toISOString().slice(0, 10)}
                         </td>

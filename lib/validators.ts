@@ -61,34 +61,52 @@ export const cartItemSchema = z.object({
 
 export type CartItem = z.infer<typeof cartItemSchema>;
 
-export const checkoutSchema = z.object({
-  name: z.string().trim().min(2, "Name is required"),
-  phone,
-  email: optionalEmail,
-  // Shop-pickup model: no delivery address is captured. These fields kept
-  // optional because customer address on file (from the customer record) is
-  // used as billing/receipt data only.
-  address: z.string().trim().optional().default(""),
-  city: z.string().trim().optional().default("Pune"),
-  pincode: z.string().optional().default(""),
-  state: z.string().trim().optional().default("Maharashtra"),
-  // Required pickup slot. Date is an ISO yyyy-mm-dd from <input type="date">;
-  // pickupTime is one of the fixed slot labels shown to the customer.
-  pickupDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a pickup date")
-    .refine((s) => {
-      const d = new Date(s + "T00:00:00");
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return d.getTime() >= today.getTime();
-    }, "Pickup date cannot be in the past"),
-  pickupTime: z.string().trim().min(1, "Select a pickup time"),
-  paymentMethod: z.enum(["COD", "UPI", "CARD"]),
-  couponCode: z.string().trim().optional(),
-  billingSameAsShipping: z.boolean().default(true),
-  notes: z.string().max(1000).optional(),
-});
+export const checkoutSchema = z
+  .object({
+    name: z.string().trim().min(2, "Name is required"),
+    phone,
+    email: optionalEmail,
+    deliveryType: z.enum(["PICKUP", "DELIVERY"]).default("PICKUP"),
+    // Address only required for DELIVERY; validated conditionally below.
+    address: z.string().trim().optional().default(""),
+    city: z.string().trim().optional().default("Pune"),
+    pincode: z.string().optional().default(""),
+    state: z.string().trim().optional().default("Maharashtra"),
+    // Pickup slot required for PICKUP orders; validated conditionally below.
+    pickupDate: z.string().optional().default(""),
+    pickupTime: z.string().trim().optional().default(""),
+    paymentMethod: z.enum(["COD", "UPI", "CARD"]),
+    couponCode: z.string().trim().optional(),
+    billingSameAsShipping: z.boolean().default(true),
+    notes: z.string().max(1000).optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.deliveryType === "PICKUP") {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(v.pickupDate)) {
+        ctx.addIssue({ code: "custom", path: ["pickupDate"], message: "Select a pickup date" });
+      } else {
+        const d = new Date(v.pickupDate + "T00:00:00");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (d.getTime() < today.getTime()) {
+          ctx.addIssue({ code: "custom", path: ["pickupDate"], message: "Pickup date cannot be in the past" });
+        }
+      }
+      if (!v.pickupTime) {
+        ctx.addIssue({ code: "custom", path: ["pickupTime"], message: "Select a pickup time" });
+      }
+    } else {
+      if (v.address.length < 5) {
+        ctx.addIssue({ code: "custom", path: ["address"], message: "Delivery address is required" });
+      }
+      if (!/^\d{6}$/.test(v.pincode)) {
+        ctx.addIssue({ code: "custom", path: ["pincode"], message: "Enter a valid 6-digit pincode" });
+      }
+      if (v.city.length < 2) {
+        ctx.addIssue({ code: "custom", path: ["city"], message: "City is required" });
+      }
+    }
+  });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 

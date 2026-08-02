@@ -79,6 +79,14 @@ export {
  */
 export const ADVANCE_PERCENT = 50;
 
+/**
+ * Delivery is only offered when the order subtotal reaches this threshold.
+ * Below it the customer must collect from the Saras Baug shop.
+ * Enforced server-side in submitCheckout; the checkout UI reads the same value
+ * to decide whether to expose the delivery option.
+ */
+export const DELIVERY_MIN_SUBTOTAL = 5000;
+
 export const BRAND = { ...business, instagram: socials.instagram, facebook: socials.facebook };
 export const NAV_LINKS = navLinks;
 export const HERO_FEATURES = featuresBar;

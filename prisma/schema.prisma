@@ -130,6 +130,10 @@ model Order {
   // Saras Baug. Optional so historical/legacy orders remain valid.
   pickupDate DateTime?
   pickupTime String?
+
+  // PICKUP (default) or DELIVERY. Delivery is only unlocked when the cart
+  // subtotal reaches the threshold; enforced server-side in pricing.
+  deliveryType DeliveryType @default(PICKUP)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -173,10 +177,17 @@ enum OrderStatus {
   PENDING
   CONFIRMED
   PROCESSING
+  READY_FOR_PICKUP
   SHIPPED
   DELIVERED
+  COMPLETED
   CANCELLED
   REFUNDED
+}
+
+enum DeliveryType {
+  PICKUP
+  DELIVERY
 }
 
 enum PaymentStatus {

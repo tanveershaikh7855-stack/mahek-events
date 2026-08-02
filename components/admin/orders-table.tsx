@@ -2,7 +2,7 @@
 
 import { useState, useMemo, Fragment } from "react";
 import { ShoppingBag, Search, ChevronDown, Phone, MapPin, Calendar } from "lucide-react";
-import { updateOrderStatus, updateOrderPayment } from "@/lib/admin/actions";
+import { updateOrderStatus, updateOrderPayment, updateOrderPickup } from "@/lib/admin/actions";
 import { StatusPill, StatusSelect, EmptyState } from "./shared/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -11,8 +11,10 @@ const ORDER_STATUSES = [
   "PENDING",
   "CONFIRMED",
   "PROCESSING",
+  "READY_FOR_PICKUP",
   "SHIPPED",
   "DELIVERED",
+  "COMPLETED",
   "CANCELLED",
   "REFUNDED",
 ] as const;
@@ -214,27 +216,11 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                             <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2 flex items-center gap-1">
                               <MapPin className="w-3 h-3" /> Shop Pickup
                             </h4>
-                            {o.pickupDate ? (
-                              <p className="text-xs text-secondary-text leading-relaxed">
-                                <strong className="text-ink">
-                                  {new Date(o.pickupDate).toLocaleDateString("en-IN", {
-                                    weekday: "long",
-                                    day: "numeric",
-                                    month: "long",
-                                  })}
-                                </strong>
-                                {o.pickupTime && (
-                                  <>
-                                    <br />
-                                    at <strong className="text-ink">{o.pickupTime}</strong>
-                                  </>
-                                )}
-                                <br />
-                                Saras Baug, Pune 411004
-                              </p>
-                            ) : (
-                              <p className="text-xs text-secondary-text">No pickup slot</p>
-                            )}
+                            <PickupEditor
+                              orderId={o.id}
+                              pickupDate={o.pickupDate}
+                              pickupTime={o.pickupTime}
+                            />
                           </div>
                           <div>
                             <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2">
@@ -273,6 +259,124 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  );
+}
+
+const PICKUP_SLOTS = [
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+  "06:00 PM",
+  "07:00 PM",
+];
+
+function PickupEditor({
+  orderId,
+  pickupDate,
+  pickupTime,
+}: {
+  orderId: string;
+  pickupDate: string | null;
+  pickupTime: string | null;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [date, setDate] = useState(
+    pickupDate ? pickupDate.slice(0, 10) : new Date().toISOString().slice(0, 10),
+  );
+  const [time, setTime] = useState(pickupTime ?? "11:00 AM");
+
+  if (!editing) {
+    return (
+      <div className="text-xs text-secondary-text leading-relaxed">
+        {pickupDate ? (
+          <p>
+            <strong className="text-ink">
+              {new Date(pickupDate).toLocaleDateString("en-IN", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </strong>
+            {pickupTime && (
+              <>
+                <br />
+                at <strong className="text-ink">{pickupTime}</strong>
+              </>
+            )}
+            <br />
+            Saras Baug, Pune 411004
+          </p>
+        ) : (
+          <p>No pickup slot</p>
+        )}
+        <div className="flex items-center gap-2 mt-1.5">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-forest hover:underline font-semibold"
+          >
+            {pickupDate ? "Edit slot" : "Set slot"}
+          </button>
+          <a
+            href="https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-forest hover:underline"
+          >
+            Map
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 text-xs">
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-full rounded-lg border border-border bg-white px-2 py-1.5 focus:outline-none focus:border-forest"
+      />
+      <select
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        className="w-full rounded-lg border border-border bg-white px-2 py-1.5 focus:outline-none focus:border-forest"
+      >
+        {PICKUP_SLOTS.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={saving}
+          onClick={async () => {
+            setSaving(true);
+            await updateOrderPickup(orderId, date, time);
+            setSaving(false);
+            setEditing(false);
+          }}
+          className="flex-1 rounded-lg bg-forest px-3 py-1.5 font-semibold text-white disabled:opacity-50"
+        >
+          {saving ? "Saving…" : "Save"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setEditing(false)}
+          className="rounded-lg border border-border px-3 py-1.5 hover:bg-secondary"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );

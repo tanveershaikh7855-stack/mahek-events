@@ -85,11 +85,30 @@ const ORDER_STATUSES = [
   "PENDING",
   "CONFIRMED",
   "PROCESSING",
+  "READY_FOR_PICKUP",
   "SHIPPED",
   "DELIVERED",
+  "COMPLETED",
   "CANCELLED",
   "REFUNDED",
 ] as const;
+
+// Customer-facing copy for each status. Kept beside the enum so a new status
+// automatically requires a matching message (TS will flag a missing key).
+const STATUS_MESSAGES: Record<(typeof ORDER_STATUSES)[number], (n: string) => string> = {
+  PENDING: (n) => `Your Mahek Balloon order ${n} is being reviewed. We'll confirm shortly.`,
+  CONFIRMED: (n) => `Your Mahek Balloon order ${n} is confirmed. We'll start preparing it.`,
+  PROCESSING: (n) => `Your Mahek Balloon order ${n} is being prepared.`,
+  READY_FOR_PICKUP: (n) =>
+    `Your Mahek Balloon order ${n} is ready! Please collect it from our shop at Saras Baug, Pune. ` +
+    `Directions: https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`,
+  SHIPPED: (n) => `Your Mahek Balloon order ${n} is out for delivery.`,
+  DELIVERED: (n) => `Your Mahek Balloon order ${n} has been delivered. Thank you!`,
+  COMPLETED: (n) => `Your Mahek Balloon order ${n} is complete. Hope you loved it — a review would mean the world.`,
+  CANCELLED: (n) =>
+    `Your Mahek Balloon order ${n} has been cancelled. Any advance paid will be refunded. Questions? Call +91 8087867988.`,
+  REFUNDED: (n) => `Your Mahek Balloon order ${n} has been refunded.`,
+};
 
 const PAYMENT_STATUSES = ["PENDING", "PARTIALLY_PAID", "PAID", "FAILED", "REFUNDED"] as const;
 
@@ -107,21 +126,28 @@ export async function updateOrderStatus(id: string, status: string): Promise<Res
       include: { customer: { select: { email: true, name: true } } },
     });
 
-    if (parsed.data === "CANCELLED") {
+    const who = order.customerName ?? order.customer?.name ?? "there";
+    const message = STATUS_MESSAGES[parsed.data](order.orderNumber);
+
+    // Customer-facing notification on every meaningful transition. Skip the
+    // PENDING baseline because the customer already sees it at checkout.
+    if (parsed.data !== "PENDING") {
       await notifyQuietly(
-        email.sendCancellationEmail({
-          reference: order.orderNumber,
-          customerName: order.customerName ?? order.customer?.name ?? "there",
-          customerEmail: order.customer?.email,
-          kind: "order",
-        }),
-        order.customerPhone
-          ? whatsapp.sendText(
-              order.customerPhone,
-              `Your Mahek Balloon order ${order.orderNumber} has been cancelled. ` +
-                `Any advance paid will be refunded. Questions? Call +91 8087867988.`,
-            )
-          : null,
+        parsed.data === "CANCELLED"
+          ? email.sendCancellationEmail({
+              reference: order.orderNumber,
+              customerName: who,
+              customerEmail: order.customer?.email,
+              kind: "order",
+            })
+          : email.sendOrderStatusEmail({
+              orderNumber: order.orderNumber,
+              customerName: who,
+              customerEmail: order.customer?.email,
+              status: parsed.data,
+              message,
+            }),
+        order.customerPhone ? whatsapp.sendText(order.customerPhone, message) : null,
       );
     }
 
@@ -130,6 +156,54 @@ export async function updateOrderStatus(id: string, status: string): Promise<Res
   } catch (e) {
     console.error("[updateOrderStatus]", e);
     return fail("Could not update the order");
+  }
+}
+
+export async function updateOrderPickup(
+  id: string,
+  pickupDate: string | null,
+  pickupTime: string | null,
+): Promise<Result> {
+  await requireAdmin();
+  try {
+    const date =
+      pickupDate && /^\d{4}-\d{2}-\d{2}$/.test(pickupDate)
+        ? new Date(`${pickupDate}T00:00:00+05:30`)
+        : null;
+    const order = await prisma.order.update({
+      where: { id },
+      data: { pickupDate: date, pickupTime: pickupTime || null },
+      include: { customer: { select: { email: true, name: true } } },
+    });
+
+    if (date) {
+      const who = order.customerName ?? order.customer?.name ?? "there";
+      const humanDate = date.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      });
+      const message =
+        `Hi ${who}, your Mahek Balloon pickup slot for order ${order.orderNumber} has been ` +
+        `set to ${humanDate}${pickupTime ? ` at ${pickupTime}` : ""}. ` +
+        `Shop: Saras Baug, Pune — https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`;
+      await notifyQuietly(
+        email.sendOrderStatusEmail({
+          orderNumber: order.orderNumber,
+          customerName: who,
+          customerEmail: order.customer?.email,
+          status: "Pickup rescheduled",
+          message,
+        }),
+        order.customerPhone ? whatsapp.sendText(order.customerPhone, message) : null,
+      );
+    }
+
+    revalidateAdmin("/admin/orders");
+    return ok("Pickup updated");
+  } catch (e) {
+    console.error("[updateOrderPickup]", e);
+    return fail("Could not update pickup slot");
   }
 }
 
