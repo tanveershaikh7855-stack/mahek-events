@@ -6,10 +6,20 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Calendar, MapPin, Users  } from "lucide-react";import { ArrowRight } from "@/components/ui/icons";
-import { FALLBACK_SERVICES } from "@/lib/seed";
 import { servicesPage } from "@/lib/content";
 import { cn, formatPrice } from "@/lib/utils";
 
+export type ServiceCard = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  priceFrom: number;
+  image: string;
+  features: string[];
+};
+
+// Fallback thumbnails for the pre-seed / legacy state; the DB image wins.
 const serviceImages: Record<string, string> = {
   birthday: "/images/birthday-arch.png",
   anniversary: "/images/wedding-room.png",
@@ -23,7 +33,7 @@ const serviceImages: Record<string, string> = {
   "room-decoration": "/images/birthday-arch.png",
 };
 
-export function ServicesPageClient() {
+export function ServicesPageClient({ services }: { services: ServiceCard[] }) {
   return (
     <div className="min-h-screen">
       <section className="pt-24 pb-12 md:pt-28 md:pb-16 bg-background border-b border-black/[0.04]">
@@ -49,7 +59,7 @@ export function ServicesPageClient() {
       <section className="py-12 md:py-16">
         <div className="container-tight">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {FALLBACK_SERVICES.map((service, index) => (
+            {services.map((service, index) => (
               <motion.article
                 key={service.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -60,11 +70,12 @@ export function ServicesPageClient() {
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-0">
                   <div className="sm:col-span-2 relative aspect-[4/3] sm:aspect-auto overflow-hidden bg-secondary">
                     <Image
-                      src={serviceImages[service.slug] || serviceImages.birthday}
+                      src={service.image || serviceImages[service.slug] || serviceImages.birthday}
                       alt={service.name}
                       fill
                       className="object-cover image-zoom"
                       sizes="(max-width: 640px) 100vw, 40vw"
+                      unoptimized
                     />
                   </div>
                   <div className="sm:col-span-3 p-5 md:p-6 flex flex-col justify-between">

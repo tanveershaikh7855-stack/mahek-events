@@ -13,7 +13,7 @@ import { Newsletter } from "@/components/home/newsletter";
 import { HomeInfoSection } from "@/components/home/home-info";
 import { ReviewVideosCarousel } from "@/components/home/review-videos-carousel";
 import { seo, business } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories, getServices } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mahek Balloons — Premium Helium Balloon Decoration in Pune | Saras Baug",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats, serviceList] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
@@ -35,6 +35,7 @@ export default async function HomePage() {
     getReviewVideos({ limit: 12 }),
     getCategories("PRODUCT"),
     getCategories("SERVICE"),
+    getServices(),
   ]);
 
   const collectImages = (rows: { slug: string; image?: string | null }[]) =>
@@ -91,7 +92,7 @@ export default async function HomePage() {
       <FeaturesBar />
       <CategoryGrid productImages={productImages} serviceImages={serviceImages} />
       <FeaturedProducts products={trim(products)} />
-      <ServicesSection />
+      <ServicesSection services={serviceList} />
       <GalleryPreview images={galleryImages} />
       <WhyChooseUs />
       <ReviewVideosCarousel videos={reviewVideos} googleReviewUrl={business.googleReviewUrl} />

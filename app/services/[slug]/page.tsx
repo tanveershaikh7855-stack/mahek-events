@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ArrowRight, Calendar, Star } from "lucide-react";
-import { FALLBACK_SERVICES } from "@/lib/seed";
+import { getServiceBySlug } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { ServiceJsonLd } from "@/components/seo/service-jsonld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
@@ -16,7 +16,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const service = FALLBACK_SERVICES.find((s) => s.slug === slug);
+  const service = await getServiceBySlug(slug);
   if (!service) return { title: "Service Not Found" };
   const title = `${service.name} in Pune — Starting ₹${service.priceFrom.toLocaleString("en-IN")} | Mahek Balloons`;
   const description = `${service.description} Professional setup within 70 KM of Pune. Book online, free consultation. Starting ₹${service.priceFrom.toLocaleString("en-IN")}.`;
@@ -51,8 +51,10 @@ const serviceImages: Record<string, string> = {
 
 export default async function ServiceDetailPage({ params }: Props) {
   const { slug } = await params;
-  const service = FALLBACK_SERVICES.find((s) => s.slug === slug);
+  const service = await getServiceBySlug(slug);
   if (!service) notFound();
+
+  const heroImage = service.image || serviceImages[service.slug] || serviceImages.birthday;
 
   return (
     <>
@@ -61,7 +63,7 @@ export default async function ServiceDetailPage({ params }: Props) {
         slug={service.slug}
         description={service.description}
         priceFrom={service.priceFrom}
-        image={serviceImages[service.slug]}
+        image={heroImage}
       />
       <BreadcrumbJsonLd
         items={[
@@ -72,11 +74,12 @@ export default async function ServiceDetailPage({ params }: Props) {
     <div className="min-h-screen pt-20 md:pt-24">
       <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <Image
-          src={serviceImages[service.slug] || serviceImages.birthday}
+          src={heroImage}
           alt={service.name}
           fill
           className="object-cover"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 container-tight">
@@ -107,11 +110,12 @@ export default async function ServiceDetailPage({ params }: Props) {
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary">
                   <Image
-                    src={serviceImages[service.slug] || serviceImages.birthday}
+                    src={heroImage}
                     alt={`${service.name} gallery ${i}`}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 50vw, 33vw"
+                    unoptimized
                   />
                 </div>
               ))}

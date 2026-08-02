@@ -8,6 +8,16 @@ import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_SERVICES } from "@/lib/seed";
 import { formatPrice } from "@/lib/utils";
 
+type ServiceCard = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  priceFrom: number;
+  image: string;
+  features: string[];
+};
+
 const serviceImages: Record<string, string> = {
   birthday: "/images/birthday-arch.png",
   wedding: "/images/wedding-room.png",
@@ -21,7 +31,9 @@ const serviceImages: Record<string, string> = {
   "room-decoration": "/images/birthday-arch.png",
 };
 
-export function ServicesSection() {
+export function ServicesSection({ services }: { services?: ServiceCard[] }) {
+  // Falls back to the static list if the home page didn't pass DB services.
+  const list = (services && services.length > 0 ? services : FALLBACK_SERVICES).slice(0, 6);
   return (
     <section className="section-spacing bg-white">
       <div className="container-tight">
@@ -60,7 +72,7 @@ export function ServicesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {FALLBACK_SERVICES.slice(0, 6).map((service, index) => (
+          {list.map((service, index) => (
             <motion.article
               key={service.slug}
               initial={{ opacity: 0, y: 14 }}
@@ -72,11 +84,12 @@ export function ServicesSection() {
               <Link href={`/services/${service.slug}`} className="block" aria-label={service.name}>
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <Image
-                    src={serviceImages[service.slug] || serviceImages.birthday}
+                    src={service.image || serviceImages[service.slug] || serviceImages.birthday}
                     alt={service.name}
                     fill
                     className="object-cover image-zoom"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">

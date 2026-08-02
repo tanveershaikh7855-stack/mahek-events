@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { ServicesPageClient } from "@/components/services/services-page-client";
 import { servicesPage, business, seo } from "@/lib/content";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
+import { getServices } from "@/lib/data";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Balloon Decoration Services in Pune — Birthday, Wedding & Events",
@@ -25,11 +28,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
   return (
     <>
       <BreadcrumbJsonLd items={[{ name: "Services", href: "/services" }]} />
-      <ServicesPageClient />
+      <ServicesPageClient services={services} />
     </>
   );
 }

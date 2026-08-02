@@ -782,6 +782,84 @@ export async function toggleGalleryActive(id: string, isActive: boolean): Promis
   }
 }
 
+// ── SERVICES ──────────────────────────────────────────────────
+
+const serviceSchema = z.object({
+  name: z.string().trim().min(2, "Name is required"),
+  description: z.string().trim().min(5, "Description is required").max(2000),
+  priceFrom: z.coerce.number().min(0, "Price must be 0 or more"),
+  image: z.string().optional(),
+  // Features arrive newline-separated from a textarea.
+  features: z.string().optional(),
+  sortOrder: z.coerce.number().int().default(0),
+  isActive: z.union([z.literal("on"), z.literal("")]).optional(),
+});
+
+export async function saveService(id: string | null, formData: FormData): Promise<Result> {
+  await requireAdmin();
+  const raw = Object.fromEntries(formData.entries());
+  // The uploader stores newline-joined values; a service holds one image.
+  if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
+  const parsed = serviceSchema.safeParse(raw);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the service fields");
+  const d = parsed.data;
+
+  const features = (d.features ?? "")
+    .split("\n")
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  const data = {
+    name: d.name,
+    description: d.description,
+    priceFrom: new Prisma.Decimal(d.priceFrom),
+    image: d.image || "/images/logo/logo.png",
+    features,
+    sortOrder: d.sortOrder,
+    isActive: d.isActive === "on",
+  };
+
+  try {
+    if (id) {
+      await prisma.service.update({ where: { id }, data });
+    } else {
+      let slug = slugify(d.name);
+      const clash = await prisma.service.findUnique({ where: { slug } });
+      if (clash) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+      await prisma.service.create({ data: { ...data, slug } });
+    }
+    revalidateAdmin("/admin/services", "/services", "/");
+    return ok(id ? "Service updated" : "Service created");
+  } catch (e) {
+    console.error("[saveService]", e);
+    return fail("Could not save the service");
+  }
+}
+
+export async function deleteService(id: string): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.service.delete({ where: { id } });
+    revalidateAdmin("/admin/services", "/services", "/");
+    return ok("Service deleted");
+  } catch (e) {
+    console.error("[deleteService]", e);
+    return fail("Could not delete the service");
+  }
+}
+
+export async function toggleServiceActive(id: string, isActive: boolean): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.service.update({ where: { id }, data: { isActive } });
+    revalidateAdmin("/admin/services", "/services", "/");
+    return ok(isActive ? "Service shown" : "Service hidden");
+  } catch (e) {
+    console.error("[toggleServiceActive]", e);
+    return fail("Could not update the service");
+  }
+}
+
 // ── OFFERS ────────────────────────────────────────────────────
 
 const offerSchema = z.object({

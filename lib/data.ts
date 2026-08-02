@@ -111,14 +111,43 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
   );
 }
 
-// Services and gallery are content-managed in lib/content.ts rather than the
-// database, so these read straight from it — no cast needed.
+// Services are admin-managed in the `services` table. When it is empty (before
+// seeding) or the DB is unreachable, fall back to the static list so /services
+// never renders blank. Decimal priceFrom is normalised to a plain number so the
+// shape matches the static fallback the pages already expect.
 export async function getServices() {
-  return FALLBACK_SERVICES;
+  return withFallback(async () => {
+    const rows = await prisma.service.findMany({
+      where: { isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+    if (rows.length === 0) return FALLBACK_SERVICES;
+    return rows.map((s) => ({
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+      description: s.description,
+      priceFrom: Number(s.priceFrom),
+      image: s.image,
+      features: Array.isArray(s.features) ? (s.features as string[]) : [],
+    }));
+  }, FALLBACK_SERVICES);
 }
 
 export async function getServiceBySlug(slug: string) {
-  return FALLBACK_SERVICES.find((s) => s.slug === slug);
+  return withFallback(async () => {
+    const s = await prisma.service.findUnique({ where: { slug } });
+    if (!s || !s.isActive) return FALLBACK_SERVICES.find((f) => f.slug === slug);
+    return {
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+      description: s.description,
+      priceFrom: Number(s.priceFrom),
+      image: s.image,
+      features: Array.isArray(s.features) ? (s.features as string[]) : [],
+    };
+  }, FALLBACK_SERVICES.find((f) => f.slug === slug));
 }
 
 /** Fisher-Yates. `sort(() => Math.random() - 0.5)` is a biased shuffle. */

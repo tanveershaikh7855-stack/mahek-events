@@ -182,6 +182,13 @@ export async function getAdminCategories() {
   });
 }
 
+export async function getAdminServices() {
+  await requireAdmin();
+  return prisma.service.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
 export async function getCoupons() {
   await requireAdmin();
   return prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });

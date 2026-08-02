@@ -327,6 +327,28 @@ enum MediaKind {
   VIDEO
 }
 
+// Decoration services shown on /services. Admin-editable; getServices() reads
+// this table and falls back to the static list in lib/content.ts when empty or
+// the DB is unreachable.
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String   @db.Text
+  priceFrom   Decimal  @db.Decimal(10, 2)
+  image       String
+  // string[] of bullet points, e.g. ["Theme customization", "Setup & takedown"]
+  features    Json     @default("[]")
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([slug])
+  @@map("services")
+}
+
 model DeliveryCharge {
   id          String   @id @default(cuid())
   minDistance Int
