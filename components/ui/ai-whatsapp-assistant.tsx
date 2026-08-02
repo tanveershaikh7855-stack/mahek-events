@@ -52,7 +52,7 @@ function getBotResponse(input: string, history: string[]): string {
   return matched[1];
 }
 
-const WHATSAPP_MESSAGE = "Hello Mahek Balloon,%0A%0AI want to discuss my decoration requirements.";
+const WHATSAPP_MESSAGE = "Hello Mahek Balloons,%0A%0AI want to discuss my decoration requirements.";
 
 function useWindowSize() {
   const [isMobile, setIsMobile] = useState(false);

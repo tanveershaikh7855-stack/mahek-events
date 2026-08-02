@@ -4,9 +4,9 @@ import { business, seo } from "@/lib/content";
 import { getGallery } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Balloon Decoration Gallery — Real Events in Pune | Mahek Balloon",
+  title: "Balloon Decoration Gallery — Real Events in Pune | Mahek Balloons",
   description:
-    "See real balloon decoration setups by Mahek Balloon, Pune — birthdays, weddings, proposals, baby showers & corporate events. Premium helium balloon styling near Saras Baug.",
+    "See real balloon decoration setups by Mahek Balloons, Pune — birthdays, weddings, proposals, baby showers & corporate events. Premium helium balloon styling near Saras Baug.",
   alternates: { canonical: "/gallery" },
   keywords: [
     "balloon decoration photos Pune",
@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     "wedding decoration photos Pune",
   ],
   openGraph: {
-    title: "Balloon Decoration Gallery | Mahek Balloon Pune",
+    title: "Balloon Decoration Gallery | Mahek Balloons Pune",
     description: "Browse real balloon decoration projects — birthdays, weddings, proposals & more.",
     url: "/gallery",
-    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Gallery" }],
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloons Gallery" }],
   },
 };
 

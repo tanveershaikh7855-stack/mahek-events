@@ -6,9 +6,9 @@ import { getOffers } from "@/lib/data";
 import { business, seo } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Balloon Decoration Offers & Deals in Pune | Mahek Balloon",
+  title: "Balloon Decoration Offers & Deals in Pune | Mahek Balloons",
   description:
-    "Exclusive offers on helium balloon decoration, party supplies & event packages in Pune. Save on birthday, wedding & celebration decor. Limited-time deals from Mahek Balloon.",
+    "Exclusive offers on helium balloon decoration, party supplies & event packages in Pune. Save on birthday, wedding & celebration decor. Limited-time deals from Mahek Balloons.",
   alternates: { canonical: "/offers" },
   keywords: [
     "balloon decoration offers Pune",
@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     "decoration package offers",
   ],
   openGraph: {
-    title: "Offers & Deals | Mahek Balloon Pune",
+    title: "Offers & Deals | Mahek Balloons Pune",
     description: "Seasonal and exclusive offers on balloon décor and celebration packages.",
     url: "/offers",
-    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Offers" }],
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloons Offers" }],
   },
 };
 

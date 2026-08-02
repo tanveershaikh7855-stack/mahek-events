@@ -21,7 +21,9 @@ export function StructuredData() {
     "@type": ["LocalBusiness", "Store"],
     "@id": `${base}/#business`,
     name: business.name,
-    alternateName: "Mahek Balloons",
+    // Singular form kept as the alternate so searches for "Mahek Balloon" still
+    // resolve to the business.
+    alternateName: "Mahek Balloon",
     description: seo.metaDescription,
     slogan: business.tagline,
     url: base,

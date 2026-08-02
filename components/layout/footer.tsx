@@ -31,12 +31,12 @@ export function Footer() {
                   inverted it, rendering the whole tile as a solid white block. */}
               <Image
                 src="/images/logo/logo.png"
-                alt="Mahek Balloon"
+                alt="Mahek Balloons"
                 width={512}
                 height={512}
                 className="h-12 w-auto object-contain rounded-lg"
               />
-              <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloon</span>
+              <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloons</span>
             </Link>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-5">{BRAND.description}</p>
             <div className="flex flex-wrap gap-3 mb-5">

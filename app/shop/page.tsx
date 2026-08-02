@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "helium balloon shop near Saras Baug",
   ],
   openGraph: {
-    title: "Shop Helium Balloons & Party Supplies | Mahek Balloon Pune",
+    title: "Shop Helium Balloons & Party Supplies | Mahek Balloons Pune",
     description:
       "Premium helium balloons, bouquets & party supplies. Same-day pickup from Saras Baug, Pune.",
     url: "/shop",

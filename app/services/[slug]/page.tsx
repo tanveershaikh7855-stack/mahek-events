@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = FALLBACK_SERVICES.find((s) => s.slug === slug);
   if (!service) return { title: "Service Not Found" };
-  const title = `${service.name} in Pune — Starting ₹${service.priceFrom.toLocaleString("en-IN")} | Mahek Balloon`;
+  const title = `${service.name} in Pune — Starting ₹${service.priceFrom.toLocaleString("en-IN")} | Mahek Balloons`;
   const description = `${service.description} Professional setup within 70 KM of Pune. Book online, free consultation. Starting ₹${service.priceFrom.toLocaleString("en-IN")}.`;
   return {
     title,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "event decoration Pune",
     ],
     openGraph: {
-      title: `${service.name} in Pune | Mahek Balloon`,
+      title: `${service.name} in Pune | Mahek Balloons`,
       description: service.description,
       url: `/services/${slug}`,
       images: serviceImages[slug]

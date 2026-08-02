@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Order Confirmed | Mahek Balloon",
+  title: "Order Confirmed | Mahek Balloons",
   robots: "noindex",
 };
 

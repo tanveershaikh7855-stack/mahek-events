@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await loadProduct(slug);
   if (!product) return { title: "Product Not Found" };
   const title = `${product.name} — Buy Online in Pune | ${business.name}`;
-  const description = `${product.shortDesc} Available at Mahek Balloon, Saras Baug, Pune. Same-day pickup. Starting ₹${product.salePrice ?? product.basePrice}.`;
+  const description = `${product.shortDesc} Available at Mahek Balloons, Saras Baug, Pune. Same-day pickup. Starting ₹${product.salePrice ?? product.basePrice}.`;
   return {
     title,
     description,

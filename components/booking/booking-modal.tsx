@@ -73,7 +73,7 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
       `💰 Amount: ₹${total.toLocaleString("en-IN")}\n` +
       `💵 Advance: ₹${advancePayment.toLocaleString("en-IN")}\n\n` +
       `📝 Special Request: ${data.specialRequests || "None"}\n\n` +
-      `_Booking via Mahek Balloon website_`;
+      `_Booking via Mahek Balloons website_`;
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${BRAND.whatsapp.replace(/\D/g, "")}?text=${encoded}`, "_blank");

@@ -43,7 +43,7 @@ export function BookingPageClient() {
   // customer can always reach us on WhatsApp even if the form submit fails.
   const whatsappBookingUrl = () => {
     const lines = [
-      "Hi Mahek Balloon! I would like to book a decoration.",
+      "Hi Mahek Balloons! I would like to book a decoration.",
       formData.name && `Name: ${formData.name}`,
       formData.phone && `Phone: ${formData.phone}`,
       formData.event && `Event: ${formData.event}`,

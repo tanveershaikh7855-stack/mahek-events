@@ -19,7 +19,7 @@ import { StatusPill } from "@/components/admin/shared/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | Mahek Balloon",
+  title: "Admin Dashboard | Mahek Balloons",
   robots: "noindex",
 };
 

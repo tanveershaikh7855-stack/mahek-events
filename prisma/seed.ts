@@ -154,7 +154,7 @@ async function seedAdmin() {
 }
 
 async function main() {
-  console.log("Seeding Mahek Balloon database...");
+  console.log("Seeding Mahek Balloons database...");
   await seedCategories();
   await seedProducts();
   await seedGallery();

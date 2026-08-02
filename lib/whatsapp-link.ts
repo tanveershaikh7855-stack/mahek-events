@@ -52,20 +52,20 @@ export function orderWaMessage(o: {
   switch (o.status) {
     case "CONFIRMED":
       return (
-        `Hi ${name}, your Mahek Balloon order ${o.orderNumber} is confirmed! ` +
+        `Hi ${name}, your Mahek Balloons order ${o.orderNumber} is confirmed! ` +
         (pickup
           ? `Pickup on ${pickup}${o.pickupTime ? ` at ${o.pickupTime}` : ""} from our Saras Baug shop. `
           : "") +
         `Maps: ${SHOP_MAPS_URL}`
       );
     case "READY_FOR_PICKUP":
-      return `Hi ${name}, your Mahek Balloon order ${o.orderNumber} is ready to collect from our Saras Baug shop! Maps: ${SHOP_MAPS_URL}`;
+      return `Hi ${name}, your Mahek Balloons order ${o.orderNumber} is ready to collect from our Saras Baug shop! Maps: ${SHOP_MAPS_URL}`;
     case "COMPLETED":
-      return `Hi ${name}, thank you for collecting order ${o.orderNumber} from Mahek Balloon! A Google review would mean a lot to us. 🎈`;
+      return `Hi ${name}, thank you for collecting order ${o.orderNumber} from Mahek Balloons! A Google review would mean a lot to us. 🎈`;
     case "CANCELLED":
-      return `Hi ${name}, your Mahek Balloon order ${o.orderNumber} has been cancelled. Any advance paid will be refunded.`;
+      return `Hi ${name}, your Mahek Balloons order ${o.orderNumber} has been cancelled. Any advance paid will be refunded.`;
     default:
-      return `Hi ${name}, this is Mahek Balloon regarding your order ${o.orderNumber}.`;
+      return `Hi ${name}, this is Mahek Balloons regarding your order ${o.orderNumber}.`;
   }
 }
 
@@ -91,7 +91,7 @@ export function bookingWaMessage(b: {
 
   switch (b.status) {
     case "NEW":
-      return `Hi ${name}, Mahek Balloon here about your ${b.eventType} decoration enquiry (${b.bookingNumber}). Could you confirm the venue and setup time for ${slot}?`;
+      return `Hi ${name}, Mahek Balloons here about your ${b.eventType} decoration enquiry (${b.bookingNumber}). Could you confirm the venue and setup time for ${slot}?`;
     case "FOLLOW_UP":
       return (
         `Hi ${name}, following up on your ${b.eventType} decoration (${b.bookingNumber}) for ${slot}. ` +
@@ -106,10 +106,10 @@ export function bookingWaMessage(b: {
         `Our team will reach the venue ahead of time to set up. Thank you! 🎈`
       );
     case "COMPLETED":
-      return `Hi ${name}, thank you for choosing Mahek Balloon for your ${b.eventType} (${b.bookingNumber})! We'd love a Google review if you enjoyed the setup. 🎈`;
+      return `Hi ${name}, thank you for choosing Mahek Balloons for your ${b.eventType} (${b.bookingNumber})! We'd love a Google review if you enjoyed the setup. 🎈`;
     case "CANCELLED":
       return `Hi ${name}, your ${b.eventType} decoration booking ${b.bookingNumber} has been cancelled. Any advance paid will be refunded.`;
     default:
-      return `Hi ${name}, this is Mahek Balloon regarding your booking ${b.bookingNumber}.`;
+      return `Hi ${name}, this is Mahek Balloons regarding your booking ${b.bookingNumber}.`;
   }
 }

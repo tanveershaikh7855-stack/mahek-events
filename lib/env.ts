@@ -45,9 +45,12 @@ const schema = z.object({
   WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
   WHATSAPP_BUSINESS_NUMBER: z.string().optional(),
 
-  // Stripe
-  STRIPE_SECRET_KEY: z.string().optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  // Razorpay. KEY_ID is also exposed publicly because the Checkout modal needs
+  // it in the browser; the SECRET signs orders and verifies callbacks server-side
+  // and must never be sent to the client.
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
 
   // Cloudinary
   CLOUDINARY_API_KEY: z.string().optional(),
@@ -84,7 +87,10 @@ export const env = parseEnv();
 /** Feature flags derived from which credentials are actually present. */
 export const features = {
   database: Boolean(env.DATABASE_URL),
-  stripe: Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET),
+  // Card/UPI checkout needs the key pair. The webhook secret is only required
+  // for the (recommended) webhook fallback, so it is not gated on here.
+  razorpay: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET),
+  razorpayWebhook: Boolean(env.RAZORPAY_WEBHOOK_SECRET),
   email: Boolean(env.RESEND_API_KEY),
   whatsapp: Boolean(env.WHATSAPP_API_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID),
   cloudinary: Boolean(env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),

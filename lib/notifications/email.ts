@@ -10,8 +10,8 @@ import { formatPrice } from "../formatters";
 
 const resend = features.email ? new Resend(env.RESEND_API_KEY) : null;
 
-const FROM = env.EMAIL_FROM ?? "Mahek Balloon <onboarding@resend.dev>";
-const BRAND_NAME = "Mahek Balloon";
+const FROM = env.EMAIL_FROM ?? "Mahek Balloons <onboarding@resend.dev>";
+const BRAND_NAME = "Mahek Balloons";
 
 type SendResult = { ok: true; id: string } | { ok: false; error: string };
 
@@ -112,7 +112,7 @@ export function sendOrderPlacedEmail(data: OrderEmailData): Promise<SendResult> 
            <p style="margin:0 0 4px;font-size:13px;color:#2F5D3A;font-weight:700">📍 Pickup from our shop</p>
            <p style="margin:0;font-size:14px;color:#1F1F1F;line-height:1.5">
              <strong>${escapeHtml(data.pickupDate)}</strong> at <strong>${escapeHtml(data.pickupTime)}</strong><br/>
-             Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004
+             Mahek Balloons, Opposite Saras Baug Garden, Pune — 411004
            </p>
          </div>`
       : "";
@@ -314,7 +314,7 @@ export function sendLoginAlertEmail(data: {
   const when = data.at.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
   const html = layout(
     "New sign-in to your admin account",
-    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.name)}, your Mahek Balloon admin account was
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.name)}, your Mahek Balloons admin account was
       just signed in.</p>
      <table style="width:100%;border-collapse:collapse;margin:16px 0">
        ${row("Account", data.email)}
@@ -323,7 +323,7 @@ export function sendLoginAlertEmail(data: {
      <p style="font-size:14px;line-height:1.6">If this was you, no action is needed. If not, change the password
       immediately.</p>`,
   );
-  return send(data.email, "New sign-in to your Mahek Balloon admin", html);
+  return send(data.email, "New sign-in to your Mahek Balloons admin", html);
 }
 
 /** Welcome email sent when a shopper creates an account (form or Google). */

@@ -153,12 +153,18 @@ export async function priceCart(options: {
       basePrice: true,
       salePrice: true,
       stock: true,
+      advancePercent: true,
     },
   });
 
   const byId = new Map(products.map((p) => [p.id, p]));
 
   const lines: PricedLine[] = [];
+  // Advance is collected per product: each line contributes its own
+  // (product.advancePercent ?? default) share of its value. We accumulate that
+  // rupee amount here and turn it into an effective percentage of the grand
+  // total below, so a mixed cart is charged a fair blended advance.
+  let advanceOnGoods = 0;
   for (const [productId, { quantity, variant }] of wanted) {
     const product = byId.get(productId);
     if (!product) {
@@ -180,6 +186,13 @@ export async function priceCart(options: {
       Number(product.salePrice ?? product.basePrice),
     );
     const images = Array.isArray(product.images) ? product.images : [];
+    const lineTotal = round2(unitPrice * quantity);
+
+    // Clamp to a sane 1–100 range; null/0/garbage falls back to the store default.
+    const rawPct = product.advancePercent;
+    const linePct =
+      rawPct && rawPct >= 1 && rawPct <= 100 ? rawPct : env.ADVANCE_PERCENT;
+    advanceOnGoods += (lineTotal * linePct) / 100;
 
     lines.push({
       productId: product.id,
@@ -188,7 +201,7 @@ export async function priceCart(options: {
       image: typeof images[0] === "string" ? images[0] : "",
       unitPrice,
       quantity,
-      lineTotal: round2(unitPrice * quantity),
+      lineTotal,
       variant,
     });
   }
@@ -203,8 +216,13 @@ export async function priceCart(options: {
   const gst = round2(taxable * env.GST_RATE);
   const total = round2(taxable + deliveryCharge + gst);
 
-  const advancePercent = env.ADVANCE_PERCENT;
-  const advanceAmount = round2((total * advancePercent) / 100);
+  // Turn the per-line advance rupees into an effective rate on the goods, then
+  // apply it to the grand total (so GST/delivery are advanced in the same
+  // proportion). Falls back to the store default for an all-zero edge case.
+  const effectivePercent =
+    subtotal > 0 ? (advanceOnGoods / subtotal) * 100 : env.ADVANCE_PERCENT;
+  const advancePercent = Math.round(effectivePercent);
+  const advanceAmount = round2((total * effectivePercent) / 100);
   const balanceDue = round2(total - advanceAmount);
 
   return {

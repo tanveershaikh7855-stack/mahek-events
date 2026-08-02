@@ -38,6 +38,41 @@ const PAYMENT_METHODS = [
   { value: "CARD", label: "Credit/Debit Card", icon: Landmark, desc: "Visa, Mastercard, RuPay" },
 ];
 
+type RazorpayResponse = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
+
+const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
+
+/** Injects the Razorpay Checkout script once and resolves when it is ready. */
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${RAZORPAY_SCRIPT}"]`,
+    );
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      existing.addEventListener("error", () => resolve(false));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = RAZORPAY_SCRIPT;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 // Shop is open Mon–Sat 9 AM–8 PM. Slots exclude the peak-fill window so the
 // shop can prep helium orders in advance.
 const PICKUP_SLOTS = [
@@ -133,36 +168,22 @@ export function CheckoutPageClient() {
       return;
     }
 
-    // Card/UPI: hand off to Stripe to collect the advance. The order is only
-    // marked CONFIRMED by the webhook once that payment actually clears.
+    // Card/UPI: open the Razorpay Checkout modal to collect the advance. The
+    // order is only marked CONFIRMED once that payment is verified server-side.
     if (result.requiresPayment) {
-      try {
-        const res = await fetch("/api/checkout/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId: result.orderId }),
-        });
-        const payload = await res.json();
-        if (res.ok && payload.url) {
-          clearCart();
-          window.location.href = payload.url;
-          return;
-        }
-        setError(
-          payload.error ??
-            "Your order was saved but payment could not start. We will call you to collect the advance.",
-        );
-        setSubmitting(false);
-        return;
-      } catch {
-        setError(
-          "Your order was saved but payment could not start. We will call you to collect the advance.",
-        );
-        setSubmitting(false);
-        return;
-      }
+      await payWithRazorpay(result);
+      return;
     }
 
+    finishOrder(result);
+  };
+
+  /** Shows the success screen and clears the cart once an order is placed/paid. */
+  const finishOrder = (result: {
+    orderNumber: string;
+    advanceAmount: number;
+    balanceDue: number;
+  }) => {
     clearCart();
     setPlacedOrder({
       orderNumber: result.orderNumber,
@@ -174,6 +195,81 @@ export function CheckoutPageClient() {
     });
     setSubmitting(false);
     setCompleted(true);
+  };
+
+  const payWithRazorpay = async (result: {
+    orderId: string;
+    orderNumber: string;
+    advanceAmount: number;
+    balanceDue: number;
+  }) => {
+    const softFail = (msg?: string) => {
+      setError(
+        msg ??
+          "Your order was saved but payment could not start. We will call you to collect the advance.",
+      );
+      setSubmitting(false);
+    };
+
+    try {
+      const res = await fetch("/api/checkout/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: result.orderId }),
+      });
+      const payload = await res.json();
+      if (!res.ok || !payload.razorpayOrderId) {
+        softFail(payload.error);
+        return;
+      }
+
+      const loaded = await loadRazorpayScript();
+      if (!loaded || typeof window === "undefined" || !window.Razorpay) {
+        softFail("Could not load the payment window. Please check your connection and retry.");
+        return;
+      }
+
+      const rzp = new window.Razorpay({
+        key: payload.keyId,
+        order_id: payload.razorpayOrderId,
+        amount: payload.amount,
+        currency: payload.currency,
+        name: payload.name,
+        description: payload.description,
+        prefill: payload.prefill,
+        theme: { color: "#1f5d3a" },
+        handler: async (response: RazorpayResponse) => {
+          // Verify server-side before showing success — a client cannot fake this.
+          try {
+            const verifyRes = await fetch("/api/checkout/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+            if (verifyRes.ok) {
+              finishOrder(result);
+            } else {
+              softFail(
+                "Payment was received but we could not verify it instantly. We will confirm your order shortly.",
+              );
+            }
+          } catch {
+            softFail(
+              "Payment was received but we could not verify it instantly. We will confirm your order shortly.",
+            );
+          }
+        },
+        modal: {
+          ondismiss: () =>
+            softFail(
+              "Payment was cancelled. Your order is saved — pay the advance anytime or choose Cash at Shop.",
+            ),
+        },
+      });
+      rzp.open();
+    } catch {
+      softFail();
+    }
   };
 
   if (items.length === 0 && !completed) {
@@ -226,7 +322,7 @@ export function CheckoutPageClient() {
                   at <strong>{placedOrder.pickupTime}</strong>
                 </p>
                 <p className="text-xs text-secondary-text mt-1">
-                  Mahek Balloon, Saras Baug, Pune — 411004
+                  Mahek Balloons, Saras Baug, Pune — 411004
                 </p>
                 <a
                   href="https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7"
@@ -326,7 +422,7 @@ export function CheckoutPageClient() {
                         </h2>
                         <p className="text-sm text-secondary-text">
                           {deliveryType === "PICKUP"
-                            ? "Mahek Balloon, Opposite Saras Baug Garden, Pune — 411004."
+                            ? "Mahek Balloons, Opposite Saras Baug Garden, Pune — 411004."
                             : "We'll bring the order to your door within Pune. Team will call to confirm timing."}
                         </p>
                       </div>

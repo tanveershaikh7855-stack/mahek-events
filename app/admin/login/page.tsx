@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AdminLoginClient } from "@/components/admin/admin-login-client";
 
 export const metadata: Metadata = {
-  title: "Admin Login | Mahek Balloon",
+  title: "Admin Login | Mahek Balloons",
   robots: "noindex",
 };
 

@@ -8,7 +8,7 @@ import { formatPrice } from "@/lib/utils";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
 export const metadata: Metadata = {
-  title: "My Account | Mahek Balloon",
+  title: "My Account | Mahek Balloons",
   description: "Manage your profile, bookings, and account settings.",
 };
 

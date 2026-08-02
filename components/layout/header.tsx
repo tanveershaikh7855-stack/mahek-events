@@ -144,12 +144,12 @@ export function Header() {
           <Link
             href="/"
             className="flex items-center gap-2.5 flex-shrink-0"
-            aria-label="Mahek Balloon Home"
+            aria-label="Mahek Balloons Home"
           >
             <div className="flex items-center gap-2.5">
               <Image
                 src="/images/logo/logo.png"
-                alt="Mahek Balloon"
+                alt="Mahek Balloons"
                 width={512}
                 height={512}
                 className="h-9 md:h-11 w-auto object-contain rounded-lg"
@@ -358,7 +358,7 @@ export function Header() {
                 <div className="flex items-center gap-2.5">
                   <Image
                     src="/images/logo/logo.png"
-                    alt="Mahek Balloon"
+                    alt="Mahek Balloons"
                     width={882}
                     height={861}
                     className="h-10 w-auto object-contain"

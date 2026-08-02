@@ -56,7 +56,7 @@ export function AdminLoginClient() {
             <Star className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-ink">Admin Login</h1>
-          <p className="text-secondary-text mt-1">Mahek Balloon Admin Panel</p>
+          <p className="text-secondary-text mt-1">Mahek Balloons Admin Panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 rounded-2xl border border-border bg-white space-y-4">

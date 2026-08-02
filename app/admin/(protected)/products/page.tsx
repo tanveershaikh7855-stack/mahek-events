@@ -16,6 +16,7 @@ export default async function ProductsPage() {
     sku: p.sku,
     basePrice: Number(p.basePrice),
     salePrice: p.salePrice ? Number(p.salePrice) : null,
+    advancePercent: p.advancePercent,
     stock: p.stock,
     isActive: p.isActive,
     isFeatured: p.isFeatured,

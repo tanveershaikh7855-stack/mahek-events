@@ -96,18 +96,18 @@ const ORDER_STATUSES = [
 // Customer-facing copy for each status. Kept beside the enum so a new status
 // automatically requires a matching message (TS will flag a missing key).
 const STATUS_MESSAGES: Record<(typeof ORDER_STATUSES)[number], (n: string) => string> = {
-  PENDING: (n) => `Your Mahek Balloon order ${n} is being reviewed. We'll confirm shortly.`,
-  CONFIRMED: (n) => `Your Mahek Balloon order ${n} is confirmed. We'll start preparing it.`,
-  PROCESSING: (n) => `Your Mahek Balloon order ${n} is being prepared.`,
+  PENDING: (n) => `Your Mahek Balloons order ${n} is being reviewed. We'll confirm shortly.`,
+  CONFIRMED: (n) => `Your Mahek Balloons order ${n} is confirmed. We'll start preparing it.`,
+  PROCESSING: (n) => `Your Mahek Balloons order ${n} is being prepared.`,
   READY_FOR_PICKUP: (n) =>
-    `Your Mahek Balloon order ${n} is ready! Please collect it from our shop at Saras Baug, Pune. ` +
+    `Your Mahek Balloons order ${n} is ready! Please collect it from our shop at Saras Baug, Pune. ` +
     `Directions: https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`,
-  SHIPPED: (n) => `Your Mahek Balloon order ${n} is out for delivery.`,
-  DELIVERED: (n) => `Your Mahek Balloon order ${n} has been delivered. Thank you!`,
-  COMPLETED: (n) => `Your Mahek Balloon order ${n} is complete. Hope you loved it — a review would mean the world.`,
+  SHIPPED: (n) => `Your Mahek Balloons order ${n} is out for delivery.`,
+  DELIVERED: (n) => `Your Mahek Balloons order ${n} has been delivered. Thank you!`,
+  COMPLETED: (n) => `Your Mahek Balloons order ${n} is complete. Hope you loved it — a review would mean the world.`,
   CANCELLED: (n) =>
-    `Your Mahek Balloon order ${n} has been cancelled. Any advance paid will be refunded. Questions? Call +91 8087867988.`,
-  REFUNDED: (n) => `Your Mahek Balloon order ${n} has been refunded.`,
+    `Your Mahek Balloons order ${n} has been cancelled. Any advance paid will be refunded. Questions? Call +91 8087867988.`,
+  REFUNDED: (n) => `Your Mahek Balloons order ${n} has been refunded.`,
 };
 
 const PAYMENT_STATUSES = ["PENDING", "PARTIALLY_PAID", "PAID", "FAILED", "REFUNDED"] as const;
@@ -184,7 +184,7 @@ export async function updateOrderPickup(
         month: "short",
       });
       const message =
-        `Hi ${who}, your Mahek Balloon pickup slot for order ${order.orderNumber} has been ` +
+        `Hi ${who}, your Mahek Balloons pickup slot for order ${order.orderNumber} has been ` +
         `set to ${humanDate}${pickupTime ? ` at ${pickupTime}` : ""}. ` +
         `Shop: Saras Baug, Pune — https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`;
       await notifyQuietly(
@@ -236,7 +236,7 @@ export async function updateOrderPayment(id: string, paymentStatus: string): Pro
         order.customerPhone
           ? whatsapp.sendText(
               order.customerPhone,
-              `Mahek Balloon: we have received ${formatPrice(amount)} for order ${order.orderNumber}. ` +
+              `Mahek Balloons: we have received ${formatPrice(amount)} for order ${order.orderNumber}. ` +
                 (fullyPaid
                   ? "Your order is paid in full. Thank you!"
                   : `Balance of ${formatPrice(Number(order.balanceDue))} is due on delivery.`),
@@ -287,7 +287,7 @@ export async function updateBookingStatus(id: string, status: string): Promise<R
         booking.customerPhone
           ? whatsapp.sendText(
               booking.customerPhone,
-              `Mahek Balloon: your ${booking.eventType} booking ${booking.bookingNumber} is CONFIRMED. ` +
+              `Mahek Balloons: your ${booking.eventType} booking ${booking.bookingNumber} is CONFIRMED. ` +
                 `We will call before the event to finalise setup timing.`,
             )
           : null,
@@ -305,7 +305,7 @@ export async function updateBookingStatus(id: string, status: string): Promise<R
         booking.customerPhone
           ? whatsapp.sendText(
               booking.customerPhone,
-              `Your Mahek Balloon booking ${booking.bookingNumber} has been cancelled. ` +
+              `Your Mahek Balloons booking ${booking.bookingNumber} has been cancelled. ` +
                 `Questions? Call +91 8087867988.`,
             )
           : null,
@@ -353,6 +353,11 @@ const productSchema = z.object({
   categoryId: z.string().min(1, "Choose a category"),
   basePrice: z.coerce.number().min(0, "Price must be 0 or more"),
   salePrice: optionalNumber(),
+  // Advance % to collect online for this product (1–100). Blank = store default.
+  advancePercent: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : v),
+    z.coerce.number().int().min(1).max(100).optional(),
+  ),
   stock: z.coerce.number().int().min(0).default(0),
   shortDesc: z.string().max(255).optional(),
   description: z.string().max(5000).optional(),
@@ -388,6 +393,7 @@ export async function saveProduct(id: string | null, formData: FormData): Promis
     categoryId: d.categoryId,
     basePrice: new Prisma.Decimal(d.basePrice),
     salePrice: d.salePrice !== undefined ? new Prisma.Decimal(d.salePrice) : null,
+    advancePercent: d.advancePercent ?? null,
     stock: d.stock,
     shortDesc: d.shortDesc || null,
     description: d.description || null,

@@ -16,7 +16,7 @@ import { seo, business } from "@/lib/content";
 import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Mahek Balloon — Premium Helium Balloon Decoration in Pune | Saras Baug",
+  title: "Mahek Balloons — Premium Helium Balloon Decoration in Pune | Saras Baug",
   description: seo.metaDescription,
   alternates: { canonical: "/" },
 };

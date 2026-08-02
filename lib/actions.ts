@@ -114,7 +114,7 @@ export async function submitBooking(
       ]),
       whatsapp.sendText(
         data.phone,
-        `Hi ${data.name}, Mahek Balloon has received your ${data.event} decoration request (${booking.bookingNumber}). ` +
+        `Hi ${data.name}, Mahek Balloons has received your ${data.event} decoration request (${booking.bookingNumber}). ` +
           `Our team will call you shortly with a quote. Bookings are confirmed once a 50% advance is paid.`,
       ),
     ]);
@@ -505,7 +505,7 @@ export async function submitCheckout(
       ]),
       whatsapp.sendText(
         data.phone,
-        `Hi ${data.name}, Mahek Balloon has received order ${order.orderNumber} for ${formatPrice(pricing.total)}. ` +
+        `Hi ${data.name}, Mahek Balloons has received order ${order.orderNumber} for ${formatPrice(pricing.total)}. ` +
           (deliveryType === "PICKUP"
             ? `Please collect from our shop opposite Saras Baug Garden on ${pickupHuman} at ${data.pickupTime}. `
             : `We'll deliver to your address; our team will call to confirm the slot. `) +

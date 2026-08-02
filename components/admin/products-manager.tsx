@@ -28,6 +28,7 @@ export type ProductRow = {
   sku: string | null;
   basePrice: number;
   salePrice: number | null;
+  advancePercent: number | null;
   stock: number;
   isActive: boolean;
   isFeatured: boolean;
@@ -151,6 +152,24 @@ function ProductDialog({
                 className={field}
               />
             </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>Advance to collect online (%)</label>
+            <input
+              name="advancePercent"
+              type="number"
+              min={1}
+              max={100}
+              step={1}
+              placeholder="50"
+              defaultValue={product?.advancePercent ?? ""}
+              className={field}
+            />
+            <p className="mt-1 text-xs text-secondary-text">
+              Percent of this product&apos;s price the customer pays online to confirm the
+              order; the rest is due at pickup. Leave blank to use the store default (50%).
+            </p>
           </div>
 
           <div>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireStripe, toPaise } from "@/lib/stripe";
+import { requireRazorpay, toPaise } from "@/lib/razorpay";
 import { features, env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -9,15 +9,17 @@ export const runtime = "nodejs";
 const bodySchema = z.object({ orderId: z.string().min(1) });
 
 /**
- * Creates a Stripe Checkout Session for the advance only.
+ * Creates a Razorpay Order for the advance only.
  *
  * The amount is read from the order row — never from the request body — so a
- * caller cannot ask to pay ₹1 against a ₹10,000 order.
+ * caller cannot ask to pay ₹1 against a ₹10,000 order. Returns the Razorpay
+ * order id plus the public key id, which the browser hands to the Razorpay
+ * Checkout modal.
  */
 export async function POST(request: Request) {
-  if (!features.stripe) {
+  if (!features.razorpay) {
     return NextResponse.json(
-      { error: "Online payment is not available. Please choose cash on delivery." },
+      { error: "Online payment is not available. Please choose Cash at Shop." },
       { status: 503 },
     );
   }
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
       advanceAmount: true,
       total: true,
       paymentStatus: true,
-      stripeSessionId: true,
+      razorpayOrderId: true,
       shippingAddress: true,
     },
   });
@@ -57,49 +59,51 @@ export async function POST(request: Request) {
     );
   }
 
-  const stripe = requireStripe();
+  const razorpay = requireRazorpay();
   const advance = Number(order.advanceAmount);
-  const shipping = order.shippingAddress as { email?: string } | null;
+  const shipping = order.shippingAddress as {
+    name?: string;
+    email?: string;
+    phone?: string;
+  } | null;
 
   try {
-    const session = await stripe.checkout.sessions.create(
-      {
-        mode: "payment",
-        line_items: [
-          {
-            quantity: 1,
-            price_data: {
-              currency: "inr",
-              unit_amount: toPaise(advance),
-              product_data: {
-                name: `Advance payment — order ${order.orderNumber}`,
-                description: `50% advance to confirm your order. Balance payable on delivery.`,
-              },
-            },
-          },
-        ],
-        customer_email: shipping?.email || undefined,
-        // Read back by the webhook to locate the order.
-        metadata: { orderId: order.id, orderNumber: order.orderNumber },
-        payment_intent_data: {
-          metadata: { orderId: order.id, orderNumber: order.orderNumber },
-        },
-        success_url: `${env.NEXT_PUBLIC_SITE_URL}/checkout/success?order=${order.orderNumber}`,
-        cancel_url: `${env.NEXT_PUBLIC_SITE_URL}/checkout?cancelled=${order.orderNumber}`,
-        expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    // Reuse an existing unpaid Razorpay order if this endpoint is retried, so
+    // one shop order never spawns duplicate payment attempts.
+    const rzpOrder =
+      order.razorpayOrderId ??
+      (
+        await razorpay.orders.create({
+          amount: toPaise(advance),
+          currency: "INR",
+          receipt: order.orderNumber,
+          notes: { orderId: order.id, orderNumber: order.orderNumber },
+        })
+      ).id;
+
+    if (!order.razorpayOrderId) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { razorpayOrderId: rzpOrder },
+      });
+    }
+
+    return NextResponse.json({
+      razorpayOrderId: rzpOrder,
+      keyId: env.RAZORPAY_KEY_ID,
+      amount: toPaise(advance),
+      currency: "INR",
+      orderNumber: order.orderNumber,
+      name: "Mahek Balloons",
+      description: `Advance for order ${order.orderNumber}`,
+      prefill: {
+        name: shipping?.name ?? "",
+        email: shipping?.email ?? "",
+        contact: shipping?.phone ?? "",
       },
-      // Retrying this endpoint must not create a second session for one order.
-      { idempotencyKey: `order-advance-${order.id}` },
-    );
-
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { stripeSessionId: session.id },
     });
-
-    return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("[checkout/session] Stripe error:", error);
+    console.error("[checkout/session] Razorpay error:", error);
     return NextResponse.json(
       { error: "Could not start payment. Please try again." },
       { status: 502 },

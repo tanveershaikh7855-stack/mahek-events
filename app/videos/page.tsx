@@ -4,9 +4,9 @@ import { getGalleryVideos } from "@/lib/data";
 import { business, seo } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Balloon Decoration Videos — Real Events in Pune | Mahek Balloon",
+  title: "Balloon Decoration Videos — Real Events in Pune | Mahek Balloons",
   description:
-    "Watch real balloon decoration videos by Mahek Balloon, Pune — birthday setups, wedding decor, proposals & event styling. See our work in action.",
+    "Watch real balloon decoration videos by Mahek Balloons, Pune — birthday setups, wedding decor, proposals & event styling. See our work in action.",
   alternates: { canonical: "/videos" },
   keywords: [
     "balloon decoration videos Pune",
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     "wedding balloon decoration video",
   ],
   openGraph: {
-    title: "Decoration Videos | Mahek Balloon Pune",
-    description: "Real balloon decoration setups and celebrations styled by Mahek Balloon.",
+    title: "Decoration Videos | Mahek Balloons Pune",
+    description: "Real balloon decoration setups and celebrations styled by Mahek Balloons.",
     url: "/videos",
-    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Videos" }],
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloons Videos" }],
   },
 };
 

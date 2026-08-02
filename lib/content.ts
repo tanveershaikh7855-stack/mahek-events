@@ -8,7 +8,7 @@
 
 // ── BUSINESS ──────────────────────────────────────────────────
 export const business = {
-  name: "Mahek Balloon",
+  name: "Mahek Balloons",
   tagline: "Premium Helium & Nitrogen Balloon Decoration in Pune",
   description:
     "Premium helium & nitrogen balloon decoration in Saras Baug, Pune. Balloon bouquets, birthday, wedding & event decoration. Delivery up to 70 KM across Pune.",
@@ -57,7 +57,7 @@ export const socials = {
 // ── SEO ───────────────────────────────────────────────────────
 export const seo = {
   metaTitle:
-    "Mahek Balloon — Helium & Nitrogen Balloon Decoration in Saras Baug, Pune",
+    "Mahek Balloons — Helium & Nitrogen Balloon Decoration in Saras Baug, Pune",
   metaDescription:
     "Premium helium & nitrogen balloon decoration in Saras Baug, Pune. Birthday, wedding, baby shower & event decor, balloon bouquets and party supplies. Serving Kondhwa, Koregaon Park, Camp, Handewadi & all Pune — delivery up to 70 KM. Book online, collect from our shop.",
   keywords: [
@@ -209,9 +209,9 @@ export const about = {
   title: "Making Celebrations",
   highlight: "Beautiful Since 2015",
   description:
-    "Mahek Balloon was born from a simple idea — every celebration deserves to look as special as the moment itself. What started as a small balloon delivery service in Pune has grown into a trusted name for premium decorations.",
+    "Mahek Balloons was born from a simple idea — every celebration deserves to look as special as the moment itself. What started as a small balloon delivery service in Pune has grown into a trusted name for premium decorations.",
   story: [
-    "Founded in 2015, Mahek Balloon began as a passion project — delivering beautifully arranged helium balloons for birthdays and celebrations across Pune.",
+    "Founded in 2015, Mahek Balloons began as a passion project — delivering beautifully arranged helium balloons for birthdays and celebrations across Pune.",
     "As demand grew, so did our vision. Today we offer a full range of decoration services including balloon bouquets, flower arrangements, wedding decor, corporate event styling, and more.",
     "Every project — whether a simple balloon bunch or a full wedding setup — receives the same attention to detail, premium materials, and commitment to excellence.",
   ],
@@ -257,7 +257,7 @@ export const about = {
         name: "Mahek Sharma",
         role: "Founder & Creative Director",
         description:
-          "Founded Mahek Balloon with a vision to bring premium balloon artistry to Pune celebrations.",
+          "Founded Mahek Balloons with a vision to bring premium balloon artistry to Pune celebrations.",
         image: "/images/IMG-20260728-WA0010.webp",
       },
       {
@@ -293,7 +293,7 @@ export const about = {
 // ── WHY CHOOSE US ─────────────────────────────────────────────
 export const whyChooseUs = {
   badge: "Our Promise",
-  title: "Why Choose Mahek Balloon?",
+  title: "Why Choose Mahek Balloons?",
   items: [
     {
       title: "70 KM Delivery",
@@ -659,7 +659,7 @@ export const testimonials: Testimonial[] = [
     image: "/images/IMG-20260728-WA0014.webp",
     rating: 5,
     review:
-      "Mahek Balloon transformed our anniversary celebration. The decor was elegant, not gaudy, and the team was professional from start to finish.",
+      "Mahek Balloons transformed our anniversary celebration. The decor was elegant, not gaudy, and the team was professional from start to finish.",
     verified: true,
   },
   {
@@ -689,7 +689,7 @@ export const testimonials: Testimonial[] = [
     image: "/images/IMG-20260728-WA0020.webp",
     rating: 5,
     review:
-      "My daughter's birthday was absolutely magical thanks to Mahek Balloon. The unicorn theme setup was beyond our expectations!",
+      "My daughter's birthday was absolutely magical thanks to Mahek Balloons. The unicorn theme setup was beyond our expectations!",
     verified: true,
   },
   {
@@ -716,7 +716,7 @@ export const faqPage = {
 
 export const faqs = [
   {
-    question: "Where is Mahek Balloon located?",
+    question: "Where is Mahek Balloons located?",
     answer:
       "We are located opposite Saras Baug Garden, Pune. We serve all of Pune including Kondhwa, Koregaon Park, Camp, Handewadi, Hadapsar, Swargate, NIBM Road and Wanowrie, with delivery up to 70 KM.",
   },
@@ -1013,7 +1013,7 @@ export const materialCategories = [
 // ── ADMIN ─────────────────────────────────────────────────────
 export const admin = {
   loginTitle: "Admin Login",
-  loginSubtitle: "Mahek Balloon Admin Panel",
+  loginSubtitle: "Mahek Balloons Admin Panel",
   emailLabel: "Email Address",
   emailPlaceholder: "admin@mahekballoons.com",
   passwordLabel: "Password",
