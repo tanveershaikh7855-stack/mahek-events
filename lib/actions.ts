@@ -197,6 +197,10 @@ export async function registerCustomer(
     }
 
     await notify([
+      email.sendWelcomeEmail({
+        customerName: data.name,
+        customerEmail: data.email,
+      }),
       email.sendAdminAlert("New customer registered", [
         `Name: ${data.name}`,
         `Email: ${data.email}`,

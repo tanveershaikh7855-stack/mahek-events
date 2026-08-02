@@ -338,7 +338,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
                 <Truck className="w-5 h-5 text-forest mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold text-ink">{product.deliveryBadge} Delivery</p>
-                  <p className="text-xs text-secondary-text">Order before 2 PM for same-day dispatch within 140 KM.</p>
+                  <p className="text-xs text-secondary-text">Order before 2 PM for same-day dispatch within 70 KM.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">

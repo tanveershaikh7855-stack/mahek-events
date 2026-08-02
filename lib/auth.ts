@@ -137,6 +137,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const googleEmail = user.email?.trim().toLowerCase();
       if (!googleEmail) return false;
 
+      // Detect first-time Google sign-in so the welcome email fires only once.
+      const existing = await prisma.customer.findUnique({
+        where: { email: googleEmail },
+        select: { id: true },
+      });
+
       const customer = await prisma.customer.upsert({
         where: { email: googleEmail },
         update: { name: user.name ?? undefined },
@@ -145,6 +151,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       user.id = customer.id;
       user.role = "CUSTOMER";
+
+      if (!existing) {
+        // Never block sign-in on a mail failure.
+        try {
+          await email.sendWelcomeEmail({
+            customerName: user.name ?? "there",
+            customerEmail: googleEmail,
+          });
+        } catch (error) {
+          console.error("[auth] welcome email failed:", error);
+        }
+      }
+
       return true;
     },
   },

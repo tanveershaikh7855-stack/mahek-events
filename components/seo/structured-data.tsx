@@ -16,17 +16,33 @@ export function StructuredData() {
 
   const localBusiness = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    // A florist-adjacent decoration store — the more specific types help Google
+    // classify the business for "balloon decoration"/"party store" queries.
+    "@type": ["LocalBusiness", "Store"],
     "@id": `${base}/#business`,
     name: business.name,
+    alternateName: "Mahek Balloons",
     description: seo.metaDescription,
+    slogan: business.tagline,
     url: base,
     telephone: business.phoneFormatted,
     email: business.email,
     image: `${base}${seo.ogImage}`,
     logo: `${base}${seo.ogImage}`,
     priceRange: "₹₹",
+    currenciesAccepted: "INR",
+    paymentAccepted: "Cash, UPI, Credit Card, Debit Card",
     foundingDate: String(business.founded),
+    keywords: seo.keywords.join(", "),
+    knowsAbout: [
+      "Helium balloon decoration",
+      "Nitrogen balloon decoration",
+      "Birthday decoration",
+      "Wedding decoration",
+      "Baby shower decoration",
+      "Balloon bouquets",
+      "Event decoration",
+    ],
     address: {
       "@type": "PostalAddress",
       streetAddress: business.address,
@@ -35,10 +51,52 @@ export function StructuredData() {
       postalCode: business.pincode,
       addressCountry: "IN",
     },
-    areaServed: {
-      "@type": "GeoCircle",
-      geoMidpoint: { "@type": "GeoCoordinates", latitude: 18.5074, longitude: 73.8567 },
-      geoRadius: (business.deliveryRadiusKm ?? 140) * 1000,
+    geo: { "@type": "GeoCoordinates", latitude: 18.5074, longitude: 73.8567 },
+    hasMap: business.googleMapsUrl,
+    // Both an explicit list of localities (strong for "<service> <area>"
+    // searches) and the delivery radius.
+    areaServed: [
+      ...(business.serviceAreas ?? []).map((name) => ({
+        "@type": "City",
+        name: `${name}, Pune`,
+      })),
+      {
+        "@type": "GeoCircle",
+        geoMidpoint: { "@type": "GeoCoordinates", latitude: 18.5074, longitude: 73.8567 },
+        geoRadius: (business.deliveryRadiusKm ?? 70) * 1000,
+      },
+    ],
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "09:00",
+        closes: "21:00",
+      },
+    ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Balloon Decoration Services",
+      itemListElement: [
+        "Helium Balloon Decoration",
+        "Nitrogen Balloon Decoration",
+        "Birthday Decoration",
+        "Wedding & Anniversary Decoration",
+        "Baby Shower Decoration",
+        "Corporate Event Decoration",
+        "Balloon Bouquets",
+      ].map((name) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name, areaServed: "Pune" },
+      })),
     },
     aggregateRating: {
       "@type": "AggregateRating",

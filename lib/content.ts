@@ -9,15 +9,15 @@
 // ── BUSINESS ──────────────────────────────────────────────────
 export const business = {
   name: "Mahek Balloon",
-  tagline: "Premium Helium Balloons & Decoration Services",
+  tagline: "Premium Helium & Nitrogen Balloon Decoration in Pune",
   description:
-    "Premium helium balloons, balloon bouquets, party supplies and luxury decoration services delivered within 140 KM.",
+    "Premium helium & nitrogen balloon decoration in Saras Baug, Pune. Balloon bouquets, birthday, wedding & event decoration. Delivery up to 70 KM across Pune.",
   founded: 2015,
-  deliveryRadiusKm: 140,
+  deliveryRadiusKm: 70,
   rating: 4.9,
   totalCustomers: 5000,
   yearsExperience: 11,
-  email: "hello@mahekballoon.com",
+  email: "hello@mahekballoons.com",
   phone: "8087867988",
   phoneFormatted: "+91 8087867988",
   whatsapp: "918087867988",
@@ -26,6 +26,20 @@ export const business = {
   state: "Maharashtra",
   city: "Pune",
   pincode: "411004",
+  // Localities we actively serve — used in SEO copy and JSON-LD areaServed so
+  // "balloon decoration <area>" searches surface the shop.
+  serviceAreas: [
+    "Saras Baug",
+    "Kondhwa",
+    "Koregaon Park",
+    "Camp",
+    "Handewadi",
+    "Swargate",
+    "Hadapsar",
+    "Wanowrie",
+    "NIBM Road",
+    "Market Yard",
+  ],
   googleMapsUrl:
     "https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7",
   // Where the "Write a Google Review" button sends customers.
@@ -37,30 +51,47 @@ export const business = {
 // ── SOCIAL LINKS ──────────────────────────────────────────────
 export const socials = {
   instagram: "https://www.instagram.com/mahek.balloons/",
-  facebook: "https://facebook.com/mahekballoon",
+  facebook: "https://facebook.com/mahekballoons",
 } as const;
 
 // ── SEO ───────────────────────────────────────────────────────
 export const seo = {
-  metaTitle: "Mahek Balloon | Premium Helium Balloons & Decoration Services",
+  metaTitle:
+    "Mahek Balloon — Helium & Nitrogen Balloon Decoration in Saras Baug, Pune",
   metaDescription:
-    "Premium helium balloons, balloon bouquets, party supplies and luxury decoration services. Same-day delivery within 140 KM. Book decorations online.",
+    "Premium helium & nitrogen balloon decoration in Saras Baug, Pune. Birthday, wedding, baby shower & event decor, balloon bouquets and party supplies. Serving Kondhwa, Koregaon Park, Camp, Handewadi & all Pune — delivery up to 70 KM. Book online, collect from our shop.",
   keywords: [
-    "helium balloons",
-    "balloon bouquets",
-    "balloon decoration",
-    "party supplies",
-    "birthday decoration",
-    "wedding decoration",
-    "flower bouquets",
-    "same day delivery",
+    // Core intent
+    "balloon decoration Pune",
+    "helium balloons Pune",
+    "nitrogen balloons Pune",
+    "balloon decoration Saras Baug",
+    "helium balloon decoration Pune",
+    "birthday decoration Pune",
+    "balloon bouquets Pune",
+    "party decoration Pune",
+    "wedding balloon decoration Pune",
+    "baby shower decoration Pune",
+    "anniversary decoration Pune",
+    // Locality long-tail
+    "balloon decoration Kondhwa",
+    "balloon decoration Koregaon Park",
+    "balloon decoration Camp Pune",
+    "balloon decoration Handewadi",
+    "balloon decoration Hadapsar",
+    "balloon decoration Swargate",
+    "balloon decoration NIBM Road",
+    "balloon decoration Wanowrie",
+    // Product/service
     "chrome balloons",
     "foil balloons",
     "number balloons",
-    "shape balloons",
+    "helium balloon delivery Pune",
+    "balloon shop near me Pune",
+    "birthday balloon decorators near me",
   ],
   ogImage: "/images/logo/logo.png",
-  siteUrl: "https://mahekballoon.com",
+  siteUrl: "https://mahekballoons.com",
 } as const;
 
 // ── NAVIGATION ────────────────────────────────────────────────
@@ -90,7 +121,7 @@ export const hero = {
   highlight: "Celebration",
   subtitle: "Unforgettable",
   description:
-    "Premium helium balloons, elegant bouquets, and bespoke decoration services for your most meaningful celebrations. Same-day delivery within 140 KM.",
+    "Premium helium balloons, elegant bouquets, and bespoke decoration services for your most meaningful celebrations. Same-day delivery within 70 KM.",
   primaryButton: { label: "Shop Balloons", href: "/shop" },
   secondaryButton: { label: "Book Decoration", href: "/booking" },
   whatsappButton: "WhatsApp",
@@ -125,7 +156,7 @@ export const heroCarousel: HeroSlide[] = [
     subtitle: "Elegant balloon styling for your most meaningful celebrations.",
     badge: "Since 2015",
     cta: { label: "Shop Balloons", href: "/shop" },
-    infoCard: { icon: "truck", label: "Same-Day Delivery", sublabel: "Within 140 KM" },
+    infoCard: { icon: "truck", label: "Same-Day Delivery", sublabel: "Within 70 KM" },
   },
   {
     image: "/images/IMG-20260728-WA0031.webp",
@@ -143,7 +174,7 @@ export const heroCarousel: HeroSlide[] = [
     badge: "Best Seller",
     price: "Starting ₹2,499",
     cta: { label: "Book Now", href: "/booking" },
-    infoCard: { icon: "map", label: "140 KM Coverage", sublabel: "Pune & Beyond" },
+    infoCard: { icon: "map", label: "70 KM Coverage", sublabel: "Pune & Beyond" },
   },
   {
     image: "/images/IMG-20260729-WA0005.jpg",
@@ -240,7 +271,7 @@ export const about = {
         name: "Arun Patel",
         role: "Operations Manager",
         description:
-          "Ensures every delivery and setup happens on time, every time, within 140 KM radius.",
+          "Ensures every delivery and setup happens on time, every time, within 70 KM radius.",
         image: "/images/IMG-20260728-WA0012.webp",
       },
     ],
@@ -255,7 +286,7 @@ export const about = {
     { value: "5000+", label: "Customers Served" },
     { value: "1000+", label: "Events Decorated" },
     { value: "10+", label: "Years Experience" },
-    { value: "140 KM", label: "Delivery Radius" },
+    { value: "70 KM", label: "Delivery Radius" },
   ],
 } as const;
 
@@ -265,7 +296,7 @@ export const whyChooseUs = {
   title: "Why Choose Mahek Balloon?",
   items: [
     {
-      title: "140 KM Delivery",
+      title: "70 KM Delivery",
       description:
         "Same-day helium balloon delivery across Pune, Pimpri-Chinchwad, and extended suburbs.",
       tag: "Order by 2 PM",
@@ -648,7 +679,7 @@ export const testimonials: Testimonial[] = [
     image: "/images/IMG-20260728-WA0019.webp",
     rating: 5,
     review:
-      "Ordered corporate event decorations for our product launch. The branding colors matched perfectly. Fast delivery within the 140 KM range.",
+      "Ordered corporate event decorations for our product launch. The branding colors matched perfectly. Fast delivery within the 70 KM range.",
     verified: true,
   },
   {
@@ -685,9 +716,24 @@ export const faqPage = {
 
 export const faqs = [
   {
-    question: "Do you deliver helium balloons within 140 KM?",
+    question: "Where is Mahek Balloon located?",
     answer:
-      "Yes. We deliver helium balloon bunches, bouquets and party supplies within a 140 KM radius from Pune. Delivery charges are calculated automatically at checkout based on your distance.",
+      "We are located opposite Saras Baug Garden, Pune. We serve all of Pune including Kondhwa, Koregaon Park, Camp, Handewadi, Hadapsar, Swargate, NIBM Road and Wanowrie, with delivery up to 70 KM.",
+  },
+  {
+    question: "Do you make helium and nitrogen balloons?",
+    answer:
+      "Yes. We specialise in premium helium balloon decoration and also offer nitrogen-filled balloons. From single helium bunches to complete event decoration, everything is prepared fresh in our Saras Baug studio.",
+  },
+  {
+    question: "Do I collect my order from the shop or is it delivered?",
+    answer:
+      "For balloon products, you book online and then collect your order from our Saras Baug shop at your chosen time — this keeps helium balloons fresh and perfectly inflated. For full decoration bookings, our team travels to your venue and sets up on site (delivery up to 70 KM across Pune).",
+  },
+  {
+    question: "Do you deliver helium balloons within 70 KM?",
+    answer:
+      "Our decoration and setup service covers a 70 KM radius from Pune. Balloon products ordered online are collected from our Saras Baug shop. Charges for on-site decoration are based on your distance.",
   },
   {
     question: "How do I book a decoration service?",
@@ -719,12 +765,12 @@ export const faqs = [
 // ── DELIVERY ──────────────────────────────────────────────────
 export const delivery = {
   area: "Saras Baug, Pune",
-  radius: 140,
+  radius: 70,
   charges: [
     { minDistance: 0, maxDistance: 10, charge: 0, freeAbove: 499 },
     { minDistance: 10, maxDistance: 30, charge: 99, freeAbove: 999 },
-    { minDistance: 30, maxDistance: 70, charge: 199, freeAbove: 1999 },
-    { minDistance: 70, maxDistance: 140, charge: 349, freeAbove: 2999 },
+    { minDistance: 30, maxDistance: 50, charge: 199, freeAbove: 1999 },
+    { minDistance: 50, maxDistance: 70, charge: 349, freeAbove: 2999 },
   ],
 } as const;
 
@@ -927,7 +973,7 @@ export const headerExtras = {
   searchPlaceholder: "Search materials, products, decor...",
   wishlistLabel: "Wishlist",
   cartLabel: "Cart",
-  deliveryBadge: "140 KM Delivery",
+  deliveryBadge: "70 KM Delivery",
   deliverySubtext: "Same day available",
   paymentBadge: "Secure Payment",
   paymentSubtext: "COD, UPI, Cards",
@@ -969,11 +1015,11 @@ export const admin = {
   loginTitle: "Admin Login",
   loginSubtitle: "Mahek Balloon Admin Panel",
   emailLabel: "Email Address",
-  emailPlaceholder: "admin@mahekballoon.com",
+  emailPlaceholder: "admin@mahekballoons.com",
   passwordLabel: "Password",
   passwordPlaceholder: "Enter password",
   signInButton: "Sign In",
-  defaultCredentials: "Default: admin@mahekballoon.com / admin123",
+  defaultCredentials: "Default: admin@mahekballoons.com / admin123",
 } as const;
 
 // ── HELPER: Get category name by ID ──────────────────────────

@@ -282,6 +282,29 @@ export function sendLoginAlertEmail(data: {
   return send(data.email, "New sign-in to your Mahek Balloon admin", html);
 }
 
+/** Welcome email sent when a shopper creates an account (form or Google). */
+export function sendWelcomeEmail(data: {
+  customerName: string;
+  customerEmail?: string | null;
+}): Promise<SendResult> {
+  if (!data.customerEmail) {
+    return Promise.resolve({ ok: false, error: "No customer email" });
+  }
+  const html = layout(
+    `Welcome to ${BRAND_NAME}!`,
+    `<p style="font-size:14px;line-height:1.6">Hi ${escapeHtml(data.customerName)}, thanks for creating your
+      ${escapeHtml(BRAND_NAME)} account. You can now track your orders and decoration bookings anytime from your
+      account page.</p>
+     <p style="font-size:14px;line-height:1.6">We specialise in premium helium &amp; nitrogen balloon decoration
+      in Saras Baug, Pune — birthdays, weddings, baby showers and every celebration in between.</p>
+     <p style="font-size:14px;line-height:1.6">
+       <a href="https://mahekballoons.com/shop" style="color:#0a7d33;font-weight:600;text-decoration:none">Browse balloons &amp; decor &rarr;</a>
+     </p>
+     <p style="font-size:14px;line-height:1.6">Questions? Call or WhatsApp us on +91 8087867988.</p>`,
+  );
+  return send(data.customerEmail, `Welcome to ${BRAND_NAME}`, html);
+}
+
 /** Internal alert so the shop notices a new order/booking without polling the DB. */
 export function sendAdminAlert(subject: string, lines: string[]): Promise<SendResult> {
   if (!env.ADMIN_EMAIL) {

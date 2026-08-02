@@ -28,8 +28,8 @@ const QUICK_REPLIES = [
 ];
 
 const BOT_RESPONSES: Record<string, string> = {
-  "balloon": "We offer premium helium balloon bunches, bouquets, and packets. Delivery within 140 KM from Pune with same-day service if ordered before 2 PM. Browse our collection at /shop.",
-  "delivery": "We deliver within 140 KM radius of Pune. Free delivery on orders above ₹499 within 10 KM. Charges apply beyond that. What's your location?",
+  "balloon": "We offer premium helium balloon bunches, bouquets, and packets. Delivery within 70 KM from Pune with same-day service if ordered before 2 PM. Browse our collection at /shop.",
+  "delivery": "We deliver within 70 KM radius of Pune. Free delivery on orders above ₹499 within 10 KM. Charges apply beyond that. What's your location?",
   "decoration": "We provide premium decoration services for birthdays, weddings, anniversaries, baby showers, corporate events, proposals, and more. Book online and our team will confirm via WhatsApp within 2 hours.",
   "wedding": "Our wedding decoration packages start at ₹14,999. Includes mandap, entrance, stage, and aisle decor. Custom themes available.",
   "birthday": "Birthday decoration starts at ₹2,499. Includes balloon arch, backdrop, signage, and setup + takedown.",
@@ -41,7 +41,7 @@ const BOT_RESPONSES: Record<string, string> = {
   "book": "You can book online at /booking or call us directly. Share your event details and we'll create a custom package for you.\n\nPhone: +91 8087867988",
   "material": "We offer premium decorative materials including balloons, flower stands, metal frames, LED numbers, lighting, and more. Visit /materials to browse all categories.",
   "baby": "Baby shower decoration starts at ₹3,499. Soft pastel themes with balloon arches, welcome boards, and themed backdrops.",
-  "area": "We cover Pune and surrounding areas up to 140 KM. Free delivery within 10 KM. Extra charges apply beyond that.",
+  "area": "We cover Pune and surrounding areas up to 70 KM. Free delivery within 10 KM. Extra charges apply beyond that.",
 };
 
 function getBotResponse(input: string, history: string[]): string {
