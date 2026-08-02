@@ -31,14 +31,17 @@ export type GalleryRow = {
   isActive: boolean;
 };
 
-// Slug values match the storefront gallery filter (see lib/content.ts).
-const CATEGORIES = [
-  { value: "birthday", label: "Birthday" },
-  { value: "wedding", label: "Wedding" },
-  { value: "baby-shower", label: "Baby Shower" },
-  { value: "corporate", label: "Corporate" },
-  { value: "proposal", label: "Proposal" },
-  { value: "room-decor", label: "Room Decor" },
+// Starter suggestions. The real list is whatever categories already exist on
+// gallery images (passed in as `knownCategories`) merged with these — the admin
+// can pick one or type a brand-new category, which then appears on the
+// storefront gallery filter automatically.
+const SUGGESTED_CATEGORIES = [
+  "birthday",
+  "wedding",
+  "baby-shower",
+  "corporate",
+  "proposal",
+  "room-decor",
 ];
 
 const field =
@@ -49,15 +52,18 @@ function GalleryDialog({
   item,
   open,
   onOpenChange,
+  knownCategories,
 }: {
   item: GalleryRow | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  knownCategories: string[];
 }) {
   const [pending, start] = useTransition();
   const [mediaType, setMediaType] = useState<"IMAGE" | "VIDEO">(
     item?.mediaType ?? "IMAGE",
   );
+  const [category, setCategory] = useState(item?.category ?? "");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -111,17 +117,22 @@ function GalleryDialog({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Category *</label>
-              <select
+              {/* Editable: pick an existing category or type a new one. It is
+                  slugified on save and shows up on the storefront filter live. */}
+              <input
                 name="category"
-                defaultValue={item?.category ?? CATEGORIES[0].value}
+                list="gallery-category-options"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                placeholder="e.g. birthday, haldi, engagement"
                 className={field}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
+              />
+              <datalist id="gallery-category-options">
+                {knownCategories.map((c) => (
+                  <option key={c} value={c} />
                 ))}
-              </select>
+              </datalist>
             </div>
             <div>
               <label className={labelCls}>Sort order</label>
@@ -194,6 +205,14 @@ function ActiveToggle({ item }: { item: GalleryRow }) {
 export function GalleryManager({ images }: { images: GalleryRow[] }) {
   const [editing, setEditing] = useState<GalleryRow | null>(null);
   const [open, setOpen] = useState(false);
+
+  // Suggestions = starter list + every category already in use, de-duped.
+  const knownCategories = Array.from(
+    new Set([
+      ...SUGGESTED_CATEGORIES,
+      ...images.map((i) => i.category).filter(Boolean),
+    ]),
+  ).sort();
 
   return (
     <div className="space-y-4">
@@ -290,6 +309,7 @@ export function GalleryManager({ images }: { images: GalleryRow[] }) {
         item={editing}
         open={open}
         onOpenChange={setOpen}
+        knownCategories={knownCategories}
       />
     </div>
   );

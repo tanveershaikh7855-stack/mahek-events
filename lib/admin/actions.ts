@@ -733,7 +733,14 @@ export async function saveGalleryImage(id: string | null, formData: FormData): P
     image: d.image,
     mediaType: d.mediaType,
     poster: d.poster || null,
-    category: d.category,
+    // Admin can type a free category; normalise to a slug so the storefront
+    // filter groups them consistently ("Baby Shower" -> "baby-shower").
+    category:
+      d.category
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "") || "other",
     sortOrder: d.sortOrder,
     isActive: d.isActive === "on",
   };

@@ -7,13 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, Filter, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { galleryCategories } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-const CATEGORIES = [
-  { value: "all", label: "All Work" },
-  ...galleryCategories.filter((c) => c !== "All Work").map((c) => ({ value: c.toLowerCase().replace(/ /g, "-"), label: c })),
-];
 
 export type GalleryItem = {
   id: string;
@@ -24,9 +18,31 @@ export type GalleryItem = {
   poster?: string | null;
 };
 
+/** Turns a stored slug like "baby-shower" into a readable "Baby Shower" chip. */
+function labelForCategory(slug: string): string {
+  return slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function GalleryPageClient({ images }: { images: GalleryItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
+
+  // Category chips are built from the categories that actually exist on the
+  // gallery images, so anything the admin adds/renames appears here live — no
+  // code change or hardcoded list to keep in sync.
+  const CATEGORIES = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const item of images) {
+      const value = item.category?.trim();
+      if (value && !seen.has(value)) seen.set(value, labelForCategory(value));
+    }
+    return [
+      { value: "all", label: "All Work" },
+      ...[...seen.entries()].map(([value, label]) => ({ value, label })),
+    ];
+  }, [images]);
 
   const filtered = useMemo(() => {
     if (selectedCategory === "all") return images;
