@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, Fragment } from "react";
-import { ShoppingBag, Search, ChevronDown, Phone, MapPin, Calendar } from "lucide-react";
+import { ShoppingBag, Search, ChevronDown, Phone, MapPin, Calendar, MessageCircle } from "lucide-react";
 import { updateOrderStatus, updateOrderPayment, updateOrderPickup } from "@/lib/admin/actions";
 import { StatusPill, StatusSelect, EmptyState } from "./shared/ui";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -124,13 +124,24 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                     <td className="px-4 py-3">
                       <p className="text-ink">{o.customerName || "Guest"}</p>
                       {o.customerPhone && (
-                        <a
-                          href={`tel:${o.customerPhone}`}
-                          className="text-xs text-secondary-text hover:text-forest inline-flex items-center gap-1"
-                        >
-                          <Phone className="w-3 h-3" />
-                          {o.customerPhone}
-                        </a>
+                        <div className="flex flex-col gap-1 mt-0.5">
+                          <a
+                            href={`tel:${o.customerPhone}`}
+                            className="text-xs text-secondary-text hover:text-forest inline-flex items-center gap-1"
+                          >
+                            <Phone className="w-3 h-3" />
+                            {o.customerPhone}
+                          </a>
+                          <a
+                            href={waLink(o.customerPhone, waMessage(o))}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-semibold text-[#25D366] hover:underline inline-flex items-center gap-1"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                            WhatsApp
+                          </a>
+                        </div>
                       )}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -275,6 +286,43 @@ const PICKUP_SLOTS = [
   "06:00 PM",
   "07:00 PM",
 ];
+
+/**
+ * Builds a wa.me click-to-chat URL. This is the one WhatsApp path that works
+ * WITHOUT the paid Meta Cloud API — the admin taps it and their own WhatsApp
+ * opens with the message pre-filled to the customer's number.
+ */
+function waLink(phone: string, message: string): string {
+  const digits = phone.replace(/\D/g, "");
+  const waId = digits.length === 10 ? `91${digits}` : digits;
+  return `https://wa.me/${waId}?text=${encodeURIComponent(message)}`;
+}
+
+/** Status-appropriate pre-filled message for the admin's WhatsApp bridge. */
+function waMessage(o: OrderRow): string {
+  const name = o.customerName || "there";
+  const pickup =
+    o.pickupDate &&
+    new Date(o.pickupDate).toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  switch (o.status) {
+    case "CONFIRMED":
+      return `Hi ${name}, your Mahek Balloon order ${o.orderNumber} is confirmed! ${
+        pickup ? `Pickup on ${pickup}${o.pickupTime ? ` at ${o.pickupTime}` : ""} from Saras Baug. ` : ""
+      }Maps: https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`;
+    case "READY_FOR_PICKUP":
+      return `Hi ${name}, your Mahek Balloon order ${o.orderNumber} is ready to collect from our Saras Baug shop! Maps: https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7`;
+    case "COMPLETED":
+      return `Hi ${name}, thank you for collecting order ${o.orderNumber} from Mahek Balloon! A Google review would mean a lot to us. 🎈`;
+    case "CANCELLED":
+      return `Hi ${name}, your Mahek Balloon order ${o.orderNumber} has been cancelled. Any advance paid will be refunded.`;
+    default:
+      return `Hi ${name}, this is Mahek Balloon regarding your order ${o.orderNumber}.`;
+  }
+}
 
 function PickupEditor({
   orderId,

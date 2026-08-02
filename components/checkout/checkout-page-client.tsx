@@ -203,10 +203,14 @@ export function CheckoutPageClient() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">Order Placed!</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">Order Received!</h1>
             {placedOrder && (
               <p className="text-sm font-mono text-forest mb-4">{placedOrder.orderNumber}</p>
             )}
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-yellow-50 border border-yellow-200 px-3 py-1 text-xs font-medium text-yellow-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+              Pending confirmation
+            </div>
             {placedOrder && placedOrder.deliveryType === "PICKUP" && (
               <div className="mb-6 p-4 rounded-xl bg-forest-light border border-forest/20 text-left">
                 <div className="flex items-center gap-2 text-forest font-semibold text-sm mb-2">
@@ -245,13 +249,15 @@ export function CheckoutPageClient() {
               </div>
             )}
             <p className="text-secondary-text mb-6">
-              Thank you for your order. We&apos;ve sent the details to your email and WhatsApp.
+              Thank you! We&apos;ve emailed your order details. Our team will review and
+              <strong> confirm your order shortly</strong> — you&apos;ll get an email and WhatsApp update
+              the moment it&apos;s confirmed, and you can track its status anytime under{" "}
+              <Link href="/account" className="text-forest underline">My Account</Link>.
               {placedOrder && placedOrder.advanceAmount > 0 && (
                 <>
-                  {" "}Your order is confirmed once the {ADVANCE_PERCENT}% advance of{" "}
-                  <strong>{formatPrice(placedOrder.advanceAmount)}</strong> is received —
-                  our team will call you to arrange it.{" "}
-                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable when you collect the order.
+                  {" "}A {ADVANCE_PERCENT}% advance of{" "}
+                  <strong>{formatPrice(placedOrder.advanceAmount)}</strong> confirms your order;{" "}
+                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable when you collect it.
                 </>
               )}
             </p>
