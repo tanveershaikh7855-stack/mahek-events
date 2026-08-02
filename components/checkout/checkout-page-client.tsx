@@ -300,8 +300,11 @@ export function CheckoutPageClient() {
                       <Input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" required />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" name="email" type="email" placeholder="your@email.com" />
+                      <Label htmlFor="email">Email Address *</Label>
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" required />
+                      <p className="text-xs text-secondary-text">
+                        We email your order confirmation and pickup details here.
+                      </p>
                     </div>
                   </div>
                 </motion.div>

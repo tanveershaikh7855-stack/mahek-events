@@ -91,8 +91,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="icon" href="/images/logo/logo.png" sizes="any" />
-        <link rel="apple-touch-icon" href="/images/logo/logo.png" />
+        {/* Tab and home-screen icons come from app/icon.png and
+            app/apple-icon.png via Next's file conventions. The stale
+            pre-rebrand app/favicon.ico used to win over these manual links,
+            which is why the browser tab kept showing the old mark. */}
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
         <StructuredData />

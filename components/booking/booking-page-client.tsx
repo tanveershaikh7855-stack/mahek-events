@@ -89,10 +89,16 @@ export function BookingPageClient() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4 tracking-tight">Booking Confirmed!</h1>
+            {/* A booking is an enquiry until staff confirm it in the admin panel,
+                so this no longer claims it is already confirmed. */}
+            <h1 className="text-2xl md:text-3xl font-bold text-ink mb-4 tracking-tight">Booking Received!</h1>
+            <div className="inline-flex items-center gap-1.5 mb-4 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
+              Pending confirmation
+            </div>
             <p className="text-secondary-text mb-6">
-              Thank you, {formData.name}! Your {formData.event} decoration booking has been received.
-              Our team will confirm via WhatsApp and email within 2 hours.
+              Thank you, {formData.name}! Your {formData.event} decoration enquiry has been received and
+              we&apos;ve emailed you the details. Our team will review it and call you with a quote —
+              you&apos;ll get an email the moment it&apos;s confirmed.
             </p>
             <div className="p-4 rounded-2xl bg-secondary text-left text-sm space-y-2 mb-6">
               {bookingNumber && (
@@ -178,14 +184,18 @@ export function BookingPageClient() {
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">Email Address *</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="your@email.com"
                     value={formData.email}
                     onChange={(e) => updateField("email", e.target.value)}
+                    required
                   />
+                  <p className="text-xs text-secondary-text">
+                    We send your booking confirmation and quote here.
+                  </p>
                 </div>
               </div>
             </motion.div>

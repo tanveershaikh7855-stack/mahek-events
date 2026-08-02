@@ -25,12 +25,16 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-10">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5" aria-label={`${BRAND.name} - Home`}>
+              {/* The logo artwork is a dark tile with light lettering, so it sits
+                  correctly on the charcoal footer as-is. The previous
+                  `brightness-0 invert` flattened every pixel to black and then
+                  inverted it, rendering the whole tile as a solid white block. */}
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Balloon"
-                width={882}
-                height={861}
-                className="h-12 w-auto object-contain brightness-0 invert"
+                width={512}
+                height={512}
+                className="h-12 w-auto object-contain rounded-lg"
               />
               <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloon</span>
             </Link>

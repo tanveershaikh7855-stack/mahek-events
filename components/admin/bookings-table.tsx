@@ -6,6 +6,7 @@ import { CalendarCheck, Search, ChevronDown, Phone, MessageCircle, Loader2 } fro
 import { updateBookingStatus, updateBookingQuote } from "@/lib/admin/actions";
 import { StatusSelect, EmptyState } from "./shared/ui";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { waLink, bookingWaMessage } from "@/lib/whatsapp-link";
 
 const BOOKING_STATUSES = ["NEW", "FOLLOW_UP", "CONFIRMED", "COMPLETED", "CANCELLED"] as const;
 
@@ -161,7 +162,7 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                     <td className="px-4 py-3">
                       <p className="text-ink">{b.customerName || "Guest"}</p>
                       {b.customerPhone && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col gap-1 mt-0.5">
                           <a
                             href={`tel:${b.customerPhone}`}
                             className="text-xs text-secondary-text hover:text-forest inline-flex items-center gap-1"
@@ -169,14 +170,18 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                             <Phone className="w-3 h-3" />
                             {b.customerPhone}
                           </a>
+                          {/* One-tap WhatsApp with the message already written.
+                              Previously this interpolated the raw phone after
+                              "91", so any formatted number produced a dead link,
+                              and it carried no message at all. */}
                           <a
-                            href={`https://wa.me/91${b.customerPhone}`}
+                            href={waLink(b.customerPhone, bookingWaMessage(b))}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-green-600 hover:text-green-700"
-                            aria-label="Message on WhatsApp"
+                            className="text-xs font-semibold text-[#25D366] hover:underline inline-flex items-center gap-1"
                           >
-                            <MessageCircle className="w-3.5 h-3.5" />
+                            <MessageCircle className="w-3 h-3" />
+                            WhatsApp
                           </a>
                         </div>
                       )}

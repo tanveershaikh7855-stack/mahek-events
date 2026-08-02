@@ -86,8 +86,8 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
    * WhatsApp, the shop had no record the enquiry ever happened.
    */
   const handleSubmit = async () => {
-    if (!data.name || !data.phone || !data.address) {
-      setError("Name, phone and address are required.");
+    if (!data.name || !data.phone || !data.address || !data.email) {
+      setError("Name, phone, email and address are required.");
       return;
     }
 
@@ -185,11 +185,14 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="booking-email">Email</Label>
+                    <Label htmlFor="booking-email">Email *</Label>
                     <div className="relative mt-1">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-text" />
-                      <Input id="booking-email" type="email" placeholder="you@example.com" className="pl-10" value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} />
+                      <Input id="booking-email" type="email" placeholder="you@example.com" className="pl-10" value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} required />
                     </div>
+                    <p className="text-[11px] text-secondary-text mt-1">
+                      We email your booking confirmation here.
+                    </p>
                   </div>
                   <div>
                     <Label htmlFor="booking-address">Delivery Address *</Label>

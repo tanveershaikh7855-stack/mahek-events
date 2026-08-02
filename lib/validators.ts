@@ -11,10 +11,24 @@ const optionalEmail = z
   .union([z.email("Invalid email"), z.literal("")])
   .optional();
 
+/**
+ * Email is required wherever we owe the customer a confirmation.
+ *
+ * Automated WhatsApp needs Meta Cloud API credentials that are not configured,
+ * so email is the only channel that reaches the customer by itself. While this
+ * was optional, anyone who left it blank silently received no confirmation at
+ * all for their booking or order.
+ */
+const requiredEmail = z
+  .string()
+  .trim()
+  .min(1, "Email is required so we can send your confirmation")
+  .pipe(z.email("Enter a valid email address"));
+
 export const bookingSchema = z.object({
   name: z.string().trim().min(2, "Name is required"),
   phone,
-  email: optionalEmail,
+  email: requiredEmail,
   event: z.string().min(1, "Select event type"),
   venue: z.string().trim().min(3, "Venue is required"),
   date: z.string().min(1, "Date is required"),
@@ -65,7 +79,7 @@ export const checkoutSchema = z
   .object({
     name: z.string().trim().min(2, "Name is required"),
     phone,
-    email: optionalEmail,
+    email: requiredEmail,
     deliveryType: z.enum(["PICKUP", "DELIVERY"]).default("PICKUP"),
     // Address only required for DELIVERY; validated conditionally below.
     address: z.string().trim().optional().default(""),
