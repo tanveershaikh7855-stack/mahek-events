@@ -190,7 +190,7 @@ export const heroCarousel: HeroSlide[] = [
     subtitle: "Chrome, foil & helium balloons in every color and theme.",
     badge: "New Collection",
     cta: { label: "Shop Balloons", href: "/shop" },
-    infoCard: { icon: "truck", label: "Free Delivery", sublabel: "Orders above ₹499" },
+    infoCard: { icon: "truck", label: "Shop Pickup", sublabel: "Collect from Saras Baug" },
   },
 ];
 
@@ -264,7 +264,7 @@ export const about = {
         name: "Priya Verma",
         role: "Lead Stylist",
         description:
-          "10+ years of experience creating stunning event transformations across the city.",
+          "11+ years of experience creating stunning event transformations across the city.",
         image: "/images/IMG-20260728-WA0011.webp",
       },
       {
@@ -285,7 +285,7 @@ export const about = {
   stats: [
     { value: "5000+", label: "Customers Served" },
     { value: "1000+", label: "Events Decorated" },
-    { value: "10+", label: "Years Experience" },
+    { value: "11+", label: "Years Experience" },
     { value: "70 KM", label: "Delivery Radius" },
   ],
 } as const;
@@ -312,7 +312,7 @@ export const whyChooseUs = {
     {
       title: "Expert Design Team",
       description:
-        "In-house stylists with 10+ years of combined experience creating elegant decorations.",
+        "In-house stylists with 11+ years of combined experience creating elegant decorations.",
       tag: "Custom Themes",
       icon: "palette",
     },
@@ -343,9 +343,9 @@ export const whyChooseUs = {
 // ── STATISTICS ────────────────────────────────────────────────
 export const statistics = {
   happyCustomers: "5000+",
-  deliveryRadius: "140",
+  deliveryRadius: "70",
   rating: "4.9",
-  yearsExperience: "10+",
+  yearsExperience: "11+",
 } as const;
 
 // ── SERVICE CATEGORIES ────────────────────────────────────────

@@ -76,10 +76,9 @@ export function StructuredData() {
           "Thursday",
           "Friday",
           "Saturday",
-          "Sunday",
         ],
         opens: "09:00",
-        closes: "21:00",
+        closes: "20:00",
       },
     ],
     hasOfferCatalog: {

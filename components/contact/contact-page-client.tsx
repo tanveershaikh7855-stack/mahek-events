@@ -69,7 +69,7 @@ export function ContactPageClient() {
     {
       icon: ({ className }: { className?: string }) => <SocialIcon d={INSTAGRAM_PATH} className={className} />,
       label: "Instagram",
-      value: "@mahekdecor",
+      value: "@mahek.balloons",
       href: BRAND.instagram,
     },
     {

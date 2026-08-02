@@ -236,7 +236,7 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                     <h3 className="font-medium text-ink flex items-center gap-2"><CreditCard className="w-4 h-4 text-forest" /> Payment</h3>
                     <div className="grid grid-cols-2 gap-2">
                       {["cod", "upi", "card"].map((method) => (
-                        <button key={method} onClick={() => setData({ ...data, paymentMethod: method })} className={cn("px-4 py-3 rounded-xl border text-sm font-medium capitalize transition-all", data.paymentMethod === method ? "border-forest bg-forest-light text-forest" : "border-border text-secondary-text")}>{method === "cod" ? "Cash on Delivery" : method === "upi" ? "UPI" : "Card"}</button>
+                        <button key={method} onClick={() => setData({ ...data, paymentMethod: method })} className={cn("px-4 py-3 rounded-xl border text-sm font-medium capitalize transition-all", data.paymentMethod === method ? "border-forest bg-forest-light text-forest" : "border-border text-secondary-text")}>{method === "cod" ? "Cash at Shop" : method === "upi" ? "UPI" : "Card"}</button>
                       ))}
                     </div>
                   </div>

@@ -226,7 +226,7 @@ export function CheckoutPageClient() {
                   at <strong>{placedOrder.pickupTime}</strong>
                 </p>
                 <p className="text-xs text-secondary-text mt-1">
-                  Mahek Balloons, Saras Baug, Pune — 411004
+                  Mahek Balloon, Saras Baug, Pune — 411004
                 </p>
                 <a
                   href="https://maps.app.goo.gl/8WdoEqNAuCB9Qzwf7"
@@ -487,7 +487,7 @@ export function CheckoutPageClient() {
                   <h2 className="text-lg font-semibold text-ink">Order Notes</h2>
                   <Textarea
                     name="notes"
-                    placeholder="Special delivery instructions, preferred time, gate code, etc."
+                    placeholder="Special pickup instructions, preferred time, any special requests..."
                     rows={3}
                   />
                 </motion.div>
@@ -581,7 +581,7 @@ export function CheckoutPageClient() {
                       <span>{formatPrice(gst)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-secondary-text">Delivery</span>
+                      <span className="text-secondary-text">Pickup</span>
                       <span className="text-forest">Shop pickup</span>
                     </div>
                     <Separator />

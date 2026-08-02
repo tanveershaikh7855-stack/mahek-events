@@ -72,7 +72,7 @@ export default async function CheckoutSuccessPage({
                 <span>{formatPrice(Number(order.amountPaid))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-secondary-text">Balance on delivery</span>
+                <span className="text-secondary-text">Balance at pickup</span>
                 <span>{formatPrice(Number(order.balanceDue))}</span>
               </div>
             </div>
