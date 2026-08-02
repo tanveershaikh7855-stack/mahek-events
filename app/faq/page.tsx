@@ -1,12 +1,34 @@
 import type { Metadata } from "next";
 import { FaqPageClient } from "@/components/faq/faq-page-client";
-import { faqPage, business } from "@/lib/content";
+import { faqPage, faqs, business, seo } from "@/lib/content";
+import { FaqJsonLd } from "@/components/seo/faq-jsonld";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
 
 export const metadata: Metadata = {
-  title: `FAQ | ${business.name}`,
-  description: faqPage.subtitle,
+  title: "FAQ — Helium Balloons, Delivery & Decoration in Pune | Mahek Balloon",
+  description:
+    "Frequently asked questions about Mahek Balloon — helium & nitrogen balloons, delivery within 70 KM, booking process, payment methods, and decoration services in Pune.",
+  alternates: { canonical: "/faq" },
+  keywords: [
+    "Mahek Balloon FAQ",
+    "helium balloon delivery Pune",
+    "balloon decoration questions",
+    "balloon shop Saras Baug",
+  ],
+  openGraph: {
+    title: "FAQ | Mahek Balloon Pune",
+    description: faqPage.subtitle,
+    url: "/faq",
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon FAQ" }],
+  },
 };
 
 export default function FaqPage() {
-  return <FaqPageClient />;
+  return (
+    <>
+      <FaqJsonLd items={faqs} />
+      <BreadcrumbJsonLd items={[{ name: "FAQ", href: "/faq" }]} />
+      <FaqPageClient />
+    </>
+  );
 }

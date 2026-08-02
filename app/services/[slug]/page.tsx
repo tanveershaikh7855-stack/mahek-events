@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, ArrowRight, Calendar, Star } from "lucide-react";
 import { FALLBACK_SERVICES } from "@/lib/seed";
 import { formatPrice } from "@/lib/utils";
+import { ServiceJsonLd } from "@/components/seo/service-jsonld";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -16,9 +18,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = FALLBACK_SERVICES.find((s) => s.slug === slug);
   if (!service) return { title: "Service Not Found" };
+  const title = `${service.name} in Pune — Starting ₹${service.priceFrom.toLocaleString("en-IN")} | Mahek Balloon`;
+  const description = `${service.description} Professional setup within 70 KM of Pune. Book online, free consultation. Starting ₹${service.priceFrom.toLocaleString("en-IN")}.`;
   return {
-    title: `${service.name} | Mahek Balloon`,
-    description: service.description,
+    title,
+    description,
+    alternates: { canonical: `/services/${slug}` },
+    keywords: [
+      `${service.name.toLowerCase()} Pune`,
+      `${service.name.toLowerCase()} near me`,
+      "balloon decoration Pune",
+      "event decoration Pune",
+    ],
+    openGraph: {
+      title: `${service.name} in Pune | Mahek Balloon`,
+      description: service.description,
+      url: `/services/${slug}`,
+      images: serviceImages[slug]
+        ? [{ url: serviceImages[slug], width: 1200, height: 630, alt: service.name }]
+        : [],
+    },
   };
 }
 
@@ -36,6 +55,20 @@ export default async function ServiceDetailPage({ params }: Props) {
   if (!service) notFound();
 
   return (
+    <>
+      <ServiceJsonLd
+        name={service.name}
+        slug={service.slug}
+        description={service.description}
+        priceFrom={service.priceFrom}
+        image={serviceImages[service.slug]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Services", href: "/services" },
+          { name: service.name, href: `/services/${service.slug}` },
+        ]}
+      />
     <div className="min-h-screen pt-20 md:pt-24">
       <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <Image
@@ -123,5 +156,6 @@ export default async function ServiceDetailPage({ params }: Props) {
         </div>
       </section>
     </div>
+    </>
   );
 }

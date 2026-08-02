@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
 import { VideosPageClient } from "@/components/videos/videos-page-client";
 import { getGalleryVideos } from "@/lib/data";
-import { business } from "@/lib/content";
+import { business, seo } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: `Videos | ${business.name}`,
+  title: "Balloon Decoration Videos — Real Events in Pune | Mahek Balloon",
   description:
-    "Watch our balloon decoration setups and celebrations in motion — real events styled by Mahek Balloon.",
+    "Watch real balloon decoration videos by Mahek Balloon, Pune — birthday setups, wedding decor, proposals & event styling. See our work in action.",
+  alternates: { canonical: "/videos" },
+  keywords: [
+    "balloon decoration videos Pune",
+    "event decoration videos",
+    "birthday decoration video",
+    "wedding balloon decoration video",
+  ],
+  openGraph: {
+    title: "Decoration Videos | Mahek Balloon Pune",
+    description: "Real balloon decoration setups and celebrations styled by Mahek Balloon.",
+    url: "/videos",
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Videos" }],
+  },
 };
 
 export const revalidate = 3600;

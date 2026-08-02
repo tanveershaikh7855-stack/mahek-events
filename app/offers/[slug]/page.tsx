@@ -24,9 +24,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const offer = await getOfferBySlug(slug);
   if (!offer) return { title: "Offer not found" };
+  const desc = offer.subtitle ?? offer.description ?? "Special offer on balloon decoration in Pune.";
   return {
-    title: `${offer.title} | ${business.name}`,
-    description: offer.subtitle ?? offer.description ?? undefined,
+    title: `${offer.title} — Special Offer | ${business.name}`,
+    description: desc,
+    alternates: { canonical: `/offers/${slug}` },
+    openGraph: {
+      title: `${offer.title} | ${business.name}`,
+      description: desc,
+      url: `/offers/${slug}`,
+      images: offer.image ? [{ url: safeSrc(offer.image), width: 1200, height: 630, alt: offer.title }] : [],
+    },
   };
 }
 

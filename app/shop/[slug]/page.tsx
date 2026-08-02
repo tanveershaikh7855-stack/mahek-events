@@ -4,6 +4,8 @@ import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import { getStoreProductBySlug, getStoreProducts } from "@/lib/data";
 import { getProduct, getAllProductSlugs } from "@/lib/product-loader";
 import { business } from "@/lib/content";
+import { ProductJsonLd } from "@/components/seo/product-jsonld";
+import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -41,13 +43,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await loadProduct(slug);
   if (!product) return { title: "Product Not Found" };
+  const title = `${product.name} — Buy Online in Pune | ${business.name}`;
+  const description = `${product.shortDesc} Available at Mahek Balloon, Saras Baug, Pune. Same-day pickup. Starting ₹${product.salePrice ?? product.basePrice}.`;
   return {
-    title: `${product.name} | ${business.name}`,
-    description: product.shortDesc,
+    title,
+    description,
+    alternates: { canonical: `/shop/${slug}` },
+    keywords: [
+      product.name.toLowerCase(),
+      "buy balloons Pune",
+      "balloon shop Pune",
+      ...(product.tags ?? []),
+    ],
     openGraph: {
-      title: product.name,
+      title: `${product.name} | ${business.name}`,
       description: product.shortDesc,
-      images: product.images[0] ? [product.images[0]] : [],
+      url: `/shop/${slug}`,
+      images: product.images[0]
+        ? [{ url: product.images[0], width: 800, height: 800, alt: product.name }]
+        : [],
     },
   };
 }
@@ -64,5 +78,27 @@ export default async function ProductPage({ params }: Props) {
     .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
     .slice(0, 4);
 
-  return <ProductDetailClient product={product as never} related={related as never} />;
+  return (
+    <>
+      <ProductJsonLd
+        name={product.name}
+        slug={product.slug}
+        description={product.shortDesc || product.description}
+        images={product.images}
+        basePrice={product.basePrice}
+        salePrice={product.salePrice}
+        sku={product.sku}
+        rating={product.rating}
+        reviewCount={product.reviewCount}
+        inStock={product.stock > 0}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Shop", href: "/shop" },
+          { name: product.name, href: `/shop/${product.slug}` },
+        ]}
+      />
+      <ProductDetailClient product={product as never} related={related as never} />
+    </>
+  );
 }

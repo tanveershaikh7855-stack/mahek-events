@@ -3,12 +3,25 @@ import Link from "next/link";
 import Image from "next/image";
 import { Sparkles, ArrowRight, Tag } from "lucide-react";
 import { getOffers } from "@/lib/data";
-import { business } from "@/lib/content";
+import { business, seo } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: `Offers | ${business.name}`,
+  title: "Balloon Decoration Offers & Deals in Pune | Mahek Balloon",
   description:
-    "Seasonal and exclusive offers on balloon décor and celebration packages from Mahek Balloon.",
+    "Exclusive offers on helium balloon decoration, party supplies & event packages in Pune. Save on birthday, wedding & celebration decor. Limited-time deals from Mahek Balloon.",
+  alternates: { canonical: "/offers" },
+  keywords: [
+    "balloon decoration offers Pune",
+    "balloon deals Pune",
+    "party supplies discount Pune",
+    "decoration package offers",
+  ],
+  openGraph: {
+    title: "Offers & Deals | Mahek Balloon Pune",
+    description: "Seasonal and exclusive offers on balloon décor and celebration packages.",
+    url: "/offers",
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Offers" }],
+  },
 };
 
 export const revalidate = 3600;

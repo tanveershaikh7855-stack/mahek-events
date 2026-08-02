@@ -1,12 +1,26 @@
 import type { Metadata } from "next";
 import { GalleryPageClient } from "@/components/gallery/gallery-page-client";
-import { business } from "@/lib/content";
+import { business, seo } from "@/lib/content";
 import { getGallery } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: `Gallery | ${business.name}`,
+  title: "Balloon Decoration Gallery — Real Events in Pune | Mahek Balloon",
   description:
-    "Browse our portfolio of balloon decorations, event styling, and celebration setups. See real projects for birthdays, weddings, proposals and more.",
+    "See real balloon decoration setups by Mahek Balloon, Pune — birthdays, weddings, proposals, baby showers & corporate events. Premium helium balloon styling near Saras Baug.",
+  alternates: { canonical: "/gallery" },
+  keywords: [
+    "balloon decoration photos Pune",
+    "balloon decoration gallery",
+    "event decoration portfolio Pune",
+    "birthday decoration photos",
+    "wedding decoration photos Pune",
+  ],
+  openGraph: {
+    title: "Balloon Decoration Gallery | Mahek Balloon Pune",
+    description: "Browse real balloon decoration projects — birthdays, weddings, proposals & more.",
+    url: "/gallery",
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "Mahek Balloon Gallery" }],
+  },
 };
 
 export const revalidate = 3600;
