@@ -11,7 +11,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
-import { submitBooking } from "@/lib/actions";
+import { submitBooking, previewCoupon } from "@/lib/actions";
+
+const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
+
+/** Loads the Razorpay Checkout script once. */
+function loadRazorpay(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT}"]`);
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      existing.addEventListener("error", () => resolve(false));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = RAZORPAY_SCRIPT;
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
 
 interface BookingModalProps {
   product: {
@@ -50,14 +71,82 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
   };
 
   const [data, setData] = useState(formData);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponPending, setCouponPending] = useState(false);
 
   if (!product) return null;
 
   const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
-  const advancePayment = Math.round(price * 0.5);
   const total = price * data.quantity;
+  const discount = couponApplied?.discount ?? 0;
+  const payableTotal = Math.max(0, total - discount);
+  const advancePayment = Math.round(payableTotal * 0.5);
 
   const deliverySlots = ["Morning (8AM-12PM)", "Afternoon (12PM-4PM)", "Evening (4PM-7PM)", "Night (7PM-9PM)"];
+
+  const applyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setCouponPending(true);
+    setCouponError("");
+    const res = await previewCoupon(couponInput.trim(), [
+      { productId: product.id, name: product.name, slug: product.slug, price, quantity: data.quantity, image: "" },
+    ]);
+    setCouponPending(false);
+    if (!res.ok) {
+      setCouponApplied(null);
+      setCouponError(res.error);
+      return;
+    }
+    setCouponApplied({ code: res.code, discount: res.discount });
+    setCouponInput(res.code);
+  };
+
+  /**
+   * Opens Razorpay for the 50% advance and resolves true only once the payment
+   * is verified server-side. Booking already exists (PENDING) so a cancelled
+   * payment simply leaves it unpaid for the shop to follow up.
+   */
+  const payAdvance = async (bookingId: string): Promise<boolean> => {
+    const res = await fetch("/api/booking/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId }),
+    });
+    const payload = await res.json();
+    if (!res.ok || !payload.razorpayOrderId) {
+      setError(payload.error ?? "Could not start payment. Please try again.");
+      return false;
+    }
+    const loaded = await loadRazorpay();
+    if (!loaded || !window.Razorpay) {
+      setError("Could not load the payment window. Please check your connection.");
+      return false;
+    }
+    return new Promise<boolean>((resolve) => {
+      const rzp = new window.Razorpay!({
+        key: payload.keyId,
+        order_id: payload.razorpayOrderId,
+        amount: payload.amount,
+        currency: payload.currency,
+        name: payload.name,
+        description: payload.description,
+        prefill: payload.prefill,
+        theme: { color: "#1f5d3a" },
+        handler: async (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          const v = await fetch("/api/booking/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(r),
+          });
+          resolve(v.ok);
+        },
+        modal: { ondismiss: () => resolve(false) },
+      });
+      rzp.open();
+    });
+  };
 
   const handleWhatsApp = (bookingNumber: string) => {
     const message = `🛍️ *New Booking - ${BRAND.name}*\n\n` +
@@ -102,21 +191,37 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
     form.set("venue", data.address);
     form.set("date", data.eventDate);
     form.set("time", data.eventTime);
-    form.set("budget", String(total));
+    // Send the discounted total so the 50% advance is computed on it.
+    form.set("budget", String(payableTotal));
     form.set(
       "instructions",
       `Product: ${product.name} x${data.quantity}. ` +
-        `Payment: ${data.paymentMethod}. ` +
+        `Total: ₹${total}${couponApplied ? ` | Coupon ${couponApplied.code} -₹${discount}` : ""}. ` +
+        `Balance: ${data.paymentMethod}. ` +
         `${data.specialRequests || "No special requests."}`,
     );
 
     const result = await submitBooking(null, form);
-    setLoading(false);
 
     if (!result.success) {
+      setLoading(false);
       const messages = Object.values(result.errors).flat();
       setError(messages[0] ?? "Could not save your booking. Please try again.");
       return;
+    }
+
+    // Collect the 50% advance online BEFORE the WhatsApp hand-off.
+    if (result.advanceAmount > 0) {
+      const paid = await payAdvance(result.bookingId);
+      setLoading(false);
+      if (!paid) {
+        setError(
+          "Payment was not completed. Your booking is saved — pay the advance to confirm, or contact us on WhatsApp.",
+        );
+        return;
+      }
+    } else {
+      setLoading(false);
     }
 
     handleWhatsApp(result.bookingNumber);
@@ -255,10 +360,38 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
                       <div className="flex justify-between"><span className="text-secondary-text">Unit Price</span><span className="text-ink font-medium">{formatPrice(price)}</span></div>
                       <div className="flex justify-between"><span className="text-secondary-text">Quantity</span><span className="text-ink font-medium">{data.quantity}</span></div>
                       <div className="flex justify-between"><span className="text-secondary-text">Total</span><span className="text-ink font-bold">{formatPrice(total)}</span></div>
-                      <div className="flex justify-between"><span className="text-secondary-text">Advance (50%)</span><span className="text-forest font-semibold">{formatPrice(advancePayment)}</span></div>
+                      {discount > 0 && (
+                        <div className="flex justify-between"><span className="text-secondary-text">Coupon ({couponApplied?.code})</span><span className="text-forest font-medium">-{formatPrice(discount)}</span></div>
+                      )}
+                      <div className="flex justify-between"><span className="text-secondary-text">Advance (50%) — pay now</span><span className="text-forest font-semibold">{formatPrice(advancePayment)}</span></div>
+                      <div className="flex justify-between"><span className="text-secondary-text">Balance later</span><span className="text-ink">{formatPrice(payableTotal - advancePayment)}</span></div>
                       {data.eventDate && <div className="flex justify-between"><span className="text-secondary-text">Date</span><span className="text-ink">{data.eventDate}</span></div>}
                       {data.eventTime && <div className="flex justify-between"><span className="text-secondary-text">Time Slot</span><span className="text-ink">{data.eventTime}</span></div>}
                     </div>
+                  </div>
+
+                  {/* Coupon box */}
+                  <div>
+                    <Label htmlFor="booking-coupon" className="text-sm">Have a coupon?</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        id="booking-coupon"
+                        placeholder="Enter code"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                        disabled={!!couponApplied}
+                        className="uppercase"
+                      />
+                      {couponApplied ? (
+                        <Button type="button" variant="outline" onClick={() => { setCouponApplied(null); setCouponInput(""); setCouponError(""); }}>Remove</Button>
+                      ) : (
+                        <Button type="button" variant="outline" onClick={applyCoupon} disabled={couponPending}>
+                          {couponPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                        </Button>
+                      )}
+                    </div>
+                    {couponError && <p className="text-xs text-red-600 mt-1">{couponError}</p>}
+                    {couponApplied && <p className="text-xs text-forest mt-1">Coupon {couponApplied.code} applied — you save {formatPrice(discount)}.</p>}
                   </div>
 
                   <div className="flex items-start gap-3">
@@ -283,8 +416,8 @@ export function BookingModal({ product, open, onOpenChange }: BookingModalProps)
               )}
               {step === "summary" && (
                 <Button className="w-full h-12 bg-forest text-white font-semibold rounded-xl hover:bg-forest/90 transition-all flex items-center justify-center gap-2" onClick={handleSubmit} disabled={!agreed || loading}>
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageCircle className="w-5 h-5" />}
-                  Confirm & Send via WhatsApp
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                  {advancePayment > 0 ? `Pay ${formatPrice(advancePayment)} Advance & Confirm` : "Confirm Booking"}
                 </Button>
               )}
               <button className="w-full mt-2 text-xs text-secondary-text hover:text-ink transition-colors" onClick={() => setStep(step === "details" ? "details" : step === "date" ? "details" : "date")}>← Back</button>

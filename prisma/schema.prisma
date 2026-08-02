@@ -234,8 +234,10 @@ model Booking {
   amountPaid    Decimal       @default(0) @db.Decimal(10, 2)
   paymentStatus PaymentStatus @default(PENDING)
 
-  stripeSessionId String?   @unique
-  confirmedAt     DateTime?
+  stripeSessionId   String?   @unique
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  confirmedAt       DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -62,7 +62,7 @@ async function notify(tasks: Promise<unknown>[]): Promise<void> {
 export async function submitBooking(
   _prevState: unknown,
   formData: FormData,
-): Promise<ActionState<{ bookingNumber: string }>> {
+): Promise<ActionState<{ bookingNumber: string; bookingId: string; advanceAmount: number }>> {
   const parsed = bookingSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!parsed.success) {
@@ -70,6 +70,11 @@ export async function submitBooking(
   }
 
   const data = parsed.data;
+
+  // 50% advance on the stated budget/total, so a product booking can collect it
+  // online before the WhatsApp hand-off.
+  const budgetNum = data.budget ? Number(data.budget) : 0;
+  const advanceAmount = budgetNum > 0 ? Math.round(budgetNum * 0.5) : 0;
 
   try {
     const booking = await prisma.booking.create({
@@ -80,6 +85,7 @@ export async function submitBooking(
         eventDate: data.date ? new Date(data.date) : null,
         eventTime: data.time,
         budget: data.budget ? new Prisma.Decimal(data.budget) : null,
+        advanceAmount: advanceAmount > 0 ? new Prisma.Decimal(advanceAmount) : null,
         instructions: data.instructions ? sanitize(data.instructions) : null,
         customerName: sanitize(data.name),
         customerPhone: data.phone,
@@ -121,7 +127,12 @@ export async function submitBooking(
 
     revalidatePath("/admin");
 
-    return { success: true, bookingNumber: booking.bookingNumber };
+    return {
+      success: true,
+      bookingNumber: booking.bookingNumber,
+      bookingId: booking.id,
+      advanceAmount,
+    };
   } catch (error) {
     // The previous version returned `success: true` with a freshly generated
     // booking number whenever the database threw — telling the customer they
