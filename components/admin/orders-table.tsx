@@ -39,6 +39,10 @@ export type OrderRow = {
   shippingAddress: Record<string, string> | null;
   pickupDate: string | null;
   pickupTime: string | null;
+  setupRequested: boolean;
+  setupAddress: string | null;
+  setupDate: string | null;
+  setupTime: string | null;
   items: { id: string; name: string; quantity: number; price: number }[];
 };
 
@@ -206,6 +210,27 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                   {expanded === o.id && (
                     <tr className="bg-secondary/30 border-t border-border">
                       <td colSpan={8} className="px-4 py-4">
+                        {o.setupRequested && (
+                          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-3">
+                            <p className="text-xs font-bold uppercase tracking-wide text-amber-800">
+                              🎈 On-site setup requested — call with a quote
+                            </p>
+                            <p className="mt-1 text-sm text-ink">
+                              {o.setupAddress || "No venue address"}
+                            </p>
+                            {o.setupDate && (
+                              <p className="text-xs text-secondary-text">
+                                Setup on{" "}
+                                {new Date(o.setupDate).toLocaleDateString("en-IN", {
+                                  weekday: "long",
+                                  day: "numeric",
+                                  month: "long",
+                                })}
+                                {o.setupTime ? ` at ${o.setupTime}` : ""}
+                              </p>
+                            )}
+                          </div>
+                        )}
                         <div className="grid md:grid-cols-3 gap-6">
                           <div>
                             <h4 className="text-xs font-semibold text-ink uppercase tracking-wide mb-2">

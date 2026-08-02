@@ -115,6 +115,13 @@ export function CheckoutPageClient() {
   }
   const [error, setError] = useState("");
 
+  // Optional "buy product + book setup" add-on: the customer also wants us to
+  // set the order up at their venue. Team calls with a setup quote, so no fee is
+  // added to the cart here.
+  const [setupRequested, setSetupRequested] = useState(false);
+  const [setupDate, setSetupDate] = useState(minPickupDate);
+  const [setupTime, setSetupTime] = useState("11:00 AM");
+
   // Coupon state. `applied` holds the server-verified discount; couponCode is
   // submitted with the order and re-validated server-side.
   const [couponInput, setCouponInput] = useState("");
@@ -543,6 +550,80 @@ export function CheckoutPageClient() {
                           defaultValue="Maharashtra"
                           required
                         />
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="p-6 rounded-2xl border border-border bg-white space-y-4"
+                >
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={setupRequested}
+                      onChange={(e) => setSetupRequested(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-border text-forest focus:ring-forest"
+                    />
+                    <span>
+                      <span className="block font-semibold text-ink">
+                        🎈 Also book on-site setup &amp; decoration
+                      </span>
+                      <span className="block text-sm text-secondary-text">
+                        Our team will bring your order and set it up at your venue. We&apos;ll
+                        call you with a setup quote — no extra charge added now.
+                      </span>
+                    </span>
+                  </label>
+                  {/* Submitted so the server knows whether setup was requested. */}
+                  <input
+                    type="hidden"
+                    name="setupRequested"
+                    value={setupRequested ? "true" : "false"}
+                  />
+                  {setupRequested && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="setupAddress">Venue address for setup *</Label>
+                        <Textarea
+                          id="setupAddress"
+                          name="setupAddress"
+                          placeholder="Hall / house address, landmark, area"
+                          rows={2}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="setupDate">Event date *</Label>
+                        <Input
+                          id="setupDate"
+                          name="setupDate"
+                          type="date"
+                          min={minPickupDate}
+                          value={setupDate}
+                          onChange={(e) => setSetupDate(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="setupTime">Setup time *</Label>
+                        <select
+                          id="setupTime"
+                          name="setupTime"
+                          value={setupTime}
+                          onChange={(e) => setSetupTime(e.target.value)}
+                          required
+                          className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
+                        >
+                          {PICKUP_SLOTS.map((slot) => (
+                            <option key={slot} value={slot}>
+                              {slot}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   )}

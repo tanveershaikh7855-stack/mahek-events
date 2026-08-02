@@ -93,8 +93,28 @@ export const checkoutSchema = z
     couponCode: z.string().trim().optional(),
     billingSameAsShipping: z.boolean().default(true),
     notes: z.string().max(1000).optional(),
+    // Optional on-site setup add-on ("buy product + book setup").
+    setupRequested: z.boolean().default(false),
+    setupAddress: z.string().trim().optional().default(""),
+    setupDate: z.string().optional().default(""),
+    setupTime: z.string().trim().optional().default(""),
   })
   .superRefine((v, ctx) => {
+    if (v.setupRequested) {
+      if (v.setupAddress.length < 5) {
+        ctx.addIssue({ code: "custom", path: ["setupAddress"], message: "Enter the venue address for setup" });
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(v.setupDate)) {
+        ctx.addIssue({ code: "custom", path: ["setupDate"], message: "Select the event/setup date" });
+      } else {
+        const d = new Date(v.setupDate + "T00:00:00");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (d.getTime() < today.getTime()) {
+          ctx.addIssue({ code: "custom", path: ["setupDate"], message: "Setup date cannot be in the past" });
+        }
+      }
+    }
     if (v.deliveryType === "PICKUP") {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(v.pickupDate)) {
         ctx.addIssue({ code: "custom", path: ["pickupDate"], message: "Select a pickup date" });

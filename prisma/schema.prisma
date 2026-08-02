@@ -122,6 +122,14 @@ model Order {
   razorpayOrderId   String? @unique
   razorpayPaymentId String? @unique
 
+  // "Buy product + book setup": the customer also wants Mahek Balloons to set
+  // the order up at their venue. The team calls with a setup quote, so no fee is
+  // fixed here. Address/date/time are only set when setupRequested is true.
+  setupRequested Boolean   @default(false)
+  setupAddress   String?   @db.Text
+  setupDate      DateTime?
+  setupTime      String?
+
   shippingAddress Json
   billingAddress  Json?
   notes           String?   @db.Text

@@ -350,6 +350,8 @@ export async function submitCheckout(
     ...raw,
     billingSameAsShipping:
       raw.billingSameAsShipping === "on" || raw.billingSameAsShipping === "true",
+    setupRequested:
+      raw.setupRequested === "on" || raw.setupRequested === "true",
   });
 
   if (!parsed.success) {
@@ -390,6 +392,13 @@ export async function submitCheckout(
   const pickupDate =
     deliveryType === "PICKUP" && data.pickupDate
       ? new Date(`${data.pickupDate}T00:00:00+05:30`)
+      : null;
+
+  // On-site setup add-on (IST-safe date, same as pickup).
+  const setupRequested = data.setupRequested === true;
+  const setupDate =
+    setupRequested && data.setupDate
+      ? new Date(`${data.setupDate}T00:00:00+05:30`)
       : null;
 
   try {
@@ -434,6 +443,10 @@ export async function submitCheckout(
           deliveryType,
           pickupDate,
           pickupTime: deliveryType === "PICKUP" ? data.pickupTime : null,
+          setupRequested,
+          setupAddress: setupRequested ? sanitize(data.setupAddress) : null,
+          setupDate,
+          setupTime: setupRequested ? data.setupTime : null,
           customerName: sanitize(data.name),
           customerPhone: data.phone,
           coupon: pricing.couponId
@@ -473,6 +486,15 @@ export async function submitCheckout(
         })
       : null;
 
+    const setupHuman = setupDate
+      ? setupDate.toLocaleDateString("en-IN", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : null;
+
     await notify([
       email.sendOrderPlacedEmail({
         orderNumber: order.orderNumber,
@@ -499,6 +521,13 @@ export async function submitCheckout(
         deliveryType === "PICKUP"
           ? `Pickup: ${pickupHuman} at ${data.pickupTime}`
           : `Delivery: ${address.address}, ${address.city} ${address.pincode}`,
+        ...(setupRequested
+          ? [
+              `⚑ ON-SITE SETUP REQUESTED — call with quote`,
+              `Setup venue: ${sanitize(data.setupAddress)}`,
+              `Setup on: ${setupHuman} at ${data.setupTime}`,
+            ]
+          : []),
         `Total: ${formatPrice(pricing.total)}`,
         `Advance due: ${formatPrice(pricing.advanceAmount)}`,
         `Payment: ${data.paymentMethod}`,
@@ -509,6 +538,9 @@ export async function submitCheckout(
           (deliveryType === "PICKUP"
             ? `Please collect from our shop opposite Saras Baug Garden on ${pickupHuman} at ${data.pickupTime}. `
             : `We'll deliver to your address; our team will call to confirm the slot. `) +
+          (setupRequested
+            ? `You've also requested on-site setup on ${setupHuman} at ${data.setupTime} — our team will call with a setup quote. `
+            : "") +
           `Pay the ${pricing.advancePercent}% advance of ${formatPrice(pricing.advanceAmount)} to confirm; ` +
           `${formatPrice(pricing.balanceDue)} on ${deliveryType === "PICKUP" ? "pickup" : "delivery"}.`,
       ),

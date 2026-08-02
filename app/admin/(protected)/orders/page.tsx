@@ -27,6 +27,10 @@ export default async function OrdersPage() {
     shippingAddress: o.shippingAddress as Record<string, string> | null,
     pickupDate: o.pickupDate ? o.pickupDate.toISOString() : null,
     pickupTime: o.pickupTime,
+    setupRequested: o.setupRequested,
+    setupAddress: o.setupAddress,
+    setupDate: o.setupDate ? o.setupDate.toISOString() : null,
+    setupTime: o.setupTime,
     items: o.items.map((i) => ({
       id: i.id,
       name: i.name,
