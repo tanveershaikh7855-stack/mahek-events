@@ -557,7 +557,10 @@ export async function submitCheckout(
       balanceDue: pricing.balanceDue,
       // COD still needs the advance, but it is collected by hand rather than
       // through Stripe.
-      requiresPayment: data.paymentMethod !== "COD",
+      // Every order now collects the advance online before it is confirmed —
+      // including "Cash at Shop", where only the remaining balance is paid in
+      // cash at pickup/delivery. So payment is required whenever an advance is due.
+      requiresPayment: pricing.advanceAmount > 0,
     };
   } catch (error) {
     if (error instanceof PricingError) return formError(error.message);

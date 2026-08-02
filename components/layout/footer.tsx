@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Mail, MapPin, Phone, Clock, Lock, Star } from "lucide-react";
 import { BRAND, FOOTER_LINKS, WHY_CHOOSE_US } from "@/lib/constants";
 import { footer } from "@/lib/content";
+import { ShareButton } from "./share-button";
 
 const SocialIcon = ({ d }: { d: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
@@ -64,6 +65,7 @@ export function Footer() {
                 <Phone className="w-4 h-4" />
                 <span>{BRAND.phone}</span>
               </a>
+              <ShareButton label="Share this site" />
             </div>
             <div className="flex gap-3">
               <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-white/30 hover:text-white transition-all duration-200" aria-label="Instagram">

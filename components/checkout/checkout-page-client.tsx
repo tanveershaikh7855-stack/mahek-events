@@ -32,10 +32,12 @@ import { cn, formatPrice } from "@/lib/utils";
 import { submitCheckout, previewCoupon } from "@/lib/actions";
 import { ADVANCE_PERCENT, DELIVERY_MIN_SUBTOTAL } from "@/lib/constants";
 
+// Every order collects the 50% advance online to confirm; the payment method
+// only decides how the remaining balance is settled.
 const PAYMENT_METHODS = [
-  { value: "COD", label: "Cash at Shop", icon: Wallet, desc: "Pay when you collect" },
-  { value: "UPI", label: "UPI (GPay/PhonePe/Paytm)", icon: Smartphone, desc: "Instant payment via UPI" },
-  { value: "CARD", label: "Credit/Debit Card", icon: Landmark, desc: "Visa, Mastercard, RuPay" },
+  { value: "COD", label: "Cash at Shop", icon: Wallet, desc: "Pay 50% online now, balance in cash at pickup/delivery" },
+  { value: "UPI", label: "UPI (GPay/PhonePe/Paytm)", icon: Smartphone, desc: "Pay 50% advance now via UPI" },
+  { value: "CARD", label: "Credit/Debit Card", icon: Landmark, desc: "Pay 50% advance now by card" },
 ];
 
 type RazorpayResponse = {
