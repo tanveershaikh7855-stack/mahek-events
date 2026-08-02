@@ -293,6 +293,9 @@ model Review {
   rating     Int
   title      String?
   comment    String?  @db.Text
+  // Name typed by a guest reviewer (no account). Falls back to the linked
+  // customer's name when present.
+  authorName String?
   isVerified Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

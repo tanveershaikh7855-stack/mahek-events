@@ -333,6 +333,65 @@ export async function previewCoupon(
   }
 }
 
+// ── CUSTOMER REVIEWS ──────────────────────────────────────────
+
+const reviewSchema = z.object({
+  productId: z.string().min(1),
+  slug: z.string().optional(),
+  name: z.string().trim().min(2, "Please enter your name"),
+  rating: z.coerce.number().int().min(1, "Select a rating").max(5),
+  comment: z.string().trim().max(1000).optional(),
+});
+
+/**
+ * Public review submission. Saved as unverified — it appears on the product page
+ * only after an admin approves it in Admin → Reviews. This is what "let
+ * customers post reviews" needs, reusing the existing Review moderation flow.
+ */
+export async function submitReview(
+  _prevState: unknown,
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = reviewSchema.safeParse(Object.fromEntries(formData.entries()));
+  if (!parsed.success) {
+    return { success: false, errors: fieldErrors(parsed.error.flatten().fieldErrors) };
+  }
+  const d = parsed.data;
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: d.productId },
+      select: { id: true },
+    });
+    if (!product) return formError("That product no longer exists.");
+
+    await prisma.review.create({
+      data: {
+        productId: d.productId,
+        rating: d.rating,
+        comment: d.comment ? sanitize(d.comment) : null,
+        authorName: sanitize(d.name),
+        isVerified: false,
+      },
+    });
+
+    await email
+      .sendAdminAlert(`New review awaiting approval`, [
+        `Product ID: ${d.productId}`,
+        `By: ${d.name} — ${d.rating}★`,
+        d.comment ? `Comment: ${d.comment}` : "No comment",
+        `Approve it in Admin → Reviews.`,
+      ])
+      .catch(() => {});
+
+    if (d.slug) revalidatePath(`/shop/${d.slug}`);
+    revalidatePath("/admin/reviews");
+    return { success: true };
+  } catch (error) {
+    console.error("[submitReview] failed:", error);
+    return formError("We could not save your review just now. Please try again.");
+  }
+}
+
 // ── CHECKOUT ──────────────────────────────────────────────────
 
 export type CheckoutSuccess = {

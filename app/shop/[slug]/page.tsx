@@ -6,6 +6,7 @@ import { getProduct, getAllProductSlugs } from "@/lib/product-loader";
 import { business } from "@/lib/content";
 import { ProductJsonLd } from "@/components/seo/product-jsonld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
+import { ProductReviews } from "@/components/shop/product-reviews";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -99,6 +100,7 @@ export default async function ProductPage({ params }: Props) {
         ]}
       />
       <ProductDetailClient product={product as never} related={related as never} />
+      <ProductReviews productId={product.id} slug={product.slug} />
     </>
   );
 }

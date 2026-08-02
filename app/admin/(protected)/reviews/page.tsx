@@ -16,7 +16,7 @@ export default async function ReviewsPage() {
     comment: r.comment,
     isVerified: r.isVerified,
     productName: r.product.name,
-    customerName: r.customer?.name ?? null,
+    customerName: r.customer?.name ?? r.authorName ?? null,
     createdAt: r.createdAt.toISOString(),
   }));
 

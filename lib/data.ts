@@ -99,6 +99,28 @@ export async function getProductBySlug(slug: string) {
   );
 }
 
+/** Approved (verified) customer reviews for a product, newest first. */
+export async function getProductReviews(productId: string) {
+  return withFallback(
+    async () => {
+      const rows = await prisma.review.findMany({
+        where: { productId, isVerified: true },
+        orderBy: { createdAt: "desc" },
+        include: { customer: { select: { name: true } } },
+        take: 50,
+      });
+      return rows.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.comment,
+        author: r.authorName || r.customer?.name || "Verified customer",
+        createdAt: r.createdAt.toISOString(),
+      }));
+    },
+    [] as { id: string; rating: number; comment: string | null; author: string; createdAt: string }[],
+  );
+}
+
 export async function getRelatedProducts(productId: string, categoryId: string, limit = 4) {
   return withFallback(
     async () =>
