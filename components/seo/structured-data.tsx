@@ -3,8 +3,8 @@ import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Server-rendered JSON-LD. Two graphs:
- *  - LocalBusiness: name, address, geo, phone, rating, socials → helps the shop
- *    surface for local "balloon decoration Pune" style searches and in Maps.
+ *  - Organization (via LocalBusiness): the `logo` field points at the real
+ *    logo file so Google can use it as the brand icon next to search results.
  *  - WebSite with a SearchAction → enables Google's sitelinks search box so a
  *    searcher can query the site straight from the results page.
  *
@@ -18,7 +18,7 @@ export function StructuredData() {
     "@context": "https://schema.org",
     // A florist-adjacent decoration store — the more specific types help Google
     // classify the business for "balloon decoration"/"party store" queries.
-    "@type": ["LocalBusiness", "Store"],
+    "@type": ["Organization", "LocalBusiness", "Store"],
     "@id": `${base}/#business`,
     name: business.name,
     // Singular form kept as the alternate so searches for "Mahek Balloon" still
@@ -30,7 +30,9 @@ export function StructuredData() {
     telephone: business.phoneFormatted,
     email: business.email,
     image: `${base}${seo.ogImage}`,
-    logo: `${base}${seo.ogImage}`,
+    // The actual square logo file (512×512) — Google uses this as the brand
+    // icon in Search. seo.ogImage is a 1200×630 banner and must not go here.
+    logo: `${base}/images/logo/logo.png`,
     priceRange: "₹₹",
     currenciesAccepted: "INR",
     paymentAccepted: "Cash, UPI, Credit Card, Debit Card",

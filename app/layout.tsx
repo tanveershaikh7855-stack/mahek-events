@@ -91,10 +91,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        {/* Tab and home-screen icons come from app/icon.png and
-            app/apple-icon.png via Next's file conventions. The stale
-            pre-rebrand app/favicon.ico used to win over these manual links,
-            which is why the browser tab kept showing the old mark. */}
+        {/* Tab/bookmark icons come from app/favicon.ico (current logo, 16/32/48)
+            plus app/icon.png and app/apple-icon.png via Next's file
+            conventions; the manifest (192/512) handles installs. */}
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
         <StructuredData />
