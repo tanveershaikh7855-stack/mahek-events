@@ -6,6 +6,7 @@ import { Truck, ArrowRight, Star, Shield, Clock, Award } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { hero, business } from "@/lib/content";
 import { HeroCarousel } from "./hero-carousel";
+import { getHeroSlides } from "@/lib/data";
 
 // Explicit tuple — inferred as number[], which framer-motion's Easing rejects.
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -17,7 +18,8 @@ const TRUST_BAR = [
   { icon: Award, text: hero.features[3] },
 ];
 
-export function Hero() {
+export async function Hero() {
+  const slides = await getHeroSlides();
   return (
     <section className="relative overflow-hidden bg-warm-white">
       <div className="container-tight relative z-10 pt-14 pb-6 md:pt-20 md:pb-8 lg:pt-24 lg:pb-10">
@@ -117,7 +119,7 @@ export function Hero() {
             transition={{ duration: 0.8, ease, delay: 0.1 }}
             className="lg:col-span-7 order-1 lg:order-2"
           >
-            <HeroCarousel />
+            <HeroCarousel slides={slides} />
           </motion.div>
         </div>
       </div>

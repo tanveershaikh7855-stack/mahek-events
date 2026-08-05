@@ -75,6 +75,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Shop pages carry real-time pricing. Give the CDN at most 60 s so
+        // price edits in admin propagate within a minute even if on-demand
+        // revalidation misses the CDN layer.
+        source: "/shop/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, s-maxage=60, stale-while-revalidate=30" },
+        ],
+      },
+      {
         // Admin should never be edge-cached — cookies, live data, and CSRF
         // tokens must not be shared between users.
         source: "/admin/:path*",

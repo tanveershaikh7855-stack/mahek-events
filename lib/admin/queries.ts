@@ -208,6 +208,13 @@ export async function getAdminGallery() {
   });
 }
 
+export async function getAdminHeroSlides() {
+  await requireAdmin();
+  return prisma.heroSlide.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+}
+
 export async function getAdminOffers() {
   await requireAdmin();
   return prisma.offer.findMany({

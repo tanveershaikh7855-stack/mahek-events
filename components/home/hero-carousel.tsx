@@ -5,8 +5,14 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { heroCarousel } from "@/lib/content";
 import { HeroImage } from "@/lib/image-utils";
+
+type HeroSlide = {
+  image: string;
+  title: string;
+  subtitle: string;
+  cta?: { label: string; href: string };
+};
 
 function useMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -20,7 +26,7 @@ function useMobile() {
   return isMobile;
 }
 
-export function HeroCarousel() {
+export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const isMobile = useMobile();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -55,7 +61,7 @@ export function HeroCarousel() {
         className="overflow-hidden rounded-[28px] lg:rounded-[32px] shadow-[0_16px_64px_-16px_rgba(0,0,0,0.15)]"
       >
         <div className="flex">
-          {heroCarousel.map((s, i) => (
+          {slides.map((s, i) => (
             <div
               key={i}
               className="flex-[0_0_100%] min-w-0 relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9]"
@@ -117,7 +123,7 @@ export function HeroCarousel() {
         </button>
 
         <div className="flex items-center gap-1.5">
-          {heroCarousel.map((_, i) => (
+          {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => emblaApi?.scrollTo(i)}

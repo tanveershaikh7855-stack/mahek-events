@@ -7,6 +7,7 @@ import {
   FALLBACK_GALLERY,
   FALLBACK_DELIVERY_CHARGES,
 } from "./seed";
+import { heroCarousel } from "./content";
 
 /**
  * Falls back to the static content CMS when the database is unreachable, so the
@@ -29,6 +30,23 @@ function withFallback<T>(fn: () => Promise<T>, fallback: unknown): Promise<T> {
     );
     return fallback as T;
   });
+}
+
+export async function getHeroSlides() {
+  return withFallback(async () => {
+    const rows = await prisma.heroSlide.findMany({
+      where: { isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+    if (rows.length === 0) return heroCarousel;
+    return rows.map((s) => ({
+      id: s.id,
+      image: s.image,
+      title: s.title,
+      subtitle: s.subtitle,
+      cta: s.ctaLabel && s.ctaHref ? { label: s.ctaLabel, href: s.ctaHref } : undefined,
+    }));
+  }, heroCarousel);
 }
 
 export async function getCategories(type?: "PRODUCT" | "SERVICE" | "EVENT") {

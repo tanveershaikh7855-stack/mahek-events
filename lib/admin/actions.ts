@@ -1010,3 +1010,72 @@ export async function saveSettings(formData: FormData): Promise<Result> {
     return fail("Could not save settings");
   }
 }
+
+// ── HERO SLIDES ────────────────────────────────────────────────
+
+const heroSlideSchema = z.object({
+  title: z.string().trim().min(2, "Title is required"),
+  subtitle: z.string().trim().min(2, "Subtitle is required"),
+  image: z.string().min(1, "Upload a slide image"),
+  ctaLabel: z.string().max(60).optional(),
+  ctaHref: z.string().max(200).optional(),
+  sortOrder: z.coerce.number().int().default(0),
+  isActive: z.union([z.literal("on"), z.literal("")]).optional(),
+});
+
+export async function saveHeroSlide(id: string | null, formData: FormData): Promise<Result> {
+  await requireAdmin();
+  const raw = Object.fromEntries(formData.entries());
+  if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
+  const parsed = heroSlideSchema.safeParse(raw);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the fields");
+  const d = parsed.data;
+  const data = {
+    title: d.title,
+    subtitle: d.subtitle,
+    image: d.image,
+    ctaLabel: d.ctaLabel || null,
+    ctaHref: d.ctaHref || null,
+    sortOrder: d.sortOrder,
+    isActive: d.isActive === "on",
+  };
+  try {
+    if (id) {
+      await prisma.heroSlide.update({ where: { id }, data });
+    } else {
+      await prisma.heroSlide.create({ data });
+    }
+    revalidateAdmin("/admin/hero-slides");
+    revalidatePath("/");
+    return ok(id ? "Slide updated" : "Slide added");
+  } catch (e) {
+    console.error("[saveHeroSlide]", e);
+    return fail("Could not save the slide");
+  }
+}
+
+export async function deleteHeroSlide(id: string): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.heroSlide.delete({ where: { id } });
+    revalidateAdmin("/admin/hero-slides");
+    revalidatePath("/");
+    return ok("Slide deleted");
+  } catch (e) {
+    console.error("[deleteHeroSlide]", e);
+    return fail("Could not delete the slide");
+  }
+}
+
+export async function toggleHeroSlideActive(id: string, isActive: boolean): Promise<Result> {
+  await requireAdmin();
+  try {
+    await prisma.heroSlide.update({ where: { id }, data: { isActive } });
+    revalidateAdmin("/admin/hero-slides");
+    revalidatePath("/");
+    return ok(isActive ? "Slide shown" : "Slide hidden");
+  } catch (e) {
+    console.error("[toggleHeroSlideActive]", e);
+    return fail("Could not update the slide");
+  }
+}

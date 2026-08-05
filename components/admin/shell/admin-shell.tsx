@@ -20,6 +20,7 @@ import {
   LogOut,
   Menu,
   X,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const NAV = [
   { icon: ShoppingBag, label: "Orders", href: "/admin/orders", key: "orders" },
   { icon: CalendarCheck, label: "Bookings", href: "/admin/bookings", key: "bookings" },
   { icon: Package, label: "Products", href: "/admin/products", key: "products" },
+  { icon: SlidersHorizontal, label: "Hero Slides", href: "/admin/hero-slides", key: null },
   { icon: Palette, label: "Services", href: "/admin/services", key: null },
   { icon: ImageIcon, label: "Gallery", href: "/admin/gallery", key: null },
   { icon: VideoIcon, label: "Review Videos", href: "/admin/review-videos", key: null },
