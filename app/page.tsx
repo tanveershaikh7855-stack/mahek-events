@@ -6,7 +6,7 @@ import { FeaturesBar } from "@/components/home/features-bar";
 import { Newsletter } from "@/components/home/newsletter";
 import { Skeleton } from "@/lib/image-utils";
 import { seo, business } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories, getServices } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories, getServices, getHeroSlides } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mahek Balloons — Premium Helium Balloon Decoration in Pune | Saras Baug",
@@ -59,7 +59,7 @@ const section = {
 };
 
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceList] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceList, heroSlides] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
@@ -67,6 +67,7 @@ export default async function HomePage() {
     getReviewVideos({ limit: 12 }),
     getCategories("PRODUCT"),
     getServices(),
+    getHeroSlides(),
   ]);
 
   const collectImages = (rows: { slug: string; image?: string | null }[]) =>
@@ -123,7 +124,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
+      <Hero slides={heroSlides} />
       <OffersHighlight offers={homeOffers} />
       <section.flowerBouquets products={trim(bouquets)} />
       <FeaturesBar />

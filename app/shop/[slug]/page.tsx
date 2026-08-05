@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import { getStoreProductBySlug, getStoreProducts } from "@/lib/data";
-import { getProduct, getAllProductSlugs } from "@/lib/product-loader";
+import { getProduct } from "@/lib/product-loader";
 import { business } from "@/lib/content";
 import { ProductJsonLd } from "@/components/seo/product-jsonld";
 import { BreadcrumbJsonLd } from "@/components/seo/breadcrumb-jsonld";
@@ -26,19 +26,17 @@ async function loadProduct(slug: string) {
 }
 
 /**
- * Prerender every known product page at build time so a visitor never waits on
- * a cold Supabase round-trip. Slugs come from the database, falling back to the
- * bundled catalogue when the DB is unreachable during a build.
+ * Product pages are generated on-demand at first request and cached via ISR
+ * (revalidate = 3600). Pre-generating all of them at build time flooded the
+ * Supabase pooler with parallel queries and made Hostinger deploys fail.
+ * Returning [] keeps every slug allowed but defers the render until a real
+ * visitor hits it, so the build never touches the DB for these pages.
  */
 export async function generateStaticParams() {
-  try {
-    const products = await getStoreProducts();
-    if (products.length > 0) return products.map((p) => ({ slug: p.slug }));
-  } catch {
-    // fall through to the static catalogue
-  }
-  return getAllProductSlugs().map((slug) => ({ slug }));
+  return [];
 }
+
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
