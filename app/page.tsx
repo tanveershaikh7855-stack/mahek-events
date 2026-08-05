@@ -6,7 +6,7 @@ import { FeaturesBar } from "@/components/home/features-bar";
 import { Newsletter } from "@/components/home/newsletter";
 import { Skeleton } from "@/lib/image-utils";
 import { seo, business } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories, getServices } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mahek Balloons — Premium Helium Balloon Decoration in Pune | Saras Baug",
@@ -59,14 +59,14 @@ const section = {
 };
 
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceList] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
     getOffers(),
     getReviewVideos({ limit: 12 }),
     getCategories("PRODUCT"),
-    getCategories("SERVICE"),
+    getServices(),
   ]);
 
   const collectImages = (rows: { slug: string; image?: string | null }[]) =>
@@ -74,7 +74,13 @@ export default async function HomePage() {
       rows.filter((r) => r.image && r.image.trim()).map((r) => [r.slug, r.image as string]),
     );
   const productImages = collectImages(productCats);
-  const serviceImages = collectImages(serviceCats);
+
+  const homeServices = serviceList.slice(0, 5).map((s) => ({
+    slug: s.slug,
+    name: s.name,
+    subtitle: s.description,
+    image: s.image ?? "",
+  }));
 
   const reviewVideos = reviewRows.map((r) => ({
     id: r.id,
@@ -121,7 +127,7 @@ export default async function HomePage() {
       <OffersHighlight offers={homeOffers} />
       <section.flowerBouquets products={trim(bouquets)} />
       <FeaturesBar />
-      <section.categoryGrid productImages={productImages} serviceImages={serviceImages} />
+      <section.categoryGrid productImages={productImages} services={homeServices} />
       <section.featuredProducts products={trim(products)} />
       <section.gallery images={galleryImages} />
       <section.whyChooseUs />

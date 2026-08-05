@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { SHOP_CATEGORIES, SERVICE_CATEGORIES } from "@/lib/constants";
+import { SHOP_CATEGORIES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -14,19 +14,9 @@ const categoryImages: Record<string, string> = {
   "flower-bouquets": "/images/princess-bouquet.png",
 };
 
-const serviceImages: Record<string, string> = {
-  birthday: "/images/birthday-arch.png",
-  anniversary: "/images/wedding-room.png",
-  "baby-shower": "/images/baby-shower-arch.png",
-  corporate: "/images/balloon-wall.png",
-  wedding: "/images/wedding-room.png",
-};
-
-/**
- * Admin-uploaded category images override the hard-coded fallbacks above,
- * so editing the image in /admin/products (Categories tab) changes the tile.
- */
 export type CategoryImageOverrides = Record<string, string>;
+
+export type ServiceTile = { slug: string; name: string; subtitle: string; image: string };
 
 function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
   name: string; slug: string; subtitle: string; image: string; type: "product" | "service"; itemCount?: number;
@@ -68,10 +58,10 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
 
 export function CategoryGrid({
   productImages = {},
-  serviceImages: serviceImagesOverride = {},
+  services = [],
 }: {
   productImages?: CategoryImageOverrides;
-  serviceImages?: CategoryImageOverrides;
+  services?: ServiceTile[];
 } = {}) {
   return (
     <section className="section-spacing bg-background">
@@ -167,7 +157,7 @@ export function CategoryGrid({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-            {SERVICE_CATEGORIES.slice(0, 5).map((cat, index) => (
+            {services.map((cat, index) => (
               <motion.div
                 key={cat.slug}
                 initial={{ opacity: 0, y: 14 }}
@@ -179,7 +169,7 @@ export function CategoryGrid({
                   name={cat.name}
                   slug={cat.slug}
                   subtitle={cat.subtitle}
-                  image={serviceImagesOverride[cat.slug] || serviceImages[cat.slug] || `/images/birthday-arch.png`}
+                  image={cat.image || `/images/birthday-arch.png`}
                   type="service"
                 />
               </motion.div>
