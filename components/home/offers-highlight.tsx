@@ -103,7 +103,6 @@ export function OffersHighlight({ offers }: { offers: HomeOffer[] }) {
                   src={safeSrc(feature.image)}
                   alt={feature.title}
                   fill
-                  priority
                   sizes="(max-width: 768px) 100vw, 1200px"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   unoptimized={feature.image.startsWith("data:")}

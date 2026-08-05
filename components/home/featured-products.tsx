@@ -12,7 +12,6 @@ import { ArrowRight } from "@/components/ui/icons";
 
 interface ProductCardProps {
   product: typeof FALLBACK_PRODUCTS[0];
-  priority?: boolean;
 }
 
 const categoryNames: Record<string, string> = {
@@ -23,7 +22,7 @@ const categoryNames: Record<string, string> = {
   "cat-5": "Flower Bouquets",
 };
 
-function ProductCard({ product, priority }: ProductCardProps) {
+function ProductCard({ product }: ProductCardProps) {
   const { toggleItem, isInWishlist } = useWishlist();
   const { items } = useCart();
   const inCart = items.some((i) => i.productId === product.id);
@@ -40,7 +39,6 @@ function ProductCard({ product, priority }: ProductCardProps) {
             fill
             className="object-cover image-zoom"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-            priority={priority}
             unoptimized={(product.images[0] ?? "").startsWith("data:")}
           />
         </Link>
@@ -169,7 +167,7 @@ export function FeaturedProducts({
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: index * 0.04, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
-              <ProductCard product={product} priority={index < 4} />
+              <ProductCard product={product} />
             </motion.div>
           ))}
         </div>

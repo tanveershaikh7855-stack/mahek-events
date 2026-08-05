@@ -150,8 +150,8 @@ export function Header() {
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Balloons"
-                width={512}
-                height={512}
+                width={160}
+                height={160}
                 className="h-9 md:h-11 w-auto object-contain rounded-lg"
                 priority
               />
@@ -359,8 +359,8 @@ export function Header() {
                   <Image
                     src="/images/logo/logo.png"
                     alt="Mahek Balloons"
-                    width={882}
-                    height={861}
+                    width={160}
+                    height={160}
                     className="h-10 w-auto object-contain"
                   />
                 </div>

@@ -1,9 +1,9 @@
 ﻿"use client";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star, Quote, CheckCircle } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { ThumbnailImage } from "@/lib/image-utils";
 
 export function Testimonials() {
   return (
@@ -60,12 +60,9 @@ export function Testimonials() {
 
               <div className="flex items-center gap-3 pt-4 border-t border-black/[0.04]">
                 <div className="relative w-9 h-9 rounded-full overflow-hidden bg-surface">
-                  <Image
+                  <ThumbnailImage
                     src={testimonial.image}
                     alt={testimonial.name}
-                    fill
-                    className="object-cover"
-                    sizes="36px"
                   />
                 </div>
                 <div>

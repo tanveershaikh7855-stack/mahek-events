@@ -33,8 +33,8 @@ export function Footer() {
               <Image
                 src="/images/logo/logo.png"
                 alt="Mahek Balloons"
-                width={512}
-                height={512}
+                width={160}
+                height={160}
                 className="h-12 w-auto object-contain rounded-lg"
               />
               <span className="font-heading font-bold text-base text-white tracking-tight hidden sm:block">Mahek Balloons</span>

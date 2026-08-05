@@ -1,11 +1,11 @@
 ﻿"use client";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "@/components/ui/icons";
 import { FALLBACK_GALLERY } from "@/lib/seed";
 import { cn } from "@/lib/utils";
+import { GalleryImage } from "@/lib/image-utils";
 
 type PreviewImage = { id: string; image: string; title: string; category: string };
 
@@ -71,13 +71,11 @@ export function GalleryPreview({ images }: { images?: PreviewImage[] }) {
                   aria-label={`View ${item.title} - ${item.category}`}
                 >
                   <div className="relative h-full overflow-hidden rounded-2xl">
-                    <Image
+                    <GalleryImage
                       src={item.image}
                       alt={item.title}
-                      fill
-                      className="object-cover image-zoom"
-                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      unoptimized={item.image.startsWith("data:")}
+                      index={index}
+                      priority={false}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-400">

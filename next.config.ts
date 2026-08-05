@@ -28,8 +28,29 @@ const nextConfig: NextConfig = {
   // errors ship. Those are fixed; the escape hatch is gone so they cannot
   // silently come back.
   poweredByHeader: false,
+  // Brotli (Hostinger CDN) + gzip (Node) for text responses.
+  compress: true,
   async headers() {
     return [
+      // Hash-stamped build assets are immutable — tell the browser/CDN to cache
+      // them for a year. _next/static and _next/image hits are the heaviest
+      // repeat-load traffic; this is where the biggest cache-hit win lives.
+      {
+        source: "/_next/static/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      // /images is not hash-versioned (files can be replaced in deploys), so
+      // cache aggressively but allow revalidation rather than a full year.
+      {
+        source: "/images/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=31536000" },
+        ],
+      },
+      {
+        source: "/favicon.ico",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
       {
         source: "/:path*",
         headers: [

@@ -3,11 +3,10 @@
 import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { heroCarousel } from "@/lib/content";
+import { HeroImage } from "@/lib/image-utils";
 
 function useMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -62,16 +61,13 @@ export function HeroCarousel() {
               className="flex-[0_0_100%] min-w-0 relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9]"
             >
               <div className="absolute inset-0 overflow-hidden">
-                <Image
+                <HeroImage
                   src={s.image}
                   alt={s.title}
-                  fill
-                  className={`object-cover transition-transform duration-[1200ms] ease-out ${
+                  priority={i === 0}
+                  className={`transition-transform duration-[1200ms] ease-out ${
                     selectedIndex === i ? "scale-105" : "scale-100"
                   }`}
-                  priority={i === 0}
-                  sizes="100vw"
-                  quality={85}
                 />
               </div>
 
@@ -95,12 +91,12 @@ export function HeroCarousel() {
                         {s.subtitle}
                       </p>
                       {s.cta && (
-                        <Link
+                        <a
                           href={s.cta.href}
                           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shadow-lg"
                         >
                           {s.cta.label}
-                        </Link>
+                        </a>
                       )}
                     </motion.div>
                   )}
