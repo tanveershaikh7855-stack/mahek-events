@@ -38,6 +38,7 @@ const schema = z.object({
 
   // Email
   RESEND_API_KEY: z.string().optional(),
+  RESEND_WEBHOOK_SECRET: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
 
   // WhatsApp Cloud API
@@ -92,6 +93,7 @@ export const features = {
   razorpay: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET),
   razorpayWebhook: Boolean(env.RAZORPAY_WEBHOOK_SECRET),
   email: Boolean(env.RESEND_API_KEY),
+  resendWebhook: Boolean(env.RESEND_WEBHOOK_SECRET),
   whatsapp: Boolean(env.WHATSAPP_API_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID),
   cloudinary: Boolean(env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),
   google: Boolean(env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET),

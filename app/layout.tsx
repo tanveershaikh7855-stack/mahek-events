@@ -17,9 +17,12 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+// Variable font: a single woff2 (200–800) replaces five per-weight files, so
+// FCP doesn't wait on a handful of font downloads. All weights (400–800) are
+// covered natively — identical rendering to the old five-weight setup.
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: "variable",
   display: "swap",
   variable: "--font-jakarta",
 });

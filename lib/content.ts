@@ -1015,11 +1015,11 @@ export const admin = {
   loginTitle: "Admin Login",
   loginSubtitle: "Mahek Balloons Admin Panel",
   emailLabel: "Email Address",
-  emailPlaceholder: "admin@mahekballoons.com",
+  emailPlaceholder: "bshaikh818@gmail.com",
   passwordLabel: "Password",
   passwordPlaceholder: "Enter password",
   signInButton: "Sign In",
-  defaultCredentials: "Default: admin@mahekballoons.com / admin123",
+  defaultCredentials: "",
 } as const;
 
 // ── HELPER: Get category name by ID ──────────────────────────

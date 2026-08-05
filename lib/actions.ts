@@ -18,6 +18,7 @@ import * as email from "./notifications/email";
 import * as whatsapp from "./notifications/whatsapp";
 import { formatPrice } from "./formatters";
 import { DELIVERY_MIN_SUBTOTAL } from "./constants";
+import { googleCalendarUrl, parseISTDateTime } from "./calendar-link";
 
 /**
  * Strips angle brackets from free-text fields before they are stored and later
@@ -112,12 +113,25 @@ export async function submitBooking(
         eventTime: data.time,
         venue: data.venue,
       }),
-      email.sendAdminAlert(`New booking ${booking.bookingNumber}`, [
-        `Customer: ${data.name} (${data.phone})`,
-        `Event: ${data.event} on ${data.date} at ${data.time}`,
-        `Venue: ${data.venue}`,
-        data.budget ? `Budget: ${formatPrice(Number(data.budget))}` : "Budget: not stated",
-      ]),
+      email.sendAdminAlert(
+        `New booking ${booking.bookingNumber}`,
+        [
+          `Customer: ${data.name} (${data.phone})`,
+          `Event: ${data.event} on ${data.date} at ${data.time}`,
+          `Venue: ${data.venue}`,
+          data.budget ? `Budget: ${formatPrice(Number(data.budget))}` : "Budget: not stated",
+        ],
+        data.date
+          ? {
+              calendarUrl: googleCalendarUrl({
+                title: `${data.event} — ${data.name} (${booking.bookingNumber})`,
+                startIST: parseISTDateTime(data.date, data.time) ?? new Date(`${data.date}T10:00:00+05:30`),
+                details: `Booking ${booking.bookingNumber}\nCustomer: ${data.name} — ${data.phone}\nVenue: ${data.venue}${data.budget ? `\nBudget: ${formatPrice(Number(data.budget))}` : ""}`,
+                location: data.venue,
+              }),
+            }
+          : undefined,
+      ),
       whatsapp.sendText(
         data.phone,
         `Hi ${data.name}, Mahek Balloons has received your ${data.event} decoration request (${booking.bookingNumber}). ` +
@@ -586,22 +600,36 @@ export async function submitCheckout(
         pickupDate: deliveryType === "PICKUP" ? pickupHuman : null,
         pickupTime: deliveryType === "PICKUP" ? data.pickupTime : null,
       }),
-      email.sendAdminAlert(`New order ${order.orderNumber}`, [
-        `Customer: ${data.name} (${data.phone})`,
-        deliveryType === "PICKUP"
-          ? `Pickup: ${pickupHuman} at ${data.pickupTime}`
-          : `Delivery: ${address.address}, ${address.city} ${address.pincode}`,
-        ...(setupRequested
-          ? [
-              `⚑ ON-SITE SETUP REQUESTED — call with quote`,
-              `Setup venue: ${sanitize(data.setupAddress)}`,
-              `Setup on: ${setupHuman} at ${data.setupTime}`,
-            ]
-          : []),
-        `Total: ${formatPrice(pricing.total)}`,
-        `Advance due: ${formatPrice(pricing.advanceAmount)}`,
-        `Payment: ${data.paymentMethod}`,
-      ]),
+      email.sendAdminAlert(
+        `New order ${order.orderNumber}`,
+        [
+          `Customer: ${data.name} (${data.phone})`,
+          deliveryType === "PICKUP"
+            ? `Pickup: ${pickupHuman} at ${data.pickupTime}`
+            : `Delivery: ${address.address}, ${address.city} ${address.pincode}`,
+          ...(setupRequested
+            ? [
+                `⚑ ON-SITE SETUP REQUESTED — call with quote`,
+                `Setup venue: ${sanitize(data.setupAddress)}`,
+                `Setup on: ${setupHuman} at ${data.setupTime}`,
+              ]
+            : []),
+          `Total: ${formatPrice(pricing.total)}`,
+          `Advance due: ${formatPrice(pricing.advanceAmount)}`,
+          `Payment: ${data.paymentMethod}`,
+        ],
+        pickupDate && data.pickupTime
+          ? {
+              calendarUrl: googleCalendarUrl({
+                title: `Order ${order.orderNumber} pickup — ${data.name}`,
+                startIST: parseISTDateTime(data.pickupDate!, data.pickupTime) ?? pickupDate,
+                durationMinutes: 30,
+                details: `Order ${order.orderNumber}\nCustomer: ${data.name} — ${data.phone}\nTotal: ${formatPrice(pricing.total)}`,
+                location: "Mahek Balloons, Opposite Saras Baug Garden, Pune 411004",
+              }),
+            }
+          : undefined,
+      ),
       whatsapp.sendText(
         data.phone,
         `Hi ${data.name}, Mahek Balloons has received order ${order.orderNumber} for ${formatPrice(pricing.total)}. ` +

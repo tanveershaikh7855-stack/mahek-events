@@ -1,19 +1,12 @@
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
 import { OffersHighlight } from "@/components/home/offers-highlight";
-import { FlowerBouquetsSection } from "@/components/home/flower-bouquets";
 import { FeaturesBar } from "@/components/home/features-bar";
-import { CategoryGrid } from "@/components/home/category-grid";
-import { FeaturedProducts } from "@/components/home/featured-products";
-import { ServicesSection } from "@/components/home/services-section";
-import { GalleryPreview } from "@/components/home/gallery-preview";
-import { WhyChooseUs } from "@/components/home/why-choose-us";
-import { Testimonials } from "@/components/home/testimonials";
 import { Newsletter } from "@/components/home/newsletter";
-import { HomeInfoSection } from "@/components/home/home-info";
-import { ReviewVideosCarousel } from "@/components/home/review-videos-carousel";
+import { Skeleton } from "@/lib/image-utils";
 import { seo, business } from "@/lib/content";
-import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories, getServices } from "@/lib/data";
+import { getStoreProducts, getGallery, getOffers, getReviewVideos, getCategories } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mahek Balloons — Premium Helium Balloon Decoration in Pune | Saras Baug",
@@ -26,8 +19,47 @@ export const metadata: Metadata = {
 // every single visit (which is what force-dynamic was doing).
 export const revalidate = 3600;
 
+// Below-the-fold sections load as separate JS chunks, fetched only when the
+// client reaches them — the initial bundle stays lean (Hero + OffersHighlight
+// + FeaturesBar render first paint). Each gets a shimmer placeholder matching
+// its natural height so nothing shifts when the chunk arrives.
+const section = {
+  flowerBouquets: dynamic(() =>
+    import("@/components/home/flower-bouquets").then((m) => m.FlowerBouquetsSection),
+    { loading: () => <Skeleton className="h-72 w-full" /> },
+  ),
+  categoryGrid: dynamic(() =>
+    import("@/components/home/category-grid").then((m) => m.CategoryGrid),
+    { loading: () => <Skeleton className="h-80 w-full" /> },
+  ),
+  featuredProducts: dynamic(() =>
+    import("@/components/home/featured-products").then((m) => m.FeaturedProducts),
+    { loading: () => <Skeleton className="h-96 w-full" /> },
+  ),
+  gallery: dynamic(() =>
+    import("@/components/home/gallery-preview").then((m) => m.GalleryPreview),
+    { loading: () => <Skeleton className="h-[480px] w-full" /> },
+  ),
+  whyChooseUs: dynamic(() =>
+    import("@/components/home/why-choose-us").then((m) => m.WhyChooseUs),
+    { loading: () => <Skeleton className="h-72 w-full" /> },
+  ),
+  reviewVideos: dynamic(() =>
+    import("@/components/home/review-videos-carousel").then((m) => m.ReviewVideosCarousel),
+    { loading: () => <Skeleton className="h-64 w-full" /> },
+  ),
+  testimonials: dynamic(() =>
+    import("@/components/home/testimonials").then((m) => m.Testimonials),
+    { loading: () => <Skeleton className="h-[420px] w-full" /> },
+  ),
+  homeInfo: dynamic(() =>
+    import("@/components/home/home-info").then((m) => m.HomeInfoSection),
+    { loading: () => <Skeleton className="h-72 w-full" /> },
+  ),
+};
+
 export default async function HomePage() {
-  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats, serviceList] = await Promise.all([
+  const [products, bouquets, galleryRows, offerRows, reviewRows, productCats, serviceCats] = await Promise.all([
     getStoreProducts({ featured: true, limit: 8 }),
     getStoreProducts({ categorySlug: "flower-bouquets", limit: 6 }),
     getGallery("all"),
@@ -35,7 +67,6 @@ export default async function HomePage() {
     getReviewVideos({ limit: 12 }),
     getCategories("PRODUCT"),
     getCategories("SERVICE"),
-    getServices(),
   ]);
 
   const collectImages = (rows: { slug: string; image?: string | null }[]) =>
@@ -88,16 +119,15 @@ export default async function HomePage() {
     <>
       <Hero />
       <OffersHighlight offers={homeOffers} />
-      <FlowerBouquetsSection products={trim(bouquets)} />
+      <section.flowerBouquets products={trim(bouquets)} />
       <FeaturesBar />
-      <CategoryGrid productImages={productImages} serviceImages={serviceImages} />
-      <FeaturedProducts products={trim(products)} />
-      <ServicesSection services={serviceList} />
-      <GalleryPreview images={galleryImages} />
-      <WhyChooseUs />
-      <ReviewVideosCarousel videos={reviewVideos} googleReviewUrl={business.googleReviewUrl} />
-      <Testimonials />
-      <HomeInfoSection />
+      <section.categoryGrid productImages={productImages} serviceImages={serviceImages} />
+      <section.featuredProducts products={trim(products)} />
+      <section.gallery images={galleryImages} />
+      <section.whyChooseUs />
+      <section.reviewVideos videos={reviewVideos} googleReviewUrl={business.googleReviewUrl} />
+      <section.testimonials />
+      <section.homeInfo />
       <Newsletter />
     </>
   );

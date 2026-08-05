@@ -183,9 +183,9 @@ export function sendOrderConfirmedEmail(data: OrderEmailData): Promise<SendResul
      <table style="width:100%;border-collapse:collapse;margin:16px 0">
        ${row("Order total", formatPrice(data.total))}
        ${row("Advance paid", formatPrice(data.advanceAmount))}
-       ${row("Balance on delivery", formatPrice(data.balanceDue), true)}
+       ${row("Balance at pickup", formatPrice(data.balanceDue), true)}
      </table>
-     <p style="font-size:14px;line-height:1.6">Our team will be in touch about delivery timing.</p>`,
+     <p style="font-size:14px;line-height:1.6">Our team will be in touch about pickup timing.</p>`,
   );
 
   return send(data.customerEmail, `Order ${data.orderNumber} confirmed`, html);
@@ -350,15 +350,32 @@ export function sendWelcomeEmail(data: {
 }
 
 /** Internal alert so the shop notices a new order/booking without polling the DB. */
-export function sendAdminAlert(subject: string, lines: string[]): Promise<SendResult> {
+export function sendAdminAlert(
+  subject: string,
+  lines: string[],
+  extras?: { calendarUrl?: string },
+): Promise<SendResult> {
   if (!env.ADMIN_EMAIL) {
     return Promise.resolve({ ok: false, error: "ADMIN_EMAIL not set" });
   }
+  // A one-tap "Add to Google Calendar" CTA saves the shop from typing the
+  // event manually — one click and the booking is on the calendar with the
+  // right date, time and venue. Optional so plain admin alerts stay plain.
+  const cta = extras?.calendarUrl
+    ? `<div style="margin:20px 0">
+         <a href="${extras.calendarUrl}" target="_blank" rel="noopener noreferrer"
+            style="display:inline-block;padding:10px 18px;background:#1F5D3A;color:#fff;
+                   text-decoration:none;font-weight:600;border-radius:10px;font-size:14px">
+           Add to Google Calendar
+         </a>
+       </div>`
+    : "";
   const html = layout(
     subject,
     `<ul style="font-size:14px;line-height:1.8;padding-left:18px">
       ${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join("")}
-     </ul>`,
+     </ul>
+     ${cta}`,
   );
   return send(env.ADMIN_EMAIL, `[Admin] ${subject}`, html);
 }
