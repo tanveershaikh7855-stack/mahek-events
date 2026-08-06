@@ -203,6 +203,18 @@ export const TOOL_DECLS: ToolDecl[] = [
     },
   },
   {
+    name: "delete_service",
+    description: "Permanently delete a decoration service. DESTRUCTIVE. Confirm with the admin first, then call with confirm=true.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Service name or id" },
+        confirm: { type: "boolean", description: "Must be true to actually delete" },
+      },
+      required: ["query", "confirm"],
+    },
+  },
+  {
     name: "create_coupon",
     description: "Create a discount coupon code.",
     parameters: {
@@ -411,6 +423,15 @@ export async function runTool(name: string, args: Args): Promise<unknown> {
       if (!found) return { error: "No service found." };
       const res = await toggleServiceActive(found.id, bool(args.active));
       return res.ok ? { ok: true, message: res.message } : { error: res.error };
+    }
+
+    case "delete_service": {
+      if (!bool(args.confirm)) return { error: "Not confirmed. Ask the admin to confirm, then call again with confirm=true." };
+      const found = await findService(String(args.query ?? ""));
+      if (found === "AMBIGUOUS") return { error: "Multiple services match — be more specific." };
+      if (!found) return { error: "No service found." };
+      const res = await deleteService(found.id);
+      return res.ok ? { ok: true, message: `Deleted "${found.name}"` } : { error: res.error };
     }
 
     case "create_coupon": {

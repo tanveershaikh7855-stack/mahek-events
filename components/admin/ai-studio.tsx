@@ -113,7 +113,7 @@ export function AIStudio() {
             <div>
               <p className="font-semibold leading-tight">Mahek AI Assistant</p>
               <p className="text-[12px] text-white/75 leading-tight">
-                Tell it what to do — it makes real changes in your admin panel.
+                Runs on your own server · free &amp; unlimited for commands
               </p>
             </div>
           </div>
@@ -134,8 +134,9 @@ export function AIStudio() {
               <p className="text-sm font-medium text-ink mb-1">Hi 👋 I&apos;m your AI manager.</p>
               <p className="text-sm text-secondary-text leading-relaxed">
                 Type a request in plain language and I&apos;ll do it — add a product, change a price,
-                hide something, create a coupon, update the About page, or just answer questions
-                about today&apos;s shop. Anything permanent like deleting, I&apos;ll confirm with you
+                hide something, create a coupon, update the About page, or answer questions about
+                today&apos;s shop. Commands run on your own server, so they&apos;re instant, free and
+                never rate-limited. Anything permanent like deleting, I&apos;ll confirm with you
                 first. Pick a card on the right to try one instantly.
               </p>
             </div>

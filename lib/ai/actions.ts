@@ -6,6 +6,7 @@ import { features } from "@/lib/env";
 import { analyzeImage } from "./gemini";
 import { runAgent, userTurn, modelTurn, type AgentStep } from "./agent";
 import { TOOL_DECLS, runTool } from "./agent-tools";
+import { localBrain } from "./local-brain";
 
 export type Result<T = void> =
   | { ok: true; data: T; message?: string }
@@ -175,8 +176,31 @@ export async function askAssistant(
   history: Array<{ role: "user" | "assistant"; text: string }> = [],
 ): Promise<Result<AssistantReply>> {
   await requireAdmin();
-  if (!features.gemini) return fail("Gemini AI is not configured. Set GOOGLE_GENAI_API_KEY.");
   if (!prompt.trim()) return fail("Please enter a message.");
+
+  // 1. Try the local brain first — it runs on our own server, costs nothing,
+  //    has no rate limit, and handles the common "do X" commands instantly.
+  try {
+    const local = await localBrain(prompt);
+    if (local?.handled) return ok({ reply: local.reply, actions: local.actions });
+  } catch (e) {
+    console.error("[localBrain]", e);
+  }
+
+  // 2. Fall back to Gemini for open-ended / creative requests it couldn't parse.
+  if (!features.gemini) {
+    return ok({
+      reply:
+        "I can do that kind of thing when the AI key is connected. For now I handle direct commands like:\n" +
+        '• "Add product Rainbow Arch ₹1299 in Balloon Bouquets"\n' +
+        '• "Change the price of Rose Bouquet to 799"\n' +
+        '• "Hide the product Sample"\n' +
+        '• "Create coupon DIWALI20 for 20% off above ₹1000"\n' +
+        '• "Change years of experience to 30+"\n' +
+        '• "How many pending orders do we have?"',
+      actions: [],
+    });
+  }
 
   try {
     const ctx = await loadShopContext();
@@ -215,7 +239,22 @@ Style: reply in short, friendly, plain text. After making changes, briefly confi
     return ok({ reply: text, actions: summarizeSteps(steps) });
   } catch (e) {
     console.error("[askAssistant]", e);
-    return fail(e instanceof Error ? e.message : "Could not reach the AI right now");
+    const msg = e instanceof Error ? e.message : "";
+    // The free Gemini tier has a daily cap. Don't scare the admin with a raw
+    // 429 — the local command engine still works for everyday actions.
+    if (/\b429\b|quota|rate.?limit/i.test(msg)) {
+      return ok({
+        reply:
+          "⚠️ The smart-writing AI has hit today's free usage limit (it resets tomorrow). " +
+          "I can still run direct commands right now — try things like:\n" +
+          '• "Add product Rainbow Arch ₹1299 in Balloon Bouquets"\n' +
+          '• "Change the price of Rose Bouquet to 799"\n' +
+          '• "Hide the product Sample"\n' +
+          '• "How many pending orders do we have?"',
+        actions: [],
+      });
+    }
+    return fail(msg || "Could not reach the AI right now");
   }
 }
 
