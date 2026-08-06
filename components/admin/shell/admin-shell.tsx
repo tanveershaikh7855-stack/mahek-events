@@ -37,6 +37,7 @@ export type NavCounts = {
 
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin", key: null },
+  { icon: Sparkles, label: "AI Assistant", href: "/admin/ai", key: null },
   { icon: ShoppingBag, label: "Orders", href: "/admin/orders", key: "orders" },
   { icon: CalendarCheck, label: "Bookings", href: "/admin/bookings", key: "bookings" },
   { icon: Package, label: "Products", href: "/admin/products", key: "products" },

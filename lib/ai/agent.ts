@@ -21,8 +21,10 @@ export type ToolDecl = {
   };
 };
 
+// This gateway only accepts USER / MODEL roles (not the "function" role some
+// Gemini SDKs use), so tool results are sent back on a "user" turn.
 type Content = {
-  role: "user" | "model" | "function";
+  role: "user" | "model";
   parts: Array<
     | { text: string }
     | { functionCall: { name: string; args: Record<string, unknown> } }
@@ -115,7 +117,7 @@ export async function runAgent(opts: {
         },
       });
     }
-    contents.push({ role: "function", parts: responseParts });
+    contents.push({ role: "user", parts: responseParts });
   }
 
   return {
