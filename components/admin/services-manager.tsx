@@ -14,6 +14,7 @@ import {
 import { saveService, deleteService, toggleServiceActive } from "@/lib/admin/actions";
 import { ConfirmDelete, EmptyState } from "./shared/ui";
 import { ImageUploader } from "./shared/image-uploader";
+import { ServiceAIFill } from "./shared/ai-fill";
 import { formatPrice, cn } from "@/lib/utils";
 
 export type ServiceRow = {
@@ -73,6 +74,13 @@ function ServiceDialog({
             defaultValue={item?.image ? [item.image] : []}
             multiple={false}
           />
+
+          <div className="flex items-center justify-between rounded-xl border border-dashed border-forest/40 bg-forest-light/50 px-3 py-2">
+            <p className="text-xs text-forest">
+              <strong>New:</strong> upload the main photo, then click AI Fill to auto-write everything else.
+            </p>
+            <ServiceAIFill imageField="image" />
+          </div>
 
           <ImageUploader
             name="images"

@@ -20,6 +20,7 @@ import {
 import { ConfirmDelete, EmptyState } from "./shared/ui";
 import { ImageUploader } from "./shared/image-uploader";
 import { VariantsEditor, type VariantGroup } from "./shared/variants-editor";
+import { ProductAIFill } from "./shared/ai-fill";
 import { formatPrice, cn } from "@/lib/utils";
 
 export type ProductRow = {
@@ -200,6 +201,13 @@ function ProductDialog({
             defaultValue={product?.images ?? []}
             multiple
           />
+
+          <div className="flex items-center justify-between rounded-xl border border-dashed border-forest/40 bg-forest-light/50 px-3 py-2">
+            <p className="text-xs text-forest">
+              <strong>New:</strong> upload an image, then click AI Fill to auto-write the name and description.
+            </p>
+            <ProductAIFill imageField="images" />
+          </div>
 
           <div>
             <label className={labelCls}>Options &amp; pricing</label>

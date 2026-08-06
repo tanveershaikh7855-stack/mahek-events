@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { AIAssistant } from "@/components/admin/ai-assistant";
 
 export type NavCounts = {
   orders: number;
@@ -162,6 +163,8 @@ export function AdminShell({
 
         <main className="p-4 md:p-6">{children}</main>
       </div>
+
+      <AIAssistant />
     </div>
   );
 }

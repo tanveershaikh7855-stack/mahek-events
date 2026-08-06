@@ -58,6 +58,10 @@ const schema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional(),
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
 
+  // Gemini AI (used by the admin AI assistant + image auto-fill).
+  // Get a free key at https://aistudio.google.com/apikey
+  GOOGLE_GENAI_API_KEY: z.string().optional(),
+
   // Business rules
   ADVANCE_PERCENT: z.coerce.number().int().min(1).max(100).default(50),
   GST_RATE: z.coerce.number().min(0).max(1).default(0.05),
@@ -97,6 +101,7 @@ export const features = {
   whatsapp: Boolean(env.WHATSAPP_API_TOKEN && env.WHATSAPP_PHONE_NUMBER_ID),
   cloudinary: Boolean(env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),
   google: Boolean(env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET),
+  gemini: Boolean(env.GOOGLE_GENAI_API_KEY),
 } as const;
 
 export const authSecret = env.AUTH_SECRET ?? env.NEXTAUTH_SECRET;
