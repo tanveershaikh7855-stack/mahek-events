@@ -12,7 +12,9 @@ import { env } from "@/lib/env";
  * key never touches the browser.
  */
 
-const MODEL = "gemini-2.5-flash";
+// `gemini-flash-latest` always resolves to the current Flash model, so we don't
+// have to chase version renames (2.5 → 3.x etc). Override with GEMINI_MODEL.
+const MODEL = env.GEMINI_MODEL || "gemini-flash-latest";
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 type GeminiPart =

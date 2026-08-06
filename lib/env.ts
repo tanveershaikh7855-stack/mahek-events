@@ -61,6 +61,8 @@ const schema = z.object({
   // Gemini AI (used by the admin AI assistant + image auto-fill).
   // Get a free key at https://aistudio.google.com/apikey
   GOOGLE_GENAI_API_KEY: z.string().optional(),
+  // Optional override, e.g. "gemini-2.0-flash". Defaults to gemini-flash-latest.
+  GEMINI_MODEL: z.string().optional(),
 
   // Business rules
   ADVANCE_PERCENT: z.coerce.number().int().min(1).max(100).default(50),

@@ -6,14 +6,14 @@ import { toast } from "sonner";
 import { askAssistant } from "@/lib/ai/actions";
 import { cn } from "@/lib/utils";
 
-type Msg = { role: "user" | "assistant"; text: string };
+type Msg = { role: "user" | "assistant"; text: string; actions?: string[] };
 
 const STARTERS = [
-  "Draft a WhatsApp reply for a customer asking about wedding decoration prices",
+  "Add a product: Chrome Gold Balloon Bouquet, ₹499, in Balloon Bouquets",
+  "Create a coupon DIWALI20 for 20% off orders above ₹1000",
+  "Change the years of experience on the About page to 30+",
   "Write 3 product descriptions for chrome balloon bouquets",
   "How many pending orders do we have right now?",
-  "Suggest 5 SEO tags for a birthday balloon arch service",
-  "Draft an email for a repeat customer offering 10% off their next order",
 ];
 
 export function AIAssistant() {
@@ -41,7 +41,10 @@ export function AIAssistant() {
     start(async () => {
       const res = await askAssistant(clean, messages);
       if (res.ok) {
-        setMessages([...next, { role: "assistant", text: res.data.reply }]);
+        setMessages([
+          ...next,
+          { role: "assistant", text: res.data.reply, actions: res.data.actions },
+        ]);
       } else {
         setMessages([
           ...next,
@@ -84,7 +87,7 @@ export function AIAssistant() {
             <div>
               <p className="text-sm font-semibold leading-tight">Mahek AI Assistant</p>
               <p className="text-[11px] text-white/70 leading-tight">
-                Powered by Gemini · knows your live shop data
+                Powered by Gemini · can make changes for you
               </p>
             </div>
           </div>
@@ -104,9 +107,10 @@ export function AIAssistant() {
               <div className="rounded-2xl bg-white border border-border p-4">
                 <p className="text-sm text-ink font-medium mb-1">Hi 👋 I&apos;m your AI assistant.</p>
                 <p className="text-xs text-secondary-text leading-relaxed">
-                  I can draft product descriptions, WhatsApp replies, marketing copy, or answer
-                  questions about today&apos;s orders. I don&apos;t edit the database — I write drafts
-                  you can paste into any admin form.
+                  I can actually make changes for you — add or edit products and services, set
+                  prices, create coupons and offers, update the About page — plus draft copy and
+                  answer questions about today&apos;s orders. Just tell me what you want. I&apos;ll
+                  confirm before anything permanent like deleting.
                 </p>
               </div>
               <div>
@@ -223,6 +227,24 @@ function MessageBubble({ message }: { message: Msg }) {
         )}
       >
         {message.text}
+        {!isUser && message.actions && message.actions.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {message.actions.map((a, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-start gap-1.5 rounded-lg px-2 py-1 text-[11px]",
+                  a.startsWith("⚠️")
+                    ? "bg-red-50 text-red-700"
+                    : "bg-forest-light text-forest",
+                )}
+              >
+                {!a.startsWith("⚠️") && <Check className="w-3 h-3 mt-0.5 flex-shrink-0" />}
+                <span>{a.replace(/^⚠️\s*/, "")}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {!isUser && (
           <button
             onClick={copy}

@@ -3,7 +3,9 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { features } from "@/lib/env";
-import { analyzeImage, generateText } from "./gemini";
+import { analyzeImage } from "./gemini";
+import { runAgent, userTurn, modelTurn, type AgentStep } from "./agent";
+import { TOOL_DECLS, runTool } from "./agent-tools";
 
 export type Result<T = void> =
   | { ok: true; data: T; message?: string }
@@ -166,53 +168,66 @@ async function loadShopContext(): Promise<ShopContext> {
   }
 }
 
+export type AssistantReply = { reply: string; actions: string[] };
+
 export async function askAssistant(
   prompt: string,
   history: Array<{ role: "user" | "assistant"; text: string }> = [],
-): Promise<Result<{ reply: string }>> {
+): Promise<Result<AssistantReply>> {
   await requireAdmin();
   if (!features.gemini) return fail("Gemini AI is not configured. Set GOOGLE_GENAI_API_KEY.");
   if (!prompt.trim()) return fail("Please enter a message.");
 
   try {
     const ctx = await loadShopContext();
-    const historyBlock = history
-      .slice(-8)
-      .map((m) => `${m.role === "user" ? "Admin" : "Assistant"}: ${m.text}`)
-      .join("\n");
 
-    const systemPrompt = `You are the admin assistant for Mahek Balloons, a Pune helium balloon and event decoration shop. You speak the way a friendly, competent shop manager would — direct, warm, no fluff.
+    const system = `You are the admin assistant for Mahek Balloons, a Pune helium balloon and event decoration shop. You are not just a chatbot — you can actually make changes in the admin panel by calling the tools provided. Act like a capable, trusted shop manager.
 
 Live shop snapshot (today, ${new Date().toDateString()}):
-- Orders today: ${ctx.ordersToday}
-- Orders this month: ${ctx.ordersThisMonth}
-- Pending orders needing attention: ${ctx.pendingOrders}
+- Orders today: ${ctx.ordersToday}, this month: ${ctx.ordersThisMonth}, pending: ${ctx.pendingOrders}
 - New booking enquiries: ${ctx.newBookings}
-- Active products in catalogue: ${ctx.activeProducts}
-- Low-stock products (<5 units): ${ctx.lowStockProducts} — ${ctx.topSellingHint}
+- Active products: ${ctx.activeProducts}, low-stock (<5): ${ctx.lowStockProducts} (${ctx.topSellingHint})
 - Total customers: ${ctx.totalCustomers}
 
-You CAN:
-- Draft product descriptions, service copy, marketing text, WhatsApp replies, email replies
-- Suggest prices, SEO titles, tag lists
-- Answer questions about the numbers above
-- Give operational advice (what to prioritise, restock ideas)
+How to work:
+- When the admin asks you to DO something (create/edit/hide/delete a product or service, add a coupon or offer, change prices, update the About page, change years of experience, etc.), USE THE TOOLS to actually do it. Don't just describe how — do it.
+- To edit or delete something, first use find_products / find_services to locate it, then act.
+- Prices are in Indian Rupees (INR). Interpret "500" as ₹500.
+- DELETING is permanent. Before calling delete_product, confirm with the admin in words and wait for a clear "yes". Only then call delete_product with confirm=true.
+- If a request is ambiguous (which product? what price?), ask a short clarifying question instead of guessing.
+- You can also just answer questions, draft copy (descriptions, WhatsApp/email replies, SEO tags), and give advice — no tool needed for those.
 
-You CANNOT (do not pretend you can):
-- Directly edit the database, place orders, or send messages. Instead, DRAFT the change and tell the admin exactly where to paste it in the admin panel.
-- Access anything not in the snapshot above.
+Style: reply in short, friendly, plain text. After making changes, briefly confirm what you did. Keep replies under ~180 words unless asked for more.`;
 
-Format: reply in plain readable text. Use short paragraphs and bullet lists when helpful. Keep it under ~250 words unless the admin asks for more.
+    const messages = [
+      ...history.slice(-8).map((m) => (m.role === "user" ? userTurn(m.text) : modelTurn(m.text))),
+      userTurn(prompt),
+    ];
 
-${historyBlock ? `Recent conversation:\n${historyBlock}\n` : ""}
-Admin just asked: ${prompt}
+    const { text, steps } = await runAgent({
+      system,
+      messages,
+      tools: TOOL_DECLS,
+      runTool,
+      maxTurns: 6,
+    });
 
-Your reply:`;
-
-    const reply = await generateText(systemPrompt, { maxTokens: 800 });
-    return ok({ reply: reply.trim() });
+    return ok({ reply: text, actions: summarizeSteps(steps) });
   } catch (e) {
     console.error("[askAssistant]", e);
     return fail(e instanceof Error ? e.message : "Could not reach the AI right now");
   }
+}
+
+/** Human-readable one-liners of the write actions the agent actually performed. */
+function summarizeSteps(steps: AgentStep[]): string[] {
+  const out: string[] = [];
+  for (const s of steps) {
+    const r = s.result as { ok?: boolean; message?: string; error?: string } | undefined;
+    // Read-only lookups aren't worth surfacing.
+    if (["find_products", "find_services", "list_categories", "get_stats"].includes(s.tool)) continue;
+    if (r?.ok) out.push(r.message ?? `${s.tool} done`);
+    else if (r?.error) out.push(`⚠️ ${s.tool}: ${r.error}`);
+  }
+  return out;
 }
