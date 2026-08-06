@@ -23,11 +23,14 @@ export type ToolDecl = {
 
 // This gateway only accepts USER / MODEL roles (not the "function" role some
 // Gemini SDKs use), so tool results are sent back on a "user" turn.
+// Gemini 2.5+ attaches a `thoughtSignature` to each functionCall part and
+// requires it to be echoed back verbatim when we resend the model's turn —
+// omitting it triggers a 400. We carry it through untouched.
 type Content = {
   role: "user" | "model";
   parts: Array<
     | { text: string }
-    | { functionCall: { name: string; args: Record<string, unknown> } }
+    | { functionCall: { name: string; args: Record<string, unknown> }; thoughtSignature?: string }
     | { functionResponse: { name: string; response: Record<string, unknown> } }
   >;
 };
@@ -41,6 +44,7 @@ type ApiResponse = {
       parts?: Array<{
         text?: string;
         functionCall?: { name: string; args: Record<string, unknown> };
+        thoughtSignature?: string;
       }>;
     };
   }>;
@@ -86,20 +90,26 @@ export async function runAgent(opts: {
     }
 
     const parts = json.candidates?.[0]?.content?.parts ?? [];
-    const calls = parts.filter((p) => p.functionCall).map((p) => p.functionCall!);
+    const callParts = parts.filter((p) => p.functionCall);
 
-    if (calls.length === 0) {
+    if (callParts.length === 0) {
       const text = parts.map((p) => p.text ?? "").join("").trim();
       return { text: text || "Done.", steps };
     }
 
+    // Echo the model's function-call turn back verbatim, preserving each
+    // thoughtSignature so the follow-up request is accepted.
     contents.push({
       role: "model",
-      parts: calls.map((c) => ({ functionCall: { name: c.name, args: c.args ?? {} } })),
+      parts: callParts.map((p) => ({
+        functionCall: { name: p.functionCall!.name, args: p.functionCall!.args ?? {} },
+        ...(p.thoughtSignature ? { thoughtSignature: p.thoughtSignature } : {}),
+      })),
     });
 
     const responseParts: Content["parts"] = [];
-    for (const c of calls) {
+    for (const p of callParts) {
+      const c = p.functionCall!;
       let result: unknown;
       try {
         result = await opts.runTool(c.name, c.args ?? {});
