@@ -264,7 +264,12 @@ function summarizeSteps(steps: AgentStep[]): string[] {
   for (const s of steps) {
     const r = s.result as { ok?: boolean; message?: string; error?: string } | undefined;
     // Read-only lookups aren't worth surfacing.
-    if (["find_products", "find_services", "list_categories", "get_stats"].includes(s.tool)) continue;
+    if (
+      ["find_products", "find_services", "list_categories", "get_stats", "find_orders", "find_bookings"].includes(
+        s.tool,
+      )
+    )
+      continue;
     if (r?.ok) out.push(r.message ?? `${s.tool} done`);
     else if (r?.error) out.push(`⚠️ ${s.tool}: ${r.error}`);
   }

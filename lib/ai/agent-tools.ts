@@ -11,6 +11,8 @@ import {
   saveCoupon,
   saveOffer,
   saveAbout,
+  updateOrderStatus,
+  updateBookingStatus,
 } from "@/lib/admin/actions";
 
 /**
@@ -266,6 +268,68 @@ export const TOOL_DECLS: ToolDecl[] = [
     },
   },
   {
+    name: "find_orders",
+    description: "List recent orders, optionally filtered by order number or status. Use to look up an order before changing its status.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Part of an order number (optional)" },
+        status: { type: "string", description: "Filter by status e.g. PENDING, CONFIRMED (optional)" },
+      },
+    },
+  },
+  {
+    name: "set_order_status",
+    description: "Change an order's status by its order number. This notifies the customer by email/WhatsApp, just like the Orders page.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Order number, e.g. MB1042" },
+        status: {
+          type: "string",
+          enum: [
+            "PENDING",
+            "CONFIRMED",
+            "PROCESSING",
+            "READY_FOR_PICKUP",
+            "SHIPPED",
+            "DELIVERED",
+            "COMPLETED",
+            "CANCELLED",
+            "REFUNDED",
+          ],
+        },
+      },
+      required: ["query", "status"],
+    },
+  },
+  {
+    name: "find_bookings",
+    description: "List recent event booking enquiries, optionally filtered by booking number or status.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Part of a booking number (optional)" },
+        status: { type: "string", description: "Filter by status e.g. NEW, CONFIRMED (optional)" },
+      },
+    },
+  },
+  {
+    name: "set_booking_status",
+    description: "Change a booking's status by its booking number. Notifies the customer on confirm/cancel.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Booking number, e.g. BK1042" },
+        status: {
+          type: "string",
+          enum: ["NEW", "FOLLOW_UP", "CONFIRMED", "COMPLETED", "CANCELLED"],
+        },
+      },
+      required: ["query", "status"],
+    },
+  },
+  {
     name: "get_stats",
     description: "Get today's live shop numbers: orders, bookings, active products, low stock, customers.",
     parameters: { type: "object", properties: {} },
@@ -484,6 +548,94 @@ export async function runTool(name: string, args: Args): Promise<unknown> {
         }),
       );
       return res.ok ? { ok: true, message: res.message } : { error: res.error };
+    }
+
+    case "find_orders": {
+      const q = String(args.query ?? "").trim();
+      const status = str(args.status)?.toUpperCase();
+      const rows = await prisma.order.findMany({
+        where: {
+          ...(q ? { orderNumber: { contains: q, mode: "insensitive" as const } } : {}),
+          ...(status ? { status: status as never } : {}),
+        },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        select: {
+          orderNumber: true,
+          status: true,
+          paymentStatus: true,
+          customerName: true,
+          total: true,
+          createdAt: true,
+        },
+      });
+      return {
+        count: rows.length,
+        orders: rows.map((o) => ({
+          orderNumber: o.orderNumber,
+          status: o.status,
+          payment: o.paymentStatus,
+          customer: o.customerName,
+          total: Number(o.total),
+          placed: o.createdAt.toISOString().slice(0, 10),
+        })),
+      };
+    }
+
+    case "set_order_status": {
+      const q = String(args.query ?? "").trim();
+      const status = str(args.status)?.toUpperCase();
+      if (!q || !status) return { error: "Need an order number and a status." };
+      const o = await prisma.order.findFirst({
+        where: { orderNumber: { contains: q, mode: "insensitive" } },
+        select: { id: true, orderNumber: true },
+      });
+      if (!o) return { error: `No order found matching "${q}".` };
+      const res = await updateOrderStatus(o.id, status);
+      return res.ok ? { ok: true, message: `Order ${o.orderNumber} → ${status}` } : { error: res.error };
+    }
+
+    case "find_bookings": {
+      const q = String(args.query ?? "").trim();
+      const status = str(args.status)?.toUpperCase();
+      const rows = await prisma.booking.findMany({
+        where: {
+          ...(q ? { bookingNumber: { contains: q, mode: "insensitive" as const } } : {}),
+          ...(status ? { status: status as never } : {}),
+        },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        select: {
+          bookingNumber: true,
+          status: true,
+          eventType: true,
+          customerName: true,
+          eventDate: true,
+        },
+      });
+      return {
+        count: rows.length,
+        bookings: rows.map((b) => ({
+          bookingNumber: b.bookingNumber,
+          status: b.status,
+          eventType: b.eventType,
+          customer: b.customerName,
+          eventDate: b.eventDate ? b.eventDate.toISOString().slice(0, 10) : null,
+        })),
+      };
+    }
+
+    case "set_booking_status": {
+      const q = String(args.query ?? "").trim();
+      const status = str(args.status)?.toUpperCase();
+      if (!q || !status) return { error: "Need a booking number and a status." };
+      const b = await prisma.booking.findFirst({
+        where: { bookingNumber: { contains: q, mode: "insensitive" } },
+        select: { id: true, bookingNumber: true },
+      });
+      if (!b) return { error: `No booking found matching "${q}".` };
+      const res = await updateBookingStatus(b.id, status);
+      return res.ok ? { ok: true, message: `Booking ${b.bookingNumber} → ${status}` } : { error: res.error };
     }
 
     case "get_stats": {

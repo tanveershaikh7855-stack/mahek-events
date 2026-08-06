@@ -36,6 +36,41 @@ function extractInt(t: string): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
+/** Map an action word to an order status. */
+function orderStatusFrom(t: string): string | undefined {
+  if (/\bconfirm/.test(t)) return "CONFIRMED";
+  if (/\bcancel/.test(t)) return "CANCELLED";
+  if (/\bready|pickup|collect/.test(t)) return "READY_FOR_PICKUP";
+  if (/\bship|dispatch/.test(t)) return "SHIPPED";
+  if (/\bdeliver/.test(t)) return "DELIVERED";
+  if (/\bcomplet|finish|done/.test(t)) return "COMPLETED";
+  if (/\bprocess|prepar|making/.test(t)) return "PROCESSING";
+  if (/\brefund/.test(t)) return "REFUNDED";
+  if (/\bpending/.test(t)) return "PENDING";
+  return undefined;
+}
+
+/** Map an action word to a booking status. */
+function bookingStatusFrom(t: string): string | undefined {
+  if (/\bconfirm/.test(t)) return "CONFIRMED";
+  if (/\bcancel/.test(t)) return "CANCELLED";
+  if (/\bcomplet|finish|done/.test(t)) return "COMPLETED";
+  if (/\bfollow.?up/.test(t)) return "FOLLOW_UP";
+  if (/\bnew\b/.test(t)) return "NEW";
+  return undefined;
+}
+
+/** Extract an order/booking reference like "MB1042", "#1042" or "order 1042". */
+function refAfter(raw: string, keyword: RegExp): string | undefined {
+  const k = raw.match(keyword);
+  if (k) {
+    const after = raw.slice(k.index! + k[0].length).match(/#?\s*([a-z0-9][a-z0-9-]{1,})/i);
+    if (after) return after[1];
+  }
+  const token = raw.match(/\b([a-z]{2,4}-?\d{2,})\b/i);
+  return token ? token[1] : undefined;
+}
+
 function extractPercent(t: string): number | undefined {
   // No trailing \b — "%" is a non-word char, so \b never matches right after it.
   const m = t.match(/\b([0-9]{1,3})\s*(?:%|percent|pct)/i);
@@ -155,6 +190,58 @@ export async function localBrain(prompt: string): Promise<LocalResult | null> {
       .slice(0, 15)
       .map((s) => `• ${s.name} — from ₹${s.priceFrom}${s.active ? "" : " (hidden)"}`);
     return done(`Services:\n${lines.join("\n")}`);
+  }
+
+  // ---- Orders: change status ----
+  if (/\border\b/.test(t) && orderStatusFrom(t)) {
+    const ref = refAfter(raw, /\border\b/i);
+    const status = orderStatusFrom(t)!;
+    if (ref) {
+      const r = await exec("set_order_status", { query: ref, status });
+      return r.ok
+        ? done(`Order ${ref} marked ${status.replace(/_/g, " ").toLowerCase()}. The customer has been notified.`, [r.message ?? "Order updated"])
+        : done(`Couldn't update order ${ref}: ${r.error}`);
+    }
+    return done("Which order number? e.g. “confirm order MB1042”.");
+  }
+
+  // ---- Orders: list ----
+  if (/\border(s)?\b/.test(t) && /\b(list|show|recent|latest|view|see|which|what)\b/.test(t)) {
+    const status = orderStatusFrom(t);
+    const r = (await runTool("find_orders", status ? { status } : {})) as {
+      orders: Array<{ orderNumber: string; status: string; customer: string; total: number; placed: string }>;
+    };
+    if (!r.orders.length) return done(status ? `No ${status.toLowerCase()} orders.` : "No orders yet.");
+    const lines = r.orders.map(
+      (o) => `• ${o.orderNumber} — ${o.customer ?? "customer"} · ₹${o.total} · ${o.status.replace(/_/g, " ").toLowerCase()} (${o.placed})`,
+    );
+    return done(`${status ? status[0] + status.slice(1).toLowerCase() + " orders" : "Recent orders"}:\n${lines.join("\n")}`);
+  }
+
+  // ---- Bookings: change status ----
+  if (/\bbooking\b/.test(t) && bookingStatusFrom(t)) {
+    const ref = refAfter(raw, /\bbooking\b/i);
+    const status = bookingStatusFrom(t)!;
+    if (ref) {
+      const r = await exec("set_booking_status", { query: ref, status });
+      return r.ok
+        ? done(`Booking ${ref} marked ${status.replace(/_/g, " ").toLowerCase()}.`, [r.message ?? "Booking updated"])
+        : done(`Couldn't update booking ${ref}: ${r.error}`);
+    }
+    return done("Which booking number? e.g. “confirm booking BK1042”.");
+  }
+
+  // ---- Bookings: list ----
+  if (/\bbooking(s)?\b/.test(t) && /\b(list|show|recent|latest|view|see|new|which|what)\b/.test(t)) {
+    const status = bookingStatusFrom(t);
+    const r = (await runTool("find_bookings", status ? { status } : {})) as {
+      bookings: Array<{ bookingNumber: string; status: string; eventType: string; customer: string; eventDate: string | null }>;
+    };
+    if (!r.bookings.length) return done(status ? `No ${status.toLowerCase()} bookings.` : "No bookings yet.");
+    const lines = r.bookings.map(
+      (b) => `• ${b.bookingNumber} — ${b.eventType} · ${b.customer ?? "customer"} · ${b.status.toLowerCase()}${b.eventDate ? ` (event ${b.eventDate})` : ""}`,
+    );
+    return done(`${status ? "Bookings" : "Recent bookings"}:\n${lines.join("\n")}`);
   }
 
   // ---- About page: years of experience / stats ----
