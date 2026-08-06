@@ -23,6 +23,7 @@ export type ServiceRow = {
   description: string;
   priceFrom: number;
   image: string;
+  images: string[];
   features: string[];
   sortOrder: number;
   isActive: boolean;
@@ -68,9 +69,16 @@ function ServiceDialog({
         >
           <ImageUploader
             name="image"
-            label="Service photo"
+            label="Main service photo (used on cards and page hero)"
             defaultValue={item?.image ? [item.image] : []}
             multiple={false}
+          />
+
+          <ImageUploader
+            name="images"
+            label="Gallery photos (customers see these on the service page)"
+            defaultValue={item?.images ?? []}
+            multiple
           />
 
           <div>

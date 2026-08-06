@@ -342,6 +342,9 @@ model Service {
   description String   @db.Text
   priceFrom   Decimal  @db.Decimal(10, 2)
   image       String
+  // Gallery images (string[]). The primary `image` is used as the hero;
+  // `images` provides additional photos for the service gallery.
+  images      Json     @default("[]")
   // string[] of bullet points, e.g. ["Theme customization", "Setup & takedown"]
   features    Json     @default("[]")
   isActive    Boolean  @default(true)
@@ -444,6 +447,27 @@ model Offer {
   @@index([isActive])
   @@index([slug])
   @@map("offers")
+}
+
+/// Single-row content model for the /about page. Fully admin-editable.
+/// The row id is always "main"; getAboutContent() creates it on first read.
+model AboutPage {
+  id              String   @id @default("main")
+  title           String?
+  highlight       String?
+  description     String?  @db.Text
+  storyImage      String?
+  // Story paragraphs as string[] JSON — one per line in the admin editor.
+  story           Json     @default("[]")
+  yearsExperience String?
+  happyCustomers  String?
+  eventsDecorated String?
+  awardsWon       String?
+  ctaTitle        String?
+  ctaSubtitle     String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("about_page")
 }
 
 model HeroSlide {

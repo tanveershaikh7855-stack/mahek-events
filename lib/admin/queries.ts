@@ -208,6 +208,14 @@ export async function getAdminGallery() {
   });
 }
 
+export async function getAdminAbout() {
+  await requireAdmin();
+  const row = await prisma.aboutPage.findUnique({ where: { id: "main" } });
+  if (row) return row;
+  // Seed a row on first admin visit so the editor has something to fill in.
+  return prisma.aboutPage.create({ data: { id: "main" } });
+}
+
 export async function getAdminHeroSlides() {
   await requireAdmin();
   return prisma.heroSlide.findMany({

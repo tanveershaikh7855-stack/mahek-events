@@ -363,9 +363,22 @@ const productSchema = z.object({
   description: z.string().max(5000).optional(),
   sku: z.string().max(64).optional(),
   images: z.string().optional(), // newline/comma separated URLs
+  // JSON string produced by the VariantsEditor component:
+  // [{ label, options: string[], optionPrices?: {[option]: number} }]
+  variants: z.string().optional(),
   isActive: z.union([z.literal("on"), z.literal("")]).optional(),
   isFeatured: z.union([z.literal("on"), z.literal("")]).optional(),
 });
+
+function parseVariants(raw?: string): Prisma.InputJsonValue {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Prisma.InputJsonValue) : [];
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Splits on newlines ONLY. A base64 data URL contains a comma
@@ -399,6 +412,7 @@ export async function saveProduct(id: string | null, formData: FormData): Promis
     description: d.description || null,
     sku: d.sku || null,
     images: parseImages(d.images),
+    variants: parseVariants(d.variants),
     isActive: d.isActive === "on",
     isFeatured: d.isFeatured === "on",
   };
@@ -789,6 +803,8 @@ const serviceSchema = z.object({
   description: z.string().trim().min(5, "Description is required").max(2000),
   priceFrom: z.coerce.number().min(0, "Price must be 0 or more"),
   image: z.string().optional(),
+  // Gallery images — newline-separated from the uploader.
+  images: z.string().optional(),
   // Features arrive newline-separated from a textarea.
   features: z.string().optional(),
   sortOrder: z.coerce.number().int().default(0),
@@ -798,7 +814,7 @@ const serviceSchema = z.object({
 export async function saveService(id: string | null, formData: FormData): Promise<Result> {
   await requireAdmin();
   const raw = Object.fromEntries(formData.entries());
-  // The uploader stores newline-joined values; a service holds one image.
+  // The uploader stores newline-joined values; a service holds one primary image.
   if (typeof raw.image === "string") raw.image = raw.image.split("\n")[0]?.trim() ?? "";
   const parsed = serviceSchema.safeParse(raw);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the service fields");
@@ -809,11 +825,17 @@ export async function saveService(id: string | null, formData: FormData): Promis
     .map((f) => f.trim())
     .filter(Boolean);
 
+  const images = (d.images ?? "")
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   const data = {
     name: d.name,
     description: d.description,
     priceFrom: new Prisma.Decimal(d.priceFrom),
-    image: d.image || "/images/logo/logo.png",
+    image: d.image || images[0] || "/images/logo/logo.png",
+    images,
     features,
     sortOrder: d.sortOrder,
     isActive: d.isActive === "on",
@@ -1011,11 +1033,70 @@ export async function saveSettings(formData: FormData): Promise<Result> {
   }
 }
 
+// ── ABOUT PAGE ─────────────────────────────────────────────────
+
+const aboutSchema = z.object({
+  title: z.string().trim().max(200).optional(),
+  highlight: z.string().trim().max(100).optional(),
+  description: z.string().trim().max(2000).optional(),
+  storyImage: z.string().optional(),
+  story: z.string().optional(), // paragraphs, one per line
+  yearsExperience: z.string().trim().max(20).optional(),
+  happyCustomers: z.string().trim().max(20).optional(),
+  eventsDecorated: z.string().trim().max(20).optional(),
+  awardsWon: z.string().trim().max(20).optional(),
+  ctaTitle: z.string().trim().max(200).optional(),
+  ctaSubtitle: z.string().trim().max(500).optional(),
+});
+
+export async function saveAbout(formData: FormData): Promise<Result> {
+  await requireAdmin();
+  const raw = Object.fromEntries(formData.entries());
+  if (typeof raw.storyImage === "string") {
+    raw.storyImage = raw.storyImage.split("\n")[0]?.trim() ?? "";
+  }
+  const parsed = aboutSchema.safeParse(raw);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the fields");
+  const d = parsed.data;
+
+  const story = (d.story ?? "")
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const data = {
+    title: d.title || null,
+    highlight: d.highlight || null,
+    description: d.description || null,
+    storyImage: d.storyImage || null,
+    story,
+    yearsExperience: d.yearsExperience || null,
+    happyCustomers: d.happyCustomers || null,
+    eventsDecorated: d.eventsDecorated || null,
+    awardsWon: d.awardsWon || null,
+    ctaTitle: d.ctaTitle || null,
+    ctaSubtitle: d.ctaSubtitle || null,
+  };
+
+  try {
+    await prisma.aboutPage.upsert({
+      where: { id: "main" },
+      create: { id: "main", ...data },
+      update: data,
+    });
+    revalidateAdmin("/admin/about", "/about");
+    return ok("About page updated");
+  } catch (e) {
+    console.error("[saveAbout]", e);
+    return fail("Could not save the About page");
+  }
+}
+
 // ── HERO SLIDES ────────────────────────────────────────────────
 
 const heroSlideSchema = z.object({
-  title: z.string().trim().min(2, "Title is required"),
-  subtitle: z.string().trim().min(2, "Subtitle is required"),
+  title: z.string().trim().max(120).optional(),
+  subtitle: z.string().trim().max(300).optional(),
   image: z.string().min(1, "Upload a slide image"),
   ctaLabel: z.string().max(60).optional(),
   ctaHref: z.string().max(200).optional(),
@@ -1031,8 +1112,8 @@ export async function saveHeroSlide(id: string | null, formData: FormData): Prom
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check the fields");
   const d = parsed.data;
   const data = {
-    title: d.title,
-    subtitle: d.subtitle,
+    title: d.title ?? "",
+    subtitle: d.subtitle ?? "",
     image: d.image,
     ctaLabel: d.ctaLabel || null,
     ctaHref: d.ctaHref || null,

@@ -61,7 +61,11 @@ interface ProductDetailClientProps {
     deliveryBadge: string;
     categoryId: string;
     images: string[];
-    variants: Array<{ label: string; options: string[] }>;
+    variants: Array<{
+      label: string;
+      options: string[];
+      optionPrices?: Record<string, number>;
+    }>;
     specifications?: Record<string, string>;
   };
   related?: typeof FALLBACK_PRODUCTS;
@@ -76,8 +80,29 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
   const { isInWishlist, toggleItem } = useWishlist();
   const { addItem } = useCart();
 
-  const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
-  const discount = calculateDiscountPercent(product.basePrice, product.salePrice);
+  // If any selected variant option has a price override, that becomes the
+  // effective unit price. The highest override wins when multiple groups
+  // override (rare — one usually holds the size/price axis).
+  const overridePrice = (() => {
+    let best: number | null = null;
+    for (const v of product.variants ?? []) {
+      const sel = selectedVariants[v.label];
+      if (!sel || !v.optionPrices) continue;
+      const p = v.optionPrices[sel];
+      if (typeof p === "number" && (best === null || p > best)) best = p;
+    }
+    return best;
+  })();
+  const price =
+    overridePrice !== null
+      ? overridePrice
+      : product.salePrice && product.salePrice < product.basePrice
+        ? product.salePrice
+        : product.basePrice;
+  const discount =
+    overridePrice !== null
+      ? 0
+      : calculateDiscountPercent(product.basePrice, product.salePrice);
   const inWishlist = isInWishlist(product.id);
 
   // A product may have no image yet (optional in admin); keep the gallery safe.
@@ -235,22 +260,30 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
                     </h4>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {variant.options.map((option) => (
-                      <button
-                        key={option}
-                        onClick={() =>
-                          setSelectedVariants((prev) => ({ ...prev, [variant.label]: option }))
-                        }
-                        className={cn(
-                          "px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200",
-                          selectedVariants[variant.label] === option
-                            ? "border-forest bg-forest-light text-forest shadow-sm shadow-forest/10"
-                            : "border-border bg-white text-secondary-text hover:border-ink/30"
-                        )}
-                      >
-                        {option}
-                      </button>
-                    ))}
+                    {variant.options.map((option) => {
+                      const optPrice = variant.optionPrices?.[option];
+                      return (
+                        <button
+                          key={option}
+                          onClick={() =>
+                            setSelectedVariants((prev) => ({ ...prev, [variant.label]: option }))
+                          }
+                          className={cn(
+                            "px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 flex flex-col items-start leading-tight",
+                            selectedVariants[variant.label] === option
+                              ? "border-forest bg-forest-light text-forest shadow-sm shadow-forest/10"
+                              : "border-border bg-white text-secondary-text hover:border-ink/30"
+                          )}
+                        >
+                          <span>{option}</span>
+                          {typeof optPrice === "number" && (
+                            <span className="text-[11px] mt-0.5 font-semibold opacity-80">
+                              ₹{optPrice.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

@@ -16,6 +16,7 @@ export default async function ServicesAdminPage() {
     description: s.description,
     priceFrom: Number(s.priceFrom),
     image: s.image,
+    images: Array.isArray(s.images) ? (s.images as string[]) : [],
     features: Array.isArray(s.features) ? (s.features as string[]) : [],
     sortOrder: s.sortOrder,
     isActive: s.isActive,

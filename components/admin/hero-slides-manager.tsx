@@ -77,22 +77,20 @@ function SlideDialog({
           />
 
           <div>
-            <label className={labelCls}>Title *</label>
+            <label className={labelCls}>Title (optional — leave blank for photo only)</label>
             <input
               name="title"
               defaultValue={item?.title ?? ""}
-              required
               placeholder="e.g. Magical Balloon Setups"
               className={field}
             />
           </div>
 
           <div>
-            <label className={labelCls}>Subtitle *</label>
+            <label className={labelCls}>Subtitle (optional)</label>
             <textarea
               name="subtitle"
               defaultValue={item?.subtitle ?? ""}
-              required
               rows={2}
               placeholder="e.g. Perfect for birthdays, weddings and every celebration"
               className={cn(field, "resize-none")}

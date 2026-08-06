@@ -55,6 +55,10 @@ export default async function ServiceDetailPage({ params }: Props) {
   if (!service) notFound();
 
   const heroImage = service.image || serviceImages[service.slug] || serviceImages.birthday;
+  const galleryImages =
+    service.images && service.images.length > 0
+      ? service.images
+      : [heroImage];
 
   return (
     <>
@@ -105,21 +109,31 @@ export default async function ServiceDetailPage({ params }: Props) {
               ))}
             </div>
 
-            <h3 className="text-xl font-semibold text-ink mb-4">Gallery</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary">
-                  <Image
-                    src={heroImage}
-                    alt={`${service.name} gallery ${i}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    unoptimized
-                  />
+            {galleryImages.length > 1 && (
+              <>
+                <h3 className="text-xl font-semibold text-ink mb-4">Gallery</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {galleryImages.map((src, i) => (
+                    <a
+                      key={`${src}-${i}`}
+                      href={src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative aspect-[4/3] rounded-xl overflow-hidden bg-secondary block group"
+                    >
+                      <Image
+                        src={src}
+                        alt={`${service.name} gallery ${i + 1}`}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        unoptimized
+                      />
+                    </a>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
 
           <div className="lg:col-span-1">

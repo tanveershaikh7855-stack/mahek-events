@@ -7,11 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Users, Star, Calendar, Trophy, Truck, Award, Heart, Sparkles } from "lucide-react";
 import { ArrowRight } from "@/components/ui/icons";
 import { about, business } from "@/lib/content";
+import type { AboutContent } from "@/lib/data";
 
 const STAT_ICONS = [Users, Calendar, Trophy, Truck];
 const VALUE_ICONS = [Sparkles, Heart, Award, Users];
 
-export function AboutClient() {
+export function AboutClient({ content }: { content?: AboutContent }) {
+  // DB-backed values with fallback to the static content. Falls through cleanly
+  // when a field wasn't set in admin, so partial admin edits don't blank the page.
+  const title = content?.title ?? about.title;
+  const highlight = content?.highlight ?? about.highlight;
+  const description = content?.description ?? about.description;
+  const storyImage = content?.storyImage ?? "/images/hero-balloons.png";
+  const storyParagraphs = content?.story?.length ? content.story : [...about.story];
+  const stats = content?.stats?.length
+    ? content.stats
+    : about.stats.map((s) => ({ value: s.value, label: s.label }));
+  const ctaTitle = content?.ctaTitle ?? about.cta.title;
+  const ctaSubtitle = content?.ctaSubtitle ?? about.cta.subtitle;
   return (
     <div className="min-h-screen pt-20 md:pt-24">
       <section className="py-14 md:py-20 bg-background border-b border-black/[0.04]">
@@ -21,9 +34,9 @@ export function AboutClient() {
             animate={{ opacity: 1, y: 0 }}
             className="heading-section text-ink"
           >
-            {about.title}
+            {title}
             <br />
-            <span className="text-forest">{about.highlight}</span>
+            <span className="text-forest">{highlight}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -31,7 +44,7 @@ export function AboutClient() {
             transition={{ delay: 0.1 }}
             className="body-large mt-6 max-w-2xl mx-auto"
           >
-            {about.description}
+            {description}
           </motion.p>
         </div>
       </section>
@@ -39,7 +52,7 @@ export function AboutClient() {
       <section className="py-14 md:py-16 bg-white border-b border-black/[0.04]">
         <div className="container-tight">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
-            {about.stats.map((stat, index) => {
+            {stats.map((stat, index) => {
               const Icon = STAT_ICONS[index % STAT_ICONS.length];
               return (
                 <motion.div
@@ -72,7 +85,7 @@ export function AboutClient() {
             >
               <h2 className="heading-section text-ink mb-6">Our Story</h2>
               <div className="space-y-4 text-secondary-text leading-relaxed">
-                {about.story.map((paragraph, i) => (
+                {storyParagraphs.map((paragraph, i) => (
                   <p key={i}>{paragraph}</p>
                 ))}
               </div>
@@ -84,11 +97,12 @@ export function AboutClient() {
               className="relative aspect-[4/3] rounded-3xl overflow-hidden"
             >
               <Image
-                src="/images/hero-balloons.png"
+                src={storyImage}
                 alt={`${business.name} - Premium Balloon Decoration`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                unoptimized={storyImage.startsWith("data:") || storyImage.startsWith("/api/")}
               />
             </motion.div>
           </div>
@@ -156,8 +170,8 @@ export function AboutClient() {
       <section className="py-16 md:py-20 bg-forest">
         <div className="container-tight text-center max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{about.cta.title}</h2>
-            <p className="text-white/80 mb-8 text-lg">{about.cta.subtitle}</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{ctaTitle}</h2>
+            <p className="text-white/80 mb-8 text-lg">{ctaSubtitle}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-gold text-white hover:bg-gold-hover rounded-full px-8 transition-all duration-300 hover:shadow-lg hover:shadow-gold/20" asChild>
                 <Link href={about.cta.primaryButton.href}>{about.cta.primaryButton.label} <ArrowRight className="ml-2 w-5 h-5" /></Link>

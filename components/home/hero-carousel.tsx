@@ -64,7 +64,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
           {slides.map((s, i) => (
             <div
               key={i}
-              className="flex-[0_0_100%] min-w-0 relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9]"
+              className="flex-[0_0_100%] min-w-0 relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[5/4]"
             >
               <div className="absolute inset-0 overflow-hidden">
                 <HeroImage
@@ -77,37 +77,44 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 />
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-              <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
-                <AnimatePresence mode="wait">
-                  {selectedIndex === i && (
-                    <motion.div
-                      key={`text-${i}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                      className="max-w-lg"
-                    >
-                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2 drop-shadow-lg">
-                        {s.title}
-                      </h2>
-                      <p className="text-sm sm:text-base text-white/80 mb-3 max-w-md drop-shadow">
-                        {s.subtitle}
-                      </p>
-                      {s.cta && (
-                        <a
-                          href={s.cta.href}
-                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shadow-lg"
+              {(s.title || s.subtitle || s.cta) && (
+                <>
+                  <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/55 via-black/20 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
+                    <AnimatePresence mode="wait">
+                      {selectedIndex === i && (
+                        <motion.div
+                          key={`text-${i}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                          className="max-w-lg"
                         >
-                          {s.cta.label}
-                        </a>
+                          {s.title && (
+                            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2 drop-shadow-lg">
+                              {s.title}
+                            </h2>
+                          )}
+                          {s.subtitle && (
+                            <p className="text-sm sm:text-base text-white/85 mb-3 max-w-md drop-shadow">
+                              {s.subtitle}
+                            </p>
+                          )}
+                          {s.cta && (
+                            <a
+                              href={s.cta.href}
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shadow-lg"
+                            >
+                              {s.cta.label}
+                            </a>
+                          )}
+                        </motion.div>
                       )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                    </AnimatePresence>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>

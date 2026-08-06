@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { AboutClient } from "@/components/about/about-client";
 import { about, business, seo } from "@/lib/content";
+import { getAboutContent } from "@/lib/data";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "About Mahek Balloons — Premium Balloon Decorators in Pune Since 2015",
   description:
-    "Mahek Balloons is Pune's trusted balloon decoration studio near Saras Baug. 11+ years of experience, 5000+ happy customers. Helium & nitrogen balloons for every celebration.",
+    "Mahek Balloons is Pune's trusted balloon decoration studio near Saras Baug. 30+ years of experience, 5000+ happy customers. Helium & nitrogen balloons for every celebration.",
   alternates: { canonical: "/about" },
   keywords: [
     "Mahek Balloons Pune",
@@ -21,6 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
-  return <AboutClient />;
+export default async function AboutPage() {
+  const content = await getAboutContent();
+  return <AboutClient content={content} />;
 }

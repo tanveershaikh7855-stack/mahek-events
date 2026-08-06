@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/actions";
 import { ConfirmDelete, EmptyState } from "./shared/ui";
 import { ImageUploader } from "./shared/image-uploader";
+import { VariantsEditor, type VariantGroup } from "./shared/variants-editor";
 import { formatPrice, cn } from "@/lib/utils";
 
 export type ProductRow = {
@@ -35,6 +36,7 @@ export type ProductRow = {
   shortDesc: string | null;
   description: string | null;
   images: string[];
+  variants: VariantGroup[];
   categoryId: string;
   categoryName: string;
 };
@@ -198,6 +200,11 @@ function ProductDialog({
             defaultValue={product?.images ?? []}
             multiple
           />
+
+          <div>
+            <label className={labelCls}>Options &amp; pricing</label>
+            <VariantsEditor name="variants" defaultValue={product?.variants ?? []} />
+          </div>
 
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm text-ink">

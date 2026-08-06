@@ -32,6 +32,57 @@ function withFallback<T>(fn: () => Promise<T>, fallback: unknown): Promise<T> {
   });
 }
 
+export type AboutContent = {
+  title: string;
+  highlight: string;
+  description: string;
+  storyImage: string;
+  story: string[];
+  stats: { value: string; label: string }[];
+  ctaTitle: string;
+  ctaSubtitle: string;
+};
+
+export async function getAboutContent(): Promise<AboutContent> {
+  // Import lazily to avoid pulling the whole content module here.
+  const { about, business } = await import("./content");
+
+  const staticContent: AboutContent = {
+    title: about.title,
+    highlight: about.highlight,
+    description: about.description,
+    storyImage: "/images/hero-balloons.png",
+    story: [...about.story],
+    stats: about.stats.map((s) => ({ value: s.value, label: s.label })),
+    ctaTitle: about.cta.title,
+    ctaSubtitle: about.cta.subtitle,
+  };
+  void business;
+
+  return withFallback(async () => {
+    const row = await prisma.aboutPage.findUnique({ where: { id: "main" } });
+    if (!row) return staticContent;
+    const story = Array.isArray(row.story)
+      ? (row.story as string[]).filter((s): s is string => typeof s === "string")
+      : staticContent.story;
+    const statsFromRow: { value: string; label: string }[] = [];
+    if (row.happyCustomers) statsFromRow.push({ value: row.happyCustomers, label: "Happy Customers" });
+    if (row.eventsDecorated) statsFromRow.push({ value: row.eventsDecorated, label: "Events Decorated" });
+    if (row.yearsExperience) statsFromRow.push({ value: row.yearsExperience, label: "Years Experience" });
+    if (row.awardsWon) statsFromRow.push({ value: row.awardsWon, label: "Awards Won" });
+    return {
+      title: row.title || staticContent.title,
+      highlight: row.highlight || staticContent.highlight,
+      description: row.description || staticContent.description,
+      storyImage: row.storyImage || staticContent.storyImage,
+      story: story.length > 0 ? story : staticContent.story,
+      stats: statsFromRow.length > 0 ? statsFromRow : staticContent.stats,
+      ctaTitle: row.ctaTitle || staticContent.ctaTitle,
+      ctaSubtitle: row.ctaSubtitle || staticContent.ctaSubtitle,
+    };
+  }, staticContent);
+}
+
 export async function getHeroSlides() {
   return withFallback(async () => {
     const rows = await prisma.heroSlide.findMany({
@@ -169,6 +220,7 @@ export async function getServices() {
       description: s.description,
       priceFrom: Number(s.priceFrom),
       image: s.image,
+      images: Array.isArray(s.images) ? (s.images as string[]) : [],
       features: Array.isArray(s.features) ? (s.features as string[]) : [],
     }));
   }, FALLBACK_SERVICES);
@@ -185,6 +237,7 @@ export async function getServiceBySlug(slug: string) {
       description: s.description,
       priceFrom: Number(s.priceFrom),
       image: s.image,
+      images: Array.isArray(s.images) ? (s.images as string[]) : [],
       features: Array.isArray(s.features) ? (s.features as string[]) : [],
     };
   }, FALLBACK_SERVICES.find((f) => f.slug === slug));
@@ -357,7 +410,21 @@ function toImageArray(v: unknown): string[] {
     .filter((s): s is string => Boolean(s));
 }
 
-type VariantGroup = { label: string; options: string[] };
+type VariantGroup = {
+  label: string;
+  options: string[];
+  optionPrices?: Record<string, number>;
+};
+
+function toOptionPrices(v: unknown): Record<string, number> | undefined {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return undefined;
+  const out: Record<string, number> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    const n = Number(val);
+    if (Number.isFinite(n) && n >= 0) out[k] = n;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
 
 function toVariants(v: unknown): VariantGroup[] {
   if (!Array.isArray(v)) return [];
@@ -366,7 +433,10 @@ function toVariants(v: unknown): VariantGroup[] {
     if (g && typeof g === "object" && "label" in g && "options" in g) {
       const label = String((g as { label: unknown }).label ?? "");
       const options = toStringArray((g as { options: unknown }).options);
-      if (label && options.length) out.push({ label, options });
+      if (label && options.length) {
+        const optionPrices = toOptionPrices((g as { optionPrices?: unknown }).optionPrices);
+        out.push(optionPrices ? { label, options, optionPrices } : { label, options });
+      }
     }
   }
   return out;

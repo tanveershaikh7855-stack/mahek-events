@@ -128,7 +128,7 @@ export const hero = {
   image: "/images/IMG-20260728-WA0032.webp",
   stats: [
     { value: "5000+", label: "Happy Customers" },
-    { value: "11+", label: "Years Experience" },
+    { value: "30+", label: "Years Experience" },
     { value: "4.9", label: "Customer Rating" },
   ],
   features: [
@@ -264,7 +264,7 @@ export const about = {
         name: "Priya Verma",
         role: "Lead Stylist",
         description:
-          "11+ years of experience creating stunning event transformations across the city.",
+          "30+ years of experience creating stunning event transformations across the city.",
         image: "/images/IMG-20260728-WA0011.webp",
       },
       {
@@ -285,7 +285,7 @@ export const about = {
   stats: [
     { value: "5000+", label: "Customers Served" },
     { value: "1000+", label: "Events Decorated" },
-    { value: "11+", label: "Years Experience" },
+    { value: "30+", label: "Years Experience" },
     { value: "70 KM", label: "Delivery Radius" },
   ],
 } as const;
@@ -312,7 +312,7 @@ export const whyChooseUs = {
     {
       title: "Expert Design Team",
       description:
-        "In-house stylists with 11+ years of combined experience creating elegant decorations.",
+        "In-house stylists with 30+ years of combined experience creating elegant decorations.",
       tag: "Custom Themes",
       icon: "palette",
     },
@@ -345,7 +345,7 @@ export const statistics = {
   happyCustomers: "5000+",
   deliveryRadius: "70",
   rating: "4.9",
-  yearsExperience: "11+",
+  yearsExperience: "30+",
 } as const;
 
 // ── SERVICE CATEGORIES ────────────────────────────────────────
@@ -370,6 +370,7 @@ export interface Service {
   description: string;
   priceFrom: number;
   image: string;
+  images?: string[];
   features: string[];
 }
 
@@ -519,7 +520,14 @@ export interface Product {
   categoryId: string;
   images: string[];
   tags: string[];
-  variants?: Array<{ label: string; options: string[] }>;
+  variants?: Array<{
+    label: string;
+    options: string[];
+    /** Optional per-option price overrides. Key is the option string.
+     * When an option has an override, selecting it displays and charges
+     * that price instead of basePrice/salePrice. */
+    optionPrices?: Record<string, number>;
+  }>;
 }
 
 export const products: Product[] = [
