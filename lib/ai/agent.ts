@@ -8,7 +8,7 @@ import { env } from "@/lib/env";
  * the UI can show what actually changed.
  */
 
-const MODEL = env.GEMINI_MODEL || "gemini-flash-latest";
+const MODEL = env.GEMINI_MODEL || "gemini-flash-lite-latest";
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 export type ToolDecl = {
