@@ -217,13 +217,13 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
             </div>
 
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-3xl font-bold text-ink">{formatPrice(price)}</span>
+              <span className="text-3xl font-bold text-ink tabular-nums">{formatPrice(price)}</span>
               {product.salePrice && product.salePrice < product.basePrice && (
                 <>
-                  <span className="text-lg text-secondary-text line-through">
+                  <span className="text-lg text-secondary-text line-through tabular-nums">
                     {formatPrice(product.basePrice)}
                   </span>
-                  <Badge className="bg-green-100 text-green-800 border-green-200 text-xs rounded-lg">
+                  <Badge className="bg-green-100 text-green-800 border-green-200 text-xs rounded-lg tabular-nums">
                     Save {formatPrice(product.basePrice - product.salePrice)}
                   </Badge>
                 </>
@@ -311,7 +311,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="flex flex-col md:flex-row gap-3 mb-6">
               <Button
                 size="lg"
                 className="flex-1 gap-2 bg-forest text-white hover:bg-forest-hover h-14 rounded-2xl text-base transition-all duration-300 hover:shadow-lg hover:shadow-forest/20"
@@ -319,7 +319,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
                 disabled={product.stock === 0}
               >
                 <ShoppingBag className="w-5 h-5" />
-                Add to Cart - {formatPrice(price * quantity)}
+                <span className="tabular-nums">Add to Cart - {formatPrice(price * quantity)}</span>
               </Button>
               <Button
                 size="lg"

@@ -971,7 +971,7 @@ export async function setReviewVerified(id: string, isVerified: boolean): Promis
   await requireAdmin();
   try {
     await prisma.review.update({ where: { id }, data: { isVerified } });
-    revalidateAdmin("/admin/reviews");
+    revalidateAdmin("/admin/reviews", "/");
     return ok(isVerified ? "Review approved" : "Review unapproved");
   } catch (e) {
     console.error("[setReviewVerified]", e);
@@ -983,7 +983,7 @@ export async function deleteReview(id: string): Promise<Result> {
   await requireAdmin();
   try {
     await prisma.review.delete({ where: { id } });
-    revalidateAdmin("/admin/reviews");
+    revalidateAdmin("/admin/reviews", "/");
     return ok("Review deleted");
   } catch (e) {
     console.error("[deleteReview]", e);
@@ -1024,7 +1024,7 @@ export async function saveSettings(formData: FormData): Promise<Result> {
         }),
       ),
     );
-    revalidateAdmin("/admin/settings");
+    revalidateAdmin("/admin/settings", "/");
     revalidatePath("/", "layout");
     return ok("Settings saved");
   } catch (e) {
@@ -1084,7 +1084,7 @@ export async function saveAbout(formData: FormData): Promise<Result> {
       create: { id: "main", ...data },
       update: data,
     });
-    revalidateAdmin("/admin/about", "/about");
+    revalidateAdmin("/admin/about", "/about", "/");
     return ok("About page updated");
   } catch (e) {
     console.error("[saveAbout]", e);

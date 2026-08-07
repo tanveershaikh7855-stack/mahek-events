@@ -85,27 +85,27 @@ export function CartPageClient() {
                     {item.variant && (
                       <p className="text-xs text-secondary-text mt-0.5">Variant: {item.variant}</p>
                     )}
-                    <p className="text-forest font-semibold mt-1">{formatPrice(item.price)}</p>
+                    <p className="text-forest font-semibold mt-1 tabular-nums">{formatPrice(item.price)}</p>
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                       <div className="flex items-center border border-border rounded-lg">
                         <button
                           onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variant)}
-                          className="w-8 h-8 flex items-center justify-center text-secondary-text hover:text-ink"
+                          className="w-11 h-11 flex items-center justify-center text-secondary-text hover:text-ink"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="w-10 h-8 flex items-center justify-center text-sm font-medium">
+                        <span className="w-10 h-11 flex items-center justify-center text-sm font-medium">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variant)}
-                          className="w-8 h-8 flex items-center justify-center text-secondary-text hover:text-ink"
+                          className="w-11 h-11 flex items-center justify-center text-secondary-text hover:text-ink"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
                       <div className="flex items-center gap-3">
-                        <p className="font-semibold text-ink">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="font-semibold text-ink tabular-nums">{formatPrice(item.price * item.quantity)}</p>
                         <button
                           onClick={() => removeItem(item.productId, item.variant)}
                           className="text-secondary-text hover:text-destructive transition-colors"
@@ -126,15 +126,15 @@ export function CartPageClient() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-secondary-text">Subtotal</span>
-                    <span className="font-medium">{formatPrice(subtotal)}</span>
+                    <span className="font-medium tabular-nums">{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-secondary-text">GST (5%)</span>
-                    <span className="font-medium">{formatPrice(gst)}</span>
+                    <span className="font-medium tabular-nums">{formatPrice(gst)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-secondary-text">Delivery</span>
-                    <span className="font-medium">
+                    <span className="font-medium tabular-nums">
                       {delivery === 0 ? (
                         <span className="text-forest">Free</span>
                       ) : (
@@ -145,7 +145,7 @@ export function CartPageClient() {
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>{formatPrice(total)}</span>
+                    <span className="tabular-nums">{formatPrice(total)}</span>
                   </div>
                 </div>
 

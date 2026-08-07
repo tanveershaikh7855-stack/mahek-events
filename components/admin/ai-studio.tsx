@@ -174,7 +174,7 @@ export function AIStudio() {
               }}
               rows={2}
               placeholder="e.g. Add a product: Rainbow Balloon Arch, ₹1299, in Balloon Bouquets"
-              className="flex-1 resize-none rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest max-h-40"
+              className="flex-1 resize-none rounded-xl border border-border bg-white px-3 py-2.5 text-sm min-h-[44px] focus:outline-none focus:border-forest max-h-40"
               disabled={pending}
             />
             <button

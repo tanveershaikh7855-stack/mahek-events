@@ -83,13 +83,13 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search order number, name or phone"
-            className="w-full rounded-xl border border-border bg-white pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-forest"
+            className="w-full min-h-[44px] rounded-xl border border-border bg-white pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-forest"
           />
         </div>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:border-forest"
+          className="min-h-[44px] min-w-[160px] rounded-xl border border-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:border-forest"
         >
           <option value="ALL">All statuses</option>
           {ORDER_STATUSES.map((s) => (
@@ -168,9 +168,9 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="font-semibold text-ink">{formatPrice(o.total)}</p>
+                      <p className="font-semibold text-ink tabular-nums">{formatPrice(o.total)}</p>
                       {o.balanceDue > 0 && (
-                        <p className="text-xs text-secondary-text">
+                        <p className="text-xs text-secondary-text tabular-nums">
                           {formatPrice(o.balanceDue)} due
                         </p>
                       )}
@@ -195,7 +195,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                     <td className="px-2">
                       <button
                         onClick={() => setExpanded(expanded === o.id ? null : o.id)}
-                        className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                        className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors"
                         aria-label="Toggle details"
                       >
                         <ChevronDown
@@ -242,7 +242,7 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                                   <span className="text-secondary-text">
                                     {i.name} × {i.quantity}
                                   </span>
-                                  <span className="text-ink font-medium">
+                                  <span className="text-ink font-medium tabular-nums">
                                     {formatPrice(i.price * i.quantity)}
                                   </span>
                                 </li>
@@ -270,15 +270,15 @@ export function OrdersTable({ orders }: { orders: OrderRow[] }) {
                               </div>
                               <div className="flex justify-between">
                                 <dt className="text-secondary-text">Advance</dt>
-                                <dd className="text-ink">{formatPrice(o.advanceAmount)}</dd>
+                                <dd className="text-ink tabular-nums">{formatPrice(o.advanceAmount)}</dd>
                               </div>
                               <div className="flex justify-between">
                                 <dt className="text-secondary-text">Paid</dt>
-                                <dd className="text-ink">{formatPrice(o.amountPaid)}</dd>
+                                <dd className="text-ink tabular-nums">{formatPrice(o.amountPaid)}</dd>
                               </div>
                               <div className="flex justify-between">
                                 <dt className="text-secondary-text">Balance</dt>
-                                <dd className="font-semibold text-ink">
+                                <dd className="font-semibold text-ink tabular-nums">
                                   {formatPrice(o.balanceDue)}
                                 </dd>
                               </div>

@@ -76,6 +76,10 @@ export default async function HomePage() {
     );
   const productImages = collectImages(productCats);
 
+  const productCounts = Object.fromEntries(
+    productCats.map((c) => [c.slug, (c as unknown as { _count?: { products: number } })._count?.products ?? 0]),
+  );
+
   const homeServices = serviceList.slice(0, 5).map((s) => ({
     slug: s.slug,
     name: s.name,
@@ -128,7 +132,7 @@ export default async function HomePage() {
       <OffersHighlight offers={homeOffers} />
       <section.flowerBouquets products={trim(bouquets)} />
       <FeaturesBar />
-      <section.categoryGrid productImages={productImages} services={homeServices} />
+      <section.categoryGrid productImages={productImages} productCounts={productCounts} services={homeServices} />
       <section.featuredProducts products={trim(products)} />
       <section.gallery images={galleryImages} />
       <section.whyChooseUs />

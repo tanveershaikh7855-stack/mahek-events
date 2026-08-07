@@ -54,8 +54,8 @@ export function MobileBottomNav() {
                   </span>
                 )}
               </div>
-              {isActive && <span className="w-4 h-[2.5px] rounded-full bg-forest" />}
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
+              {isActive && <span className="w-4 h-[2.5px] rounded-full bg-forest" />}
             </Link>
           );
         })}

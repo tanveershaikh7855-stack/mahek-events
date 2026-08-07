@@ -47,7 +47,7 @@ function ServiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto pb-6">
         <DialogHeader>
           <DialogTitle>{item ? "Edit service" : "Add service"}</DialogTitle>
           <DialogDescription>
@@ -249,7 +249,7 @@ export function ServicesManager({ services }: { services: ServiceRow[] }) {
                   <p className="font-medium text-ink truncate">{s.name}</p>
                   <ActiveToggle item={s} />
                 </div>
-                <p className="text-xs text-secondary-text">
+                <p className="text-xs text-secondary-text tabular-nums">
                   From {formatPrice(s.priceFrom)}
                 </p>
                 <p className="mt-1 line-clamp-2 text-xs text-secondary-text">

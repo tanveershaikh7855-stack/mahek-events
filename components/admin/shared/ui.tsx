@@ -82,7 +82,7 @@ export function StatusSelect({
             }
           });
         }}
-        className="appearance-none rounded-lg border border-border bg-white pl-3 pr-8 py-1.5 text-xs font-medium text-ink focus:outline-none focus:border-forest disabled:opacity-60"
+        className="appearance-none rounded-lg border border-border bg-white pl-3 pr-8 py-1.5 min-h-[36px] text-xs font-medium text-ink focus:outline-none focus:border-forest disabled:opacity-60"
       >
         {options.map((o) => (
           <option key={o} value={o}>
@@ -118,8 +118,8 @@ export function ConfirmDelete({
       <button
         onClick={() => setOpen(true)}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors",
-          label ? "px-3 py-1.5 text-xs font-medium border border-red-200" : "p-2",
+          "inline-flex items-center justify-center gap-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors",
+          label ? "px-3 py-1.5 text-xs font-medium border border-red-200 min-h-[44px]" : "w-9 h-9",
         )}
         aria-label="Delete"
       >

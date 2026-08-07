@@ -73,7 +73,7 @@ function ProductDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto pb-6">
         <DialogHeader>
           <DialogTitle>{product ? "Edit product" : "New product"}</DialogTitle>
           <DialogDescription>
@@ -492,15 +492,15 @@ export function ProductsManager({
                         <td className="px-4 py-3">
                           {p.salePrice ? (
                             <>
-                              <span className="font-semibold text-ink">
+                              <span className="font-semibold text-ink tabular-nums">
                                 {formatPrice(p.salePrice)}
                               </span>
-                              <span className="text-xs text-secondary-text line-through ml-1.5">
+                              <span className="text-xs text-secondary-text line-through ml-1.5 tabular-nums">
                                 {formatPrice(p.basePrice)}
                               </span>
                             </>
                           ) : (
-                            <span className="font-semibold text-ink">
+                            <span className="font-semibold text-ink tabular-nums">
                               {formatPrice(p.basePrice)}
                             </span>
                           )}
@@ -520,7 +520,7 @@ export function ProductsManager({
                                 setEditing(p);
                                 setProductOpen(true);
                               }}
-                              className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors"
                               aria-label="Edit"
                             >
                               <Pencil className="w-4 h-4 text-secondary-text" />
@@ -622,7 +622,7 @@ export function ProductsManager({
                                 setEditingCat(c);
                                 setCatOpen(true);
                               }}
-                              className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors"
                               aria-label="Edit"
                             >
                               <Pencil className="w-4 h-4 text-secondary-text" />

@@ -361,8 +361,8 @@ export function CheckoutPageClient() {
               {placedOrder && placedOrder.advanceAmount > 0 && (
                 <>
                   {" "}A {ADVANCE_PERCENT}% advance of{" "}
-                  <strong>{formatPrice(placedOrder.advanceAmount)}</strong> confirms your order;{" "}
-                  <strong>{formatPrice(placedOrder.balanceDue)}</strong> is payable when you collect it.
+                  <strong className="tabular-nums">{formatPrice(placedOrder.advanceAmount)}</strong> confirms your order;{" "}
+                  <strong className="tabular-nums">{formatPrice(placedOrder.balanceDue)}</strong> is payable when you collect it.
                 </>
               )}
             </p>
@@ -398,15 +398,15 @@ export function CheckoutPageClient() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
-                      <Input id="name" name="name" placeholder="Enter your full name" required />
+                      <Input id="name" name="name" placeholder="Enter your full name" required className="min-h-[44px]" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" required />
+                      <Input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={10} placeholder="9876543210" required className="min-h-[44px]" />
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input id="email" name="email" type="email" placeholder="your@email.com" required />
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" required className="min-h-[44px]" />
                       <p className="text-xs text-secondary-text">
                         We email your order confirmation and pickup details here.
                       </p>
@@ -445,7 +445,7 @@ export function CheckoutPageClient() {
                       type="button"
                       onClick={() => setDeliveryType("PICKUP")}
                       className={cn(
-                        "py-2 rounded-lg text-sm font-medium transition-all",
+                        "min-h-[44px] py-2 rounded-lg text-sm font-medium transition-all",
                         deliveryType === "PICKUP"
                           ? "bg-white shadow-sm text-ink"
                           : "text-secondary-text hover:text-ink",
@@ -463,7 +463,7 @@ export function CheckoutPageClient() {
                           : `Delivery unlocks at ${formatPrice(DELIVERY_MIN_SUBTOTAL)}`
                       }
                       className={cn(
-                        "py-2 rounded-lg text-sm font-medium transition-all",
+                        "min-h-[44px] py-2 rounded-lg text-sm font-medium transition-all",
                         deliveryType === "DELIVERY"
                           ? "bg-white shadow-sm text-ink"
                           : "text-secondary-text hover:text-ink",
@@ -489,6 +489,7 @@ export function CheckoutPageClient() {
                             value={pickupDate}
                             onChange={(e) => setPickupDate(e.target.value)}
                             required
+                            className="min-h-[44px]"
                           />
                         </div>
                         <div className="space-y-2">
@@ -501,7 +502,7 @@ export function CheckoutPageClient() {
                             value={pickupTime}
                             onChange={(e) => setPickupTime(e.target.value)}
                             required
-                            className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
+                            className="w-full min-h-[44px] rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
                           >
                             {PICKUP_SLOTS.map((slot) => (
                               <option key={slot} value={slot}>
@@ -530,7 +531,7 @@ export function CheckoutPageClient() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="city">City *</Label>
-                        <Input id="city" name="city" placeholder="Pune" defaultValue="Pune" required />
+                        <Input id="city" name="city" placeholder="Pune" defaultValue="Pune" required className="min-h-[44px]" />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="pincode">Pincode *</Label>
@@ -541,6 +542,7 @@ export function CheckoutPageClient() {
                           maxLength={6}
                           placeholder="411004"
                           required
+                          className="min-h-[44px]"
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">
@@ -551,6 +553,7 @@ export function CheckoutPageClient() {
                           placeholder="Maharashtra"
                           defaultValue="Maharashtra"
                           required
+                          className="min-h-[44px]"
                         />
                       </div>
                     </div>
@@ -608,6 +611,7 @@ export function CheckoutPageClient() {
                           value={setupDate}
                           onChange={(e) => setSetupDate(e.target.value)}
                           required
+                          className="min-h-[44px]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -618,7 +622,7 @@ export function CheckoutPageClient() {
                           value={setupTime}
                           onChange={(e) => setSetupTime(e.target.value)}
                           required
-                          className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
+                          className="w-full min-h-[44px] rounded-xl border border-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-forest"
                         >
                           {PICKUP_SLOTS.map((slot) => (
                             <option key={slot} value={slot}>
@@ -689,7 +693,7 @@ export function CheckoutPageClient() {
                           <p className="text-sm font-medium text-ink line-clamp-1">{item.name}</p>
                           <p className="text-xs text-secondary-text">Qty: {item.quantity}</p>
                         </div>
-                        <p className="text-sm font-semibold text-ink">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="text-sm font-semibold text-ink tabular-nums">{formatPrice(item.price * item.quantity)}</p>
                       </div>
                     ))}
                   </div>
@@ -729,14 +733,14 @@ export function CheckoutPageClient() {
                               }
                             }}
                             placeholder="Coupon code"
-                            className="w-full rounded-xl border border-border bg-white pl-9 pr-3 py-2.5 text-sm uppercase focus:outline-none focus:border-forest"
+                            className="w-full min-h-[44px] rounded-xl border border-border bg-white pl-9 pr-3 py-2.5 text-sm uppercase focus:outline-none focus:border-forest"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={applyCoupon}
                           disabled={couponPending || !couponInput.trim()}
-                          className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white hover:bg-ink/90 disabled:opacity-50"
+                          className="min-h-[44px] rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white hover:bg-ink/90 disabled:opacity-50"
                         >
                           {couponPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
                         </button>
@@ -750,17 +754,17 @@ export function CheckoutPageClient() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-secondary-text">Subtotal</span>
-                      <span>{formatPrice(subtotal)}</span>
+                      <span className="tabular-nums">{formatPrice(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                       <div className="flex justify-between text-forest">
                         <span>Discount ({applied?.code})</span>
-                        <span>-{formatPrice(discount)}</span>
+                        <span className="tabular-nums">-{formatPrice(discount)}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
                       <span className="text-secondary-text">GST (5%)</span>
-                      <span>{formatPrice(gst)}</span>
+                      <span className="tabular-nums">{formatPrice(gst)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-secondary-text">Pickup</span>
@@ -769,18 +773,18 @@ export function CheckoutPageClient() {
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span>{formatPrice(total)}</span>
+                      <span className="tabular-nums">{formatPrice(total)}</span>
                     </div>
                   </div>
 
                   <div className="rounded-xl bg-forest-light border border-forest/20 p-3 space-y-2 text-sm">
                     <div className="flex justify-between font-semibold text-ink">
                       <span>Advance to confirm ({ADVANCE_PERCENT}%)</span>
-                      <span>{formatPrice(advance)}</span>
+                      <span className="tabular-nums">{formatPrice(advance)}</span>
                     </div>
                     <div className="flex justify-between text-secondary-text">
                       <span>Balance at pickup</span>
-                      <span>{formatPrice(balance)}</span>
+                      <span className="tabular-nums">{formatPrice(balance)}</span>
                     </div>
                   </div>
 
@@ -801,9 +805,11 @@ export function CheckoutPageClient() {
                     ) : (
                       <>
                         <Lock className="w-5 h-5 mr-2" />
-                        {paymentMethod === "COD"
-                          ? `Place Order - ${formatPrice(total)}`
-                          : `Pay Advance - ${formatPrice(advance)}`}
+                        <span className="tabular-nums">
+                          {paymentMethod === "COD"
+                            ? `Place Order - ${formatPrice(total)}`
+                            : `Pay Advance - ${formatPrice(advance)}`}
+                        </span>
                       </>
                     )}
                   </Button>

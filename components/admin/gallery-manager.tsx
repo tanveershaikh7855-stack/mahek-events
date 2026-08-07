@@ -67,7 +67,7 @@ function GalleryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto pb-6">
         <DialogHeader>
           <DialogTitle>{item ? "Edit image" : "Add gallery image"}</DialogTitle>
           <DialogDescription>
@@ -287,7 +287,7 @@ export function GalleryManager({ images }: { images: GalleryRow[] }) {
                       setEditing(item);
                       setOpen(true);
                     }}
-                    className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors"
                     aria-label="Edit"
                   >
                     <Pencil className="w-4 h-4 text-secondary-text" />

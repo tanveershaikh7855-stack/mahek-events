@@ -100,7 +100,7 @@ function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         <div className="flex items-center gap-1.5 mt-2">
-          <span className="text-[0.9375rem] font-bold text-ink tracking-tight">{formatPrice(price)}</span>
+          <span className="text-[0.9375rem] font-bold text-ink tracking-tight tabular-nums">{formatPrice(price)}</span>
           {product.salePrice && product.salePrice < product.basePrice && (
             <span className="text-secondary-text line-through text-[11px]">{formatPrice(product.basePrice)}</span>
           )}

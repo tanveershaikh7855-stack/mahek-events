@@ -115,13 +115,13 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search booking, name, phone or event"
-            className="w-full rounded-xl border border-border bg-white pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-forest"
+            className="w-full min-h-[44px] rounded-xl border border-border bg-white pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-forest"
           />
         </div>
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:border-forest"
+          className="min-h-[44px] min-w-[160px] rounded-xl border border-border bg-white px-4 py-2.5 text-sm focus:outline-none focus:border-forest"
         >
           <option value="ALL">All statuses</option>
           {BOOKING_STATUSES.map((s) => (
@@ -196,12 +196,12 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                     <td className="px-4 py-3">
                       {b.quotedAmount ? (
                         <>
-                          <p className="font-semibold text-ink">{formatPrice(b.quotedAmount)}</p>
+                          <p className="font-semibold text-ink tabular-nums">{formatPrice(b.quotedAmount)}</p>
                           <p className="text-xs text-secondary-text">quoted</p>
                         </>
                       ) : b.budget ? (
                         <>
-                          <p className="text-ink">{formatPrice(b.budget)}</p>
+                          <p className="text-ink tabular-nums">{formatPrice(b.budget)}</p>
                           <p className="text-xs text-secondary-text">customer budget</p>
                         </>
                       ) : (
@@ -218,7 +218,7 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                     <td className="px-2">
                       <button
                         onClick={() => setExpanded(expanded === b.id ? null : b.id)}
-                        className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                        className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-secondary transition-colors"
                         aria-label="Toggle details"
                       >
                         <ChevronDown

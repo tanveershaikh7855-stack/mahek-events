@@ -123,7 +123,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       <div className="flex items-center justify-center gap-3 mt-4">
         <button
           onClick={scrollPrev}
-          className="w-9 h-9 rounded-full border border-black/10 bg-white flex items-center justify-center text-ink hover:bg-forest hover:text-white hover:border-forest transition-all duration-200 shadow-sm"
+          className="w-11 h-11 rounded-full border border-black/10 bg-white flex items-center justify-center text-ink hover:bg-forest hover:text-white hover:border-forest transition-all duration-200 shadow-sm"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -146,7 +146,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
 
         <button
           onClick={scrollNext}
-          className="w-9 h-9 rounded-full border border-black/10 bg-white flex items-center justify-center text-ink hover:bg-forest hover:text-white hover:border-forest transition-all duration-200 shadow-sm"
+          className="w-11 h-11 rounded-full border border-black/10 bg-white flex items-center justify-center text-ink hover:bg-forest hover:text-white hover:border-forest transition-all duration-200 shadow-sm"
           aria-label="Next slide"
         >
           <ChevronRight className="w-4 h-4" />

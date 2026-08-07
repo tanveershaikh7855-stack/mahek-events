@@ -34,9 +34,9 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
-          {itemCount !== undefined && (
-            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-ink shadow-sm">
-              {itemCount}+ items
+          {itemCount !== undefined && itemCount > 0 && (
+            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-ink shadow-sm tabular-nums">
+              {itemCount} {itemCount === 1 ? "item" : "items"}
             </div>
           )}
         </div>
@@ -58,9 +58,11 @@ function CategoryCard({ name, slug, subtitle, image, type, itemCount }: {
 
 export function CategoryGrid({
   productImages = {},
+  productCounts = {},
   services = [],
 }: {
   productImages?: CategoryImageOverrides;
+  productCounts?: Record<string, number>;
   services?: ServiceTile[];
 } = {}) {
   return (
@@ -115,7 +117,7 @@ export function CategoryGrid({
                 subtitle={cat.subtitle}
                 image={productImages[cat.slug] || categoryImages[cat.slug] || `/images/balloon-wall.png`}
                 type="product"
-                itemCount={20}
+                itemCount={productCounts[cat.slug]}
               />
             </motion.div>
           ))}

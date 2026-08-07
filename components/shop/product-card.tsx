@@ -143,7 +143,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
         )}>
           <button
             onClick={handleQuickView}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/95 backdrop-blur-sm text-ink text-xs font-semibold shadow-sm hover:bg-white transition-colors"
+            className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/95 backdrop-blur-sm text-ink text-xs font-semibold shadow-sm hover:bg-white transition-colors"
             aria-label="Quick view"
           >
             <Eye className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-forest text-white text-xs font-semibold shadow-sm hover:bg-forest-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-forest text-white text-xs font-semibold shadow-sm hover:bg-forest-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Add to cart"
           >
             <ShoppingBag className="w-3.5 h-3.5" />
@@ -164,7 +164,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
         <button
           onClick={handleWishlistToggle}
           className={cn(
-            "absolute top-2.5 left-2.5 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm transition-all duration-300",
+            "absolute top-2.5 left-2.5 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm transition-all duration-300",
             discount > 0 && "top-11",
             "md:opacity-0 md:group-hover:opacity-100 md:translate-y-1 md:group-hover:translate-y-0",
             inWishlist ? "text-rose-500" : "text-secondary-text hover:text-rose-500"
@@ -173,14 +173,6 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
         >
           <Heart className={cn("w-4 h-4", inWishlist && "fill-current")} />
         </button>
-
-        {/* Delivery Badge */}
-        <div className="absolute bottom-2.5 left-2.5 md:hidden">
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[10px] font-medium text-forest shadow-sm">
-            <Truck className="w-3 h-3" />
-            {product.deliveryBadge}
-          </span>
-        </div>
       </div>
 
       {/* Card Content */}
@@ -203,7 +195,7 @@ export function ProductCard({ product, priority = false, onQuickView }: ProductC
         </Link>
 
         <div className="flex items-center gap-1.5 mt-2">
-          <span className="text-[0.9375rem] font-bold text-ink tracking-tight">{formatPrice(price)}</span>
+          <span className="text-[0.9375rem] font-bold text-ink tracking-tight tabular-nums">{formatPrice(price)}</span>
           {product.salePrice && product.salePrice < product.basePrice && (
             <span className="text-secondary-text line-through text-[11px]">{formatPrice(product.basePrice)}</span>
           )}

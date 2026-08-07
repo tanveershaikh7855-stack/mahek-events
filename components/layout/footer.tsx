@@ -156,7 +156,7 @@ export function Footer() {
                 Admin
               </Link>
             </div>
-            <div className="flex items-center gap-5 text-xs text-white/30">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-5 text-xs text-white/30">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" />
                 {BRAND.address}

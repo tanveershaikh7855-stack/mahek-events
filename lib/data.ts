@@ -106,6 +106,7 @@ export async function getCategories(type?: "PRODUCT" | "SERVICE" | "EVENT") {
     return prisma.category.findMany({
       where,
       orderBy: { sortOrder: "asc" },
+      include: { _count: { select: { products: true } } },
     });
   }, FALLBACK_CATEGORIES.filter((c) => (type ? c.type === type : true)));
 }

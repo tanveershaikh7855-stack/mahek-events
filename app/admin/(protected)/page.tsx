@@ -93,7 +93,7 @@ export default async function AdminPage() {
                 <div className="w-10 h-10 rounded-xl bg-forest-light flex items-center justify-center">
                   <c.icon className="w-5 h-5 text-forest" />
                 </div>
-                <p className="text-2xl font-bold text-ink mt-3">{c.value}</p>
+                <p className="text-2xl font-bold text-ink mt-3 tabular-nums">{c.value}</p>
                 <p className="text-sm text-secondary-text mt-0.5">{c.label}</p>
                 <p className="text-xs text-secondary-text/70 mt-1">{c.sub}</p>
               </div>
@@ -133,7 +133,7 @@ export default async function AdminPage() {
                       <p className="text-xs text-secondary-text">{o.orderNumber}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="text-sm font-semibold text-ink">
+                      <p className="text-sm font-semibold text-ink tabular-nums">
                         {formatPrice(Number(o.total))}
                       </p>
                       <StatusPill status={o.status} />
