@@ -76,23 +76,27 @@ export function AdminShell({
     <div className="min-h-screen bg-background flex">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-border transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto",
+          "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-border transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto flex flex-col",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <Link href="/admin" className="flex items-center gap-2">
+        <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
+          <Link href="/admin" className="flex items-center gap-2 min-h-[44px]">
             <div className="w-8 h-8 rounded-lg bg-forest flex items-center justify-center">
               <Star className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-ink text-sm">Mahek Admin</span>
           </Link>
-          <button onClick={() => setOpen(false)} className="lg:hidden p-1" aria-label="Close menu">
+          <button
+            onClick={() => setOpen(false)}
+            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-secondary-text hover:text-ink hover:bg-secondary transition-colors"
+            aria-label="Close menu"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="p-3 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto p-3 space-y-1 scrollbar-hide">
           {NAV.map((item) => {
             const count = item.key ? counts[item.key] : 0;
             return (
@@ -101,16 +105,16 @@ export function AdminShell({
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors min-h-[44px]",
                   isActive(item.href)
                     ? "bg-forest-light text-forest"
                     : "text-secondary-text hover:text-ink hover:bg-secondary",
                 )}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span className="flex-1">{item.label}</span>
+                <span className="flex-1 truncate">{item.label}</span>
                 {count > 0 && (
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0.5 tabular-nums">
                     {count}
                   </Badge>
                 )}
@@ -119,17 +123,17 @@ export function AdminShell({
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border space-y-1">
+        <div className="p-3 border-t border-border space-y-1 flex-shrink-0 bg-white">
           <Link
             href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary-text hover:text-ink hover:bg-secondary transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-secondary-text hover:text-ink hover:bg-secondary transition-colors min-h-[44px]"
           >
             <LayoutDashboard className="w-5 h-5" />
             <span>View Website</span>
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/admin/login" })}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors min-h-[44px]"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
@@ -138,31 +142,39 @@ export function AdminShell({
       </aside>
 
       {open && (
-        <div className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setOpen(false)} />
+        <div
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
       )}
 
-      <div className="flex-1 min-w-0">
-        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-border">
-          <div className="flex items-center justify-between px-4 md:px-6 h-16">
-            <div className="flex items-center gap-4">
-              <button onClick={() => setOpen(true)} className="lg:hidden p-2" aria-label="Open menu">
+      <div className="flex-1 min-w-0 flex flex-col">
+        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-border">
+          <div className="flex items-center justify-between px-4 md:px-6 h-16 gap-3">
+            <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+              <button
+                onClick={() => setOpen(true)}
+                className="lg:hidden inline-flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-secondary-text hover:text-ink hover:bg-secondary transition-colors flex-shrink-0"
+                aria-label="Open menu"
+              >
                 <Menu className="w-5 h-5" />
               </button>
-              <h1 className="text-lg font-semibold text-ink">{title}</h1>
+              <h1 className="text-base md:text-lg font-semibold text-ink truncate">{title}</h1>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-secondary">
+            <div className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-secondary flex-shrink-0">
               <div className="w-8 h-8 rounded-full bg-forest flex items-center justify-center text-white text-xs font-bold">
                 {initial}
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-ink leading-tight">{user.name || "Admin"}</p>
-                <p className="text-xs text-secondary-text leading-tight">{user.email}</p>
+              <div className="hidden sm:block min-w-0">
+                <p className="text-sm font-medium text-ink leading-tight truncate max-w-[180px]">{user.name || "Admin"}</p>
+                <p className="text-xs text-secondary-text leading-tight truncate max-w-[180px]">{user.email}</p>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="p-4 md:p-6">{children}</main>
+        <main className="p-4 md:p-6 pb-24 lg:pb-6 flex-1">{children}</main>
       </div>
 
       <AIAssistant />

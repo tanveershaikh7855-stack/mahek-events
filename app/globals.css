@@ -142,6 +142,25 @@
     font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     letter-spacing: -0.025em;
     font-weight: 700;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Anchor jumps should stop below the sticky header, not under it. */
+  :target,
+  [id] {
+    scroll-margin-top: 88px;
+  }
+
+  /* Prices, counters, timers — keep digits from shifting the layout. */
+  .tabular-nums,
+  [class*="price"],
+  [class*="tabular"] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 
   ::selection {
@@ -352,11 +371,24 @@ img[loading="lazy"]:not([src=""]) {
   }
 }
 
-/* Focus visible styles */
+/* Focus visible styles — forest ring with subtle glow for polish. */
 :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(24, 78, 59, 0.12);
+}
+
+/* Buttons/links: hide focus ring on mouse click but keep for keyboard. */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Every interactive element gets a comfortable tap target. */
+button, a[href], [role="button"] {
+  touch-action: manipulation;
 }
 
 /* Reduced motion */
